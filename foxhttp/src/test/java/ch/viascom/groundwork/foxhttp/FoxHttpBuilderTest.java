@@ -121,8 +121,8 @@ public class FoxHttpBuilderTest {
         foxHttpClientBuilder.setFoxHttpTimeouts(0, 0);
         foxHttpClientBuilder.setFoxHttpUserAgent("FoxHttp v1.0");
         foxHttpClientBuilder.addFoxHttpAuthorization(FoxHttpAuthorizationScope.ANY, authorization);
-        foxHttpClientBuilder.activteGZipResponseInterceptor(100);
-        foxHttpClientBuilder.registerFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_BODY, new FoxHttpRequestBodyInterceptor() {
+        foxHttpClientBuilder.activateGZipResponseInterceptor(100);
+        foxHttpClientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_BODY, new FoxHttpRequestBodyInterceptor() {
             @Override
             public void onIntercept(FoxHttpRequestBodyInterceptorContext context) throws FoxHttpException {
                 System.out.println(context);
@@ -153,10 +153,10 @@ public class FoxHttpBuilderTest {
         assertThat(foxHttpClient.getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE).get(0).getWeight()).isEqualTo(100);
         assertThat(foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderEscapeCharStart()).isEqualTo("[");
 
-        foxHttpClientBuilder.activteFoxHttpLogger(true);
+        foxHttpClientBuilder.activateFoxHttpLogger(true);
         foxHttpClientBuilder.setFoxHttpTimeoutStrategy(foxHttpTimeoutStrategy);
         foxHttpClientBuilder.setFoxHttpInterceptors(new EnumMap<>(FoxHttpInterceptorType.class));
-        foxHttpClientBuilder.activteDeflateResponseInterceptor(true, 100);
+        foxHttpClientBuilder.activateGzipResponseInterceptor(true, 100);
 
         FoxHttpClient foxHttpClient2 = foxHttpClientBuilder.build();
 
@@ -165,8 +165,8 @@ public class FoxHttpBuilderTest {
         assertThat(foxHttpClient2.getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE).get(0).getWeight()).isEqualTo(100);
 
         foxHttpClientBuilder.setFoxHttpInterceptors(new EnumMap<>(FoxHttpInterceptorType.class));
-        foxHttpClientBuilder.activteDeflateResponseInterceptor(true);
-        foxHttpClientBuilder.activteGZipResponseInterceptor();
+        foxHttpClientBuilder.activateDeflateResponseInterceptor(true);
+        foxHttpClientBuilder.activateGZipResponseInterceptor();
 
         FoxHttpClient foxHttpClient3 = foxHttpClientBuilder.build();
         assertThat(foxHttpClient3.getFoxHttpTimeoutStrategy().getConnectionTimeout()).isEqualTo(0);
@@ -194,7 +194,7 @@ public class FoxHttpBuilderTest {
             }
         };
 
-        foxHttpClientBuilder.registerFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_BODY, foxHttpInterceptor);
+        foxHttpClientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_BODY, foxHttpInterceptor);
 
         FoxHttpClient foxHttpClient = foxHttpClientBuilder.build();
 
@@ -230,7 +230,7 @@ public class FoxHttpBuilderTest {
         requestBuilder.addRequestHeader(headerField);
         requestBuilder.addRequestQueryEntry("name", "FoxHttp");
         requestBuilder.setSkipResponseBody(false);
-        requestBuilder.registerFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_BODY, foxHttpInterceptor);
+        requestBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_BODY, foxHttpInterceptor);
         requestBuilder.setRequestBody(new RequestStringBody("Hi!"));
         requestBuilder.addFoxHttpPlaceholderEntry("method", "post");
 

@@ -2,8 +2,6 @@ package ch.viascom.groundwork.foxhttp.authorization;
 
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 
-import java.net.URLConnection;
-
 /**
  * FoxHttpAuthorization interface
  *
@@ -11,5 +9,5 @@ import java.net.URLConnection;
  */
 @FunctionalInterface
 public interface FoxHttpAuthorization {
-    void doAuthorization(URLConnection connection, FoxHttpAuthorizationScope foxHttpAuthorizationScope) throws FoxHttpRequestException;
+    void doAuthorization(FoxHttpAuthorizationContext authorizationContext, FoxHttpAuthorizationScope foxHttpAuthorizationScope) throws FoxHttpRequestException;
 }

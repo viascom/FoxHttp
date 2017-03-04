@@ -5,8 +5,6 @@ import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.util.BasicAuthUtil;
 import lombok.*;
 
-import java.net.URLConnection;
-
 /**
  * Basic Auth for FoxHttp
  * <p>
@@ -25,8 +23,8 @@ public class BasicAuthAuthorization implements FoxHttpAuthorization {
     private String password;
 
     @Override
-    public void doAuthorization(URLConnection connection, FoxHttpAuthorizationScope foxHttpAuthorizationScope) throws FoxHttpRequestException {
-        connection.setRequestProperty(HeaderTypes.AUTHORIZATION.toString(), "Basic " + BasicAuthUtil.getBasicAuthenticationEncoding(username, password));
+    public void doAuthorization(FoxHttpAuthorizationContext authorizationContext, FoxHttpAuthorizationScope foxHttpAuthorizationScope) throws FoxHttpRequestException {
+        authorizationContext.getUrlConnection().setRequestProperty(HeaderTypes.AUTHORIZATION.toString(), "Basic " + BasicAuthUtil.getBasicAuthenticationEncoding(username, password));
     }
 
 

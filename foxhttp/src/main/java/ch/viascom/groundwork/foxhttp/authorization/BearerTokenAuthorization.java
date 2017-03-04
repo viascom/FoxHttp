@@ -3,8 +3,6 @@ package ch.viascom.groundwork.foxhttp.authorization;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import lombok.*;
 
-import java.net.URLConnection;
-
 /**
  * Bearer Token for FoxHttp
  * <p>
@@ -27,7 +25,7 @@ public class BearerTokenAuthorization implements FoxHttpAuthorization {
     }
 
     @Override
-    public void doAuthorization(URLConnection connection, FoxHttpAuthorizationScope foxHttpAuthorizationScope) {
-        connection.setRequestProperty(HeaderTypes.AUTHORIZATION.toString(), headerPrefix + " " + token);
+    public void doAuthorization(FoxHttpAuthorizationContext authorizationContext, FoxHttpAuthorizationScope foxHttpAuthorizationScope) {
+        authorizationContext.getUrlConnection().setRequestProperty(HeaderTypes.AUTHORIZATION.toString(), headerPrefix + " " + token);
     }
 }

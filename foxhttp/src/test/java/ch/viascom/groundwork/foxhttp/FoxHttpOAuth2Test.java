@@ -45,7 +45,7 @@ public class FoxHttpOAuth2Test {
         httpClient = new FoxHttpClientBuilder(new GsonParser(), new GsonParser())
                 .setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "OAuth2"))
                 .addFoxHttpPlaceholderEntry("solara", solaraURL)
-                .registerFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE,new DefaultServiceResultFaultInterceptor())
+                .addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE,new DefaultServiceResultFaultInterceptor())
                 .build();
 
 

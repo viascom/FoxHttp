@@ -1,6 +1,7 @@
 package ch.viascom.groundwork.foxhttp;
 
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorization;
+import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationContext;
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationScope;
 import ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody;
 import ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBodyContext;
@@ -117,7 +118,7 @@ public class FoxHttpRequest {
         foxHttpClient.getFoxHttpLogger().log("setFoxHttpClient(" + foxHttpClient + ")");
         this.foxHttpClient = foxHttpClient;
 
-        return executeHttp("https".equals(url.getProtocol()));
+        return executeHttp("https".equals(getUrl().getProtocol()));
     }
 
 
@@ -125,36 +126,36 @@ public class FoxHttpRequest {
         try {
             //Execute interceptor
             foxHttpClient.getFoxHttpLogger().log("executeRequestInterceptor()");
-            FoxHttpInterceptorExecutor.executeRequestInterceptor(new FoxHttpRequestInterceptorContext(url, this, foxHttpClient));
+            FoxHttpInterceptorExecutor.executeRequestInterceptor(new FoxHttpRequestInterceptorContext(getUrl(), this, foxHttpClient));
 
             foxHttpClient.getFoxHttpLogger().log("setCookieStore(" + foxHttpClient.getFoxHttpCookieStore() + ")");
             CookieHandler.setDefault((CookieManager) foxHttpClient.getFoxHttpCookieStore());
 
             // Create Scope
-            authScope = FoxHttpAuthorizationScope.create(url.toString(), requestType);
+            authScope = FoxHttpAuthorizationScope.create(getUrl().toString(), requestType);
 
             foxHttpClient.getFoxHttpLogger().log("prepareQuery(" + getRequestQuery() + ")");
             prepareQuery();
 
             foxHttpClient.getFoxHttpLogger().log("processPlaceholders()");
-            String parsedURL = foxHttpClient.getFoxHttpPlaceholderStrategy().processPlaceholders(url.toString(), foxHttpClient);
+            String parsedURL = foxHttpClient.getFoxHttpPlaceholderStrategy().processPlaceholders(getUrl().toString(), foxHttpClient);
             url = new URL(parsedURL);
 
             checkPlaceholders();
 
             //Execute interceptor
             foxHttpClient.getFoxHttpLogger().log("executeRequestConnectionInterceptor()");
-            FoxHttpInterceptorExecutor.executeRequestConnectionInterceptor(new FoxHttpRequestConnectionInterceptorContext(url, this, foxHttpClient));
+            FoxHttpInterceptorExecutor.executeRequestConnectionInterceptor(new FoxHttpRequestConnectionInterceptorContext(getUrl(), this, foxHttpClient));
 
             //Create connection
-            foxHttpClient.getFoxHttpLogger().log("createConnection(" + url + ")");
+            foxHttpClient.getFoxHttpLogger().log("createConnection(" + getUrl() + ")");
             if (foxHttpClient.getFoxHttpProxyStrategy() == null) {
-                connection = url.openConnection();
+                connection = getUrl().openConnection();
             } else {
                 foxHttpClient.getFoxHttpLogger().log("useProxy(" + foxHttpClient.getFoxHttpProxyStrategy() + ")");
-                connection = url.openConnection(foxHttpClient.getFoxHttpProxyStrategy().getProxy(url));
-                if (foxHttpClient.getFoxHttpProxyStrategy().hasProxyAuthorization(url)) {
-                    setHeaderIfNotExist(HeaderTypes.PROXY_AUTHORIZATION, foxHttpClient.getFoxHttpProxyStrategy().getProxyAuthorization(url), connection);
+                connection = getUrl().openConnection(foxHttpClient.getFoxHttpProxyStrategy().getProxy(getUrl()));
+                if (foxHttpClient.getFoxHttpProxyStrategy().hasProxyAuthorization(getUrl())) {
+                    setHeaderIfNotExist(HeaderTypes.PROXY_AUTHORIZATION, foxHttpClient.getFoxHttpProxyStrategy().getProxyAuthorization(getUrl()), connection);
                 }
             }
 
@@ -263,9 +264,9 @@ public class FoxHttpRequest {
 
     private void checkPlaceholders() throws FoxHttpRequestException {
         Pattern pattern = Pattern.compile(foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMatchRegex());
-        Matcher matcher = pattern.matcher(url.toString());
+        Matcher matcher = pattern.matcher(getUrl().toString());
         if (matcher.find()) {
-            throw new FoxHttpRequestException("The url dose still contain placeholders after finishing processing all defined placeholders.\n-> " + url.toString());
+            throw new FoxHttpRequestException("The url dose still contain placeholders after finishing processing all defined placeholders.\n-> " + getUrl().toString());
         }
 
     }
@@ -283,7 +284,7 @@ public class FoxHttpRequest {
     private void prepareQuery() throws FoxHttpRequestException, MalformedURLException {
         if (getRequestQuery().hasQueryEntries()) {
             String query = getRequestQuery().getQueryString();
-            url = new URL(url.toString() + query);
+            url = new URL(getUrl().toString() + query);
         }
     }
 
@@ -294,11 +295,11 @@ public class FoxHttpRequest {
     }
 
     private void processAuthorizationStrategy() throws FoxHttpRequestException {
-        List<FoxHttpAuthorization> foxHttpAuthorizations = foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorization(connection, authScope, foxHttpClient
-        );
+        List<FoxHttpAuthorization> foxHttpAuthorizations = foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorization(connection, authScope, foxHttpClient);
+        FoxHttpAuthorizationContext authorizationContext = new FoxHttpAuthorizationContext(connection, this, foxHttpClient);
         for (FoxHttpAuthorization foxHttpAuthorization : foxHttpAuthorizations) {
             foxHttpClient.getFoxHttpLogger().log("-> doAuthorization(" + foxHttpAuthorization + ")");
-            foxHttpAuthorization.doAuthorization(connection, authScope);
+            foxHttpAuthorization.doAuthorization(authorizationContext, authScope);
         }
     }
 
@@ -326,7 +327,7 @@ public class FoxHttpRequest {
         }
 
         //Check for empty URL
-        if (url == null) {
+        if (getUrl() == null) {
             throw new FoxHttpRequestException("URL of the request ist not defined");
         }
 

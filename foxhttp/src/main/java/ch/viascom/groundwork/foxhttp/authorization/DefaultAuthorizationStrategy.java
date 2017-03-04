@@ -29,16 +29,16 @@ public class DefaultAuthorizationStrategy implements FoxHttpAuthorizationStrateg
     /**
      * Returns a list of matching FoxHttpAuthorizations based on the given FoxHttpAuthorizationScope
      *
-     * @param connection                connection of the request
-     * @param foxHttpAuthorizationScope looking for scope
+     * @param connection  connection of the request
+     * @param searchScope looking for scope
      * @return
      */
     @Override
-    public List<FoxHttpAuthorization> getAuthorization(URLConnection connection, FoxHttpAuthorizationScope foxHttpAuthorizationScope, FoxHttpClient foxHttpClient) {
+    public List<FoxHttpAuthorization> getAuthorization(URLConnection connection, FoxHttpAuthorizationScope searchScope, FoxHttpClient foxHttpClient) {
         ArrayList<FoxHttpAuthorization> foxHttpAuthorizationList = new ArrayList<>();
 
         for (Map.Entry<String, ArrayList<FoxHttpAuthorization>> entry : foxHttpAuthorizations.entrySet()) {
-            if (RegexUtil.doesURLMatch(foxHttpAuthorizationScope.toString(), foxHttpClient.getFoxHttpPlaceholderStrategy().processPlaceholders(entry.getKey(), foxHttpClient))) {
+            if (RegexUtil.doesURLMatch(searchScope.toString(), foxHttpClient.getFoxHttpPlaceholderStrategy().processPlaceholders(entry.getKey(), foxHttpClient))) {
                 foxHttpAuthorizationList.addAll(entry.getValue());
             }
         }
@@ -48,6 +48,23 @@ public class DefaultAuthorizationStrategy implements FoxHttpAuthorizationStrateg
         }
 
         return foxHttpAuthorizationList;
+    }
+
+    /**
+     * Add a new FoxHttpAuthorization to the AuthorizationStrategy
+     *
+     * @param foxHttpAuthorizationScopes scopes in which the authorization is used
+     * @param foxHttpAuthorization       authorization itself
+     */
+    @Override
+    public void addAuthorization(List<FoxHttpAuthorizationScope> foxHttpAuthorizationScopes, FoxHttpAuthorization foxHttpAuthorization) {
+        for (FoxHttpAuthorizationScope scope : foxHttpAuthorizationScopes) {
+            if (foxHttpAuthorizations.containsKey(scope.toString())) {
+                foxHttpAuthorizations.get(scope.toString()).add(foxHttpAuthorization);
+            } else {
+                foxHttpAuthorizations.put(scope.toString(), new ArrayList<>(Collections.singletonList(foxHttpAuthorization)));
+            }
+        }
     }
 
     /**
@@ -63,7 +80,6 @@ public class DefaultAuthorizationStrategy implements FoxHttpAuthorizationStrateg
         } else {
             foxHttpAuthorizations.put(foxHttpAuthorizationScope.toString(), new ArrayList<>(Collections.singletonList(foxHttpAuthorization)));
         }
-
     }
 
     /**

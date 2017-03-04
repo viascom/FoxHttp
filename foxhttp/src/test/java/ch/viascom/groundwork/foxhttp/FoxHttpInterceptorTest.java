@@ -6,6 +6,7 @@ import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
 import ch.viascom.groundwork.foxhttp.interceptors.*;
+import ch.viascom.groundwork.foxhttp.lambda.LambdaLogger;
 import ch.viascom.groundwork.foxhttp.models.GetResponse;
 import ch.viascom.groundwork.foxhttp.models.PostResponse;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
@@ -25,7 +26,7 @@ public class FoxHttpInterceptorTest {
     @Test
     public void GZipTest() throws Exception {
         FoxHttpClientBuilder clientBuilder = new FoxHttpClientBuilder();
-        clientBuilder.activteGZipResponseInterceptor();
+        clientBuilder.activateGZipResponseInterceptor();
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "gzip", RequestType.GET, clientBuilder.build());
@@ -39,7 +40,7 @@ public class FoxHttpInterceptorTest {
     @Test
     public void DeflateTest() throws Exception {
         FoxHttpClientBuilder clientBuilder = new FoxHttpClientBuilder();
-        clientBuilder.activteDeflateResponseInterceptor(false);
+        clientBuilder.activateDeflateResponseInterceptor(false);
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "deflate", RequestType.GET, clientBuilder.build());
@@ -56,7 +57,7 @@ public class FoxHttpInterceptorTest {
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
 
         //Add query entry
-        clientBuilder.registerFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST, new RequestInterceptor());
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST, new RequestInterceptor());
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "get", RequestType.GET, clientBuilder.build());
         FoxHttpRequest request = requestBuilder.build();
@@ -72,7 +73,7 @@ public class FoxHttpInterceptorTest {
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
 
         //Add header entry
-        clientBuilder.registerFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_HEADER, new RequestHeaderInterceptor());
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_HEADER, new RequestHeaderInterceptor());
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "get", RequestType.GET, clientBuilder.build());
         FoxHttpRequest request = requestBuilder.build();
@@ -86,9 +87,10 @@ public class FoxHttpInterceptorTest {
     public void requestBodyInterceptorTest() throws Exception {
         FoxHttpClientBuilder clientBuilder = new FoxHttpClientBuilder();
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
+        clientBuilder.setFoxHttpLogger(new LambdaLogger((message,e) -> System.out.println(message)));
 
         //Add new string body
-        clientBuilder.registerFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_BODY, new RequestBodyInterceptor());
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_BODY, new RequestBodyInterceptor());
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "post", RequestType.POST, clientBuilder.build());
         requestBuilder.setRequestBody(new RequestStringBody("Dont send this!", ContentType.DEFAULT_TEXT));
@@ -105,7 +107,7 @@ public class FoxHttpInterceptorTest {
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
 
         //Throw exception on 404
-        clientBuilder.registerFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE_CODE, new ResponseCodeInterceptor());
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE_CODE, new ResponseCodeInterceptor());
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "status/404", RequestType.GET, clientBuilder.build());
         FoxHttpRequest request = requestBuilder.build();
@@ -124,7 +126,7 @@ public class FoxHttpInterceptorTest {
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
 
         //Set response code to 500
-        clientBuilder.registerFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE, new ResponseInterceptor());
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE, new ResponseInterceptor());
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "status/404", RequestType.GET, clientBuilder.build());
         FoxHttpRequest request = requestBuilder.build();
@@ -140,7 +142,7 @@ public class FoxHttpInterceptorTest {
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
 
         //Set new response body
-        clientBuilder.registerFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE_BODY, new ResponseBodyInterceptor());
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE_BODY, new ResponseBodyInterceptor());
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "status/404", RequestType.GET, clientBuilder.build());
         FoxHttpRequest request = requestBuilder.build();
@@ -156,11 +158,11 @@ public class FoxHttpInterceptorTest {
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
 
         //Add query entry
-        clientBuilder.registerFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_HEADER, new RequestHeaderInterceptor(10));
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_HEADER, new RequestHeaderInterceptor(10));
 
         //Add header entry
         RequestHeaderInterceptor headerInterceptor = new RequestHeaderInterceptor(5);
-        clientBuilder.registerFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_HEADER, headerInterceptor);
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_HEADER, headerInterceptor);
 
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "get", RequestType.GET, clientBuilder.build());

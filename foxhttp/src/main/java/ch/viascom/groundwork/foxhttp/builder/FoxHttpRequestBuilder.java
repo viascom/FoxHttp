@@ -2,6 +2,8 @@ package ch.viascom.groundwork.foxhttp.builder;
 
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
 import ch.viascom.groundwork.foxhttp.FoxHttpRequest;
+import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorization;
+import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationScope;
 import ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
@@ -9,12 +11,14 @@ import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptor;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * FoxHttpRequest builder to create a new FoxHttpRequest
@@ -236,7 +240,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpClientBuilder (this)
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
-    public FoxHttpRequestBuilder registerFoxHttpInterceptor(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
+    public FoxHttpRequestBuilder addFoxHttpInterceptor(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
         foxHttpRequest.getFoxHttpClient().register(interceptorType, foxHttpInterceptor);
         return this;
     }
@@ -250,6 +254,61 @@ public class FoxHttpRequestBuilder {
      */
     public FoxHttpRequestBuilder addFoxHttpPlaceholderEntry(String placeholder, String value) {
         foxHttpRequest.getFoxHttpClient().getFoxHttpPlaceholderStrategy().addPlaceholder(placeholder, value);
+        return this;
+    }
+
+    /**
+     *
+     * @param authorizationScope
+     * @param foxHttpAuthorization
+     * @return
+     */
+    public FoxHttpRequestBuilder addFoxHttpAuthorization(FoxHttpAuthorizationScope authorizationScope, FoxHttpAuthorization foxHttpAuthorization) {
+        foxHttpRequest.getFoxHttpClient().getFoxHttpAuthorizationStrategy().addAuthorization(authorizationScope, foxHttpAuthorization);
+        return this;
+    }
+
+    /**
+     *
+     * @param authorizationScopes
+     * @param foxHttpAuthorization
+     * @return
+     */
+    public FoxHttpRequestBuilder addFoxHttpAuthorization(List<FoxHttpAuthorizationScope> authorizationScopes, FoxHttpAuthorization foxHttpAuthorization) {
+        foxHttpRequest.getFoxHttpClient().getFoxHttpAuthorizationStrategy().addAuthorization(authorizationScopes, foxHttpAuthorization);
+        return this;
+    }
+
+    /**
+     *
+     * @param foxHttpLogger
+     * @return
+     */
+    public FoxHttpRequestBuilder setLogger(FoxHttpLogger foxHttpLogger) {
+        foxHttpRequest.getFoxHttpClient().setFoxHttpLogger(foxHttpLogger);
+        return this;
+    }
+
+    /**
+     *
+     * @param foxHttpLogger
+     * @param activate
+     * @return
+     */
+    public FoxHttpRequestBuilder setLogger(FoxHttpLogger foxHttpLogger, boolean activate) {
+        foxHttpRequest.getFoxHttpClient().setFoxHttpLogger(foxHttpLogger);
+        activateFoxHttpLogger(activate);
+        return this;
+    }
+
+    /**
+     * Activate defined Logger
+     *
+     * @param activate activate logger
+     * @return FoxHttpClientBuilder (this)
+     */
+    public FoxHttpRequestBuilder activateFoxHttpLogger(boolean activate) {
+        foxHttpRequest.getFoxHttpClient().getFoxHttpLogger().setLoggingEnabled(activate);
         return this;
     }
 

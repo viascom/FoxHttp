@@ -55,7 +55,7 @@ public class FoxHttpClientBuilder {
     /**
      * Create a new builder with a default FoxHttpClient except for the request and response parser
      *
-     * @param foxHttpParser  a request parser and response parser
+     * @param foxHttpParser a request parser and response parser
      */
     public FoxHttpClientBuilder(FoxHttpParser foxHttpParser) {
         foxHttpClient = new FoxHttpClient();
@@ -91,7 +91,7 @@ public class FoxHttpClientBuilder {
     /**
      * Set the response parser
      *
-     * @param foxHttpResponseParser A FoxHttpParser
+     * @param foxHttpResponseParser a FoxHttpParser
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpClientBuilder setFoxHttpResponseParser(FoxHttpParser foxHttpResponseParser) {
@@ -102,7 +102,7 @@ public class FoxHttpClientBuilder {
     /**
      * Set the request parser
      *
-     * @param foxHttpRequestParser A FoxHttpParser
+     * @param foxHttpRequestParser a FoxHttpParser
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpClientBuilder setFoxHttpRequestParser(FoxHttpParser foxHttpRequestParser) {
@@ -123,14 +123,14 @@ public class FoxHttpClientBuilder {
     }
 
     /**
-     * Register an interceptor
+     * Add an interceptor
      *
      * @param interceptorType    Type of the interceptor
      * @param foxHttpInterceptor Interceptor instance
      * @return FoxHttpClientBuilder (this)
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
-    public FoxHttpClientBuilder registerFoxHttpInterceptor(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
+    public FoxHttpClientBuilder addFoxHttpInterceptor(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
         foxHttpClient.register(interceptorType, foxHttpInterceptor);
         return this;
     }
@@ -141,7 +141,7 @@ public class FoxHttpClientBuilder {
      * @return FoxHttpClientBuilder (this)
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
-    public FoxHttpClientBuilder activteGZipResponseInterceptor() throws FoxHttpException {
+    public FoxHttpClientBuilder activateGZipResponseInterceptor() throws FoxHttpException {
         foxHttpClient.register(FoxHttpInterceptorType.RESPONSE, new GZipResponseInterceptor());
         return this;
     }
@@ -153,7 +153,7 @@ public class FoxHttpClientBuilder {
      * @return FoxHttpClientBuilder (this)
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
-    public FoxHttpClientBuilder activteGZipResponseInterceptor(int weight) throws FoxHttpException {
+    public FoxHttpClientBuilder activateGZipResponseInterceptor(int weight) throws FoxHttpException {
         foxHttpClient.register(FoxHttpInterceptorType.RESPONSE, new GZipResponseInterceptor(weight));
         return this;
     }
@@ -163,7 +163,7 @@ public class FoxHttpClientBuilder {
      * @return FoxHttpClientBuilder (this)
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
-    public FoxHttpClientBuilder activteDeflateResponseInterceptor(boolean nowrap) throws FoxHttpException {
+    public FoxHttpClientBuilder activateDeflateResponseInterceptor(boolean nowrap) throws FoxHttpException {
         foxHttpClient.register(FoxHttpInterceptorType.RESPONSE, new DeflateResponseInterceptor(nowrap));
         return this;
 
@@ -175,7 +175,7 @@ public class FoxHttpClientBuilder {
      * @return FoxHttpClientBuilder (this)
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
-    public FoxHttpClientBuilder activteDeflateResponseInterceptor(boolean nowrap, int weight) throws FoxHttpException {
+    public FoxHttpClientBuilder activateGzipResponseInterceptor(boolean nowrap, int weight) throws FoxHttpException {
         foxHttpClient.register(FoxHttpInterceptorType.RESPONSE, new DeflateResponseInterceptor(nowrap, weight));
         return this;
 
@@ -184,7 +184,7 @@ public class FoxHttpClientBuilder {
     /**
      * Set a CookieStore
      *
-     * @param foxHttpCookieStore A CookieStore
+     * @param foxHttpCookieStore a CookieStore
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpClientBuilder setFoxHttpCookieStore(FoxHttpCookieStore foxHttpCookieStore) {
@@ -195,7 +195,7 @@ public class FoxHttpClientBuilder {
     /**
      * Set an AuthorizationStrategy
      *
-     * @param foxHttpAuthorizationStrategy An AuthorizationStrategy
+     * @param foxHttpAuthorizationStrategy an AuthorizationStrategy
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpClientBuilder setFoxHttpAuthorizationStrategy(FoxHttpAuthorizationStrategy foxHttpAuthorizationStrategy) {
@@ -204,7 +204,7 @@ public class FoxHttpClientBuilder {
     }
 
     /**
-     * Add a Authorization to the AuthorizationStrategy
+     * Add an Authorization to the AuthorizationStrategy
      *
      * @param foxHttpAuthorizationScope Scope of the authorization
      * @param foxHttpAuthorization      Authorization itself
@@ -218,7 +218,7 @@ public class FoxHttpClientBuilder {
     /**
      * Set a TimeoutStrategy
      *
-     * @param foxHttpTimeoutStrategy A TimeoutStrategy
+     * @param foxHttpTimeoutStrategy a TimeoutStrategy
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpClientBuilder setFoxHttpTimeoutStrategy(FoxHttpTimeoutStrategy foxHttpTimeoutStrategy) {
@@ -297,11 +297,24 @@ public class FoxHttpClientBuilder {
     /**
      * Set a Logger
      *
-     * @param foxHttpLogger A logger
+     * @param foxHttpLogger a logger
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpClientBuilder setFoxHttpLogger(FoxHttpLogger foxHttpLogger) {
         foxHttpClient.setFoxHttpLogger(foxHttpLogger);
+        return this;
+    }
+
+    /**
+     * Set a Logger
+     *
+     * @param foxHttpLogger a logger
+     * @param activate      activate the logger
+     * @return FoxHttpClientBuilder (this)
+     */
+    public FoxHttpClientBuilder setFoxHttpLogger(FoxHttpLogger foxHttpLogger, boolean activate) {
+        foxHttpClient.setFoxHttpLogger(foxHttpLogger);
+        activateFoxHttpLogger(activate);
         return this;
     }
 
@@ -311,7 +324,7 @@ public class FoxHttpClientBuilder {
      * @param activate activate logger
      * @return FoxHttpClientBuilder (this)
      */
-    public FoxHttpClientBuilder activteFoxHttpLogger(boolean activate) {
+    public FoxHttpClientBuilder activateFoxHttpLogger(boolean activate) {
         foxHttpClient.getFoxHttpLogger().setLoggingEnabled(activate);
         return this;
     }
