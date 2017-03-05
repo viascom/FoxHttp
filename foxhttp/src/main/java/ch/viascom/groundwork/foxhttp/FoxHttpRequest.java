@@ -215,6 +215,12 @@ public class FoxHttpRequest {
             int responseCode = ((HttpURLConnection) connection).getResponseCode();
             foxHttpClient.getFoxHttpLogger().log("responseCode(" + responseCode + ")");
 
+            //Execute interceptor
+            foxHttpClient.getFoxHttpLogger().log("executeResponseCodeInterceptor()");
+            FoxHttpInterceptorExecutor.executeResponseCodeInterceptor(
+                    new FoxHttpResponseCodeInterceptorContext(responseCode, this, foxHttpClient)
+            );
+
             if (!skipResponseBody) {
                 InputStream is;
                 if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < HttpURLConnection.HTTP_MULT_CHOICE) {
@@ -227,29 +233,25 @@ public class FoxHttpRequest {
                     is = ((HttpURLConnection) connection).getErrorStream();
                 }
 
-                //Execute interceptor
-                foxHttpClient.getFoxHttpLogger().log("executeResponseCodeInterceptor()");
-                FoxHttpInterceptorExecutor.executeResponseCodeInterceptor(
-                        new FoxHttpResponseCodeInterceptorContext(responseCode, this, foxHttpClient)
-                );
-
                 foxHttpClient.getFoxHttpLogger().log("createFoxHttpResponse()");
                 foxHttpResponse = new FoxHttpResponse(is, this, responseCode, foxHttpClient);
-                //Process response headers
-                foxHttpClient.getFoxHttpLogger().log("processResponseHeader()");
-                processResponseHeader();
-
-                //Execute interceptor
-                foxHttpClient.getFoxHttpLogger().log("executeResponseInterceptor()");
-                FoxHttpInterceptorExecutor.executeResponseInterceptor(
-                        new FoxHttpResponseInterceptorContext(responseCode, foxHttpResponse, this, foxHttpClient)
-                );
-
-                return foxHttpResponse;
             } else {
-                foxHttpClient.getFoxHttpLogger().log("No response return because skipResponseBody is active!");
-                return null;
+                foxHttpClient.getFoxHttpLogger().log("createFoxHttpResponse()");
+                foxHttpResponse = new FoxHttpResponse(null, this, responseCode, foxHttpClient);
+                foxHttpClient.getFoxHttpLogger().log("No body return because skipResponseBody is active!");
             }
+
+            //Process response headers
+            foxHttpClient.getFoxHttpLogger().log("processResponseHeader()");
+            processResponseHeader();
+
+            //Execute interceptor
+            foxHttpClient.getFoxHttpLogger().log("executeResponseInterceptor()");
+            FoxHttpInterceptorExecutor.executeResponseInterceptor(
+                    new FoxHttpResponseInterceptorContext(responseCode, foxHttpResponse, this, foxHttpClient)
+            );
+
+            return foxHttpResponse;
         } catch (FoxHttpException e) {
             throw e;
         } catch (Exception e) {

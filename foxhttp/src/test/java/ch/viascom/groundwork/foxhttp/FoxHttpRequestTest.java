@@ -348,7 +348,7 @@ public class FoxHttpRequestTest {
 
         foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
                 FoxHttpAuthorizationScope.ANY,
-                (connection, foxHttpAuthorizationScope) -> connection.setRequestProperty("Product-Key", "GroundWork FoxHttp")
+                (authorizationContext, foxHttpAuthorizationScope) -> authorizationContext.getUrlConnection().setRequestProperty("Product-Key", "GroundWork FoxHttp")
         );
 
         foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
@@ -463,7 +463,7 @@ public class FoxHttpRequestTest {
     public void placeholderQueryAuthScopeTest() throws Exception {
 
         FoxHttpClient client = new FoxHttpClientBuilder(new GsonParser())
-                .addFoxHttpAuthorization(FoxHttpAuthorizationScope.create("{endpoint}get"), (connection, foxHttpAuthorizationScope) -> connection.setRequestProperty(HeaderTypes.USER_AGENT.toString(), "FOX-TEST-AGENT"))
+                .addFoxHttpAuthorization(FoxHttpAuthorizationScope.create("{endpoint}get"), (authorizationContext, foxHttpAuthorizationScope) -> authorizationContext.getUrlConnection().setRequestProperty(HeaderTypes.USER_AGENT.toString(), "FOX-TEST-AGENT"))
                 .build();
 
         FoxHttpRequestBuilder builder = new FoxHttpRequestBuilder("{endpoint}get", RequestType.GET, client);
