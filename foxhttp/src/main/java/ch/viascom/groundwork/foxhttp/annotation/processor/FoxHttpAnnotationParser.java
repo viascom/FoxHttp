@@ -30,6 +30,16 @@ public class FoxHttpAnnotationParser {
     }
 
     /**
+     * Add a new response parser to the annotation parser
+     *
+     * @param annotation     a annotation
+     * @param responseParser a response parser
+     */
+    public void addResponseParser(Class<? extends Annotation> annotation, FoxHttpResponseParser responseParser) {
+        getResponseParsers().put(annotation, responseParser);
+    }
+
+    /**
      * Parse the given interface for the use of FoxHttp
      *
      * @param serviceInterface interface to parse
