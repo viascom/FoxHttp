@@ -5,7 +5,7 @@
 [![release](https://img.shields.io/badge/release-v1.2.1-brightgreen.svg)](https://github.com/Viascom/groundwork/tree/master)
 [![develop](https://img.shields.io/badge/develop-v1.2.1-brightgreen.svg)](https://github.com/Viascom/groundwork/tree/foxhttp-develop)<br/>
 [![coverage](https://img.shields.io/badge/test--coverage-80%25-brightgreen.svg)](https://github.com/Viascom/groundwork/tree/foxhttp-develop)
-[![Snap CI branch](https://img.shields.io/snap-ci/Viascom/groundwork/foxhttp-develop.svg)]()
+[![tests](https://img.shields.io/badge/tests-75/75-brightgreen.svg)](https://github.com/Viascom/groundwork/tree/foxhttp-develop)
 [![Maven Central](https://img.shields.io/maven-central/v/ch.viascom.groundwork/foxhttp.svg)]()
 [![Bintray](https://img.shields.io/bintray/v/viascom/GroundWork/ch.viascom.groundwork%3Afoxhttp.svg)]()<br/><br/>
 Request against [httpbin](https://httpbin.org/) which was installed on localhost:<br/>
@@ -23,6 +23,7 @@ Request against [httpbin](https://httpbin.org/) which was installed on localhost
 * Integrated Object, URL-Encoded & Multipart-Body support
 * Custom and predefined interceptors
 * Powerful authorization strategy
+* Lambda support
 * Fully customizable cookie store
 * Host and SSL trust strategy
 * Easy proxy strategy
