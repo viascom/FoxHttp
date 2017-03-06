@@ -23,6 +23,7 @@ import org.joda.time.DateTime;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 
 /**
@@ -47,13 +48,14 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
 
     private Gson parser;
     private FoxHttpServiceResultHasher objectHasher;
+    private Charset charset = Charset.forName("UTF-8");
 
 
     /**
      * Create a new FoxHttpServiceResultParser
      *
-     * @param foxHttpResponse response with a serialized service result
-     * @param customParserBuilder    a custom gson parser builder
+     * @param foxHttpResponse     response with a serialized service result
+     * @param customParserBuilder a custom gson parser builder
      */
     public FoxHttpServiceResultResponse(FoxHttpResponse foxHttpResponse, GsonBuilder customParserBuilder) throws FoxHttpResponseException {
         this(foxHttpResponse, null, customParserBuilder);
@@ -81,9 +83,9 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
     /**
      * Create a new FoxHttpServiceResultParser
      *
-     * @param foxHttpResponse response with a serialized service result
-     * @param objectHasher    object hasher to check the result
-     * @param customParserBuilder    a custom gson parser builder
+     * @param foxHttpResponse     response with a serialized service result
+     * @param objectHasher        object hasher to check the result
+     * @param customParserBuilder a custom gson parser builder
      */
     public FoxHttpServiceResultResponse(FoxHttpResponse foxHttpResponse, FoxHttpServiceResultHasher objectHasher, GsonBuilder customParserBuilder) throws FoxHttpResponseException {
         this.responseBody = foxHttpResponse.getResponseBody();
@@ -166,7 +168,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * @throws IOException if the stream is not accessible
      */
     public String getStringBody() throws IOException {
-        BufferedReader rd = new BufferedReader(new InputStreamReader(getInputStreamBody()));
+        BufferedReader rd = new BufferedReader(new InputStreamReader(getInputStreamBody(), charset));
         String line;
         StringBuilder response = new StringBuilder();
         while ((line = rd.readLine()) != null) {
