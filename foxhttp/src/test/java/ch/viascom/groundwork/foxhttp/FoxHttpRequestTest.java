@@ -10,6 +10,7 @@ import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.cookie.DefaultCookieStore;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
+import ch.viascom.groundwork.foxhttp.lambda.LambdaAuthorization;
 import ch.viascom.groundwork.foxhttp.log.SystemOutFoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.models.*;
 import ch.viascom.groundwork.foxhttp.objects.RemoveMeAuthorization;
@@ -89,6 +90,26 @@ public class FoxHttpRequestTest {
         GetResponse getResponse = foxHttpResponse.getParsedBody(GetResponse.class);
 
         assertThat(getResponse.getUrl()).isEqualTo(endpoint + "get");
+    }
+
+    @Test
+    public void getSkipResponseBodyRequest() throws Exception {
+
+        FoxHttpClient foxHttpClient = new FoxHttpClient();
+        foxHttpClient.setFoxHttpResponseParser(new GsonParser());
+
+        FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
+        foxHttpRequest.setUrl(new URL(endpoint + "get"));
+        foxHttpRequest.setRequestType(RequestType.GET);
+        foxHttpRequest.setFollowRedirect(true);
+        foxHttpRequest.setSkipResponseBody(true);
+
+        FoxHttpResponse foxHttpResponse = foxHttpRequest.execute();
+
+        assertThat(foxHttpResponse.getResponseCode()).isEqualTo(200);
+        assertThat(foxHttpResponse.getByteArrayOutputStreamBody().size()).isEqualTo(0);
+        assertThat(foxHttpResponse.getFoxHttpRequest().getRequestType()).isEqualTo(RequestType.GET);
+        assertThat(foxHttpResponse.getFoxHttpRequest().getUrl()).isEqualTo(new URL(endpoint + "get"));
     }
 
     @Test
@@ -463,7 +484,7 @@ public class FoxHttpRequestTest {
     public void placeholderQueryAuthScopeTest() throws Exception {
 
         FoxHttpClient client = new FoxHttpClientBuilder(new GsonParser())
-                .addFoxHttpAuthorization(FoxHttpAuthorizationScope.create("{endpoint}get"), (authorizationContext, foxHttpAuthorizationScope) -> authorizationContext.getUrlConnection().setRequestProperty(HeaderTypes.USER_AGENT.toString(), "FOX-TEST-AGENT"))
+                .addFoxHttpAuthorization(FoxHttpAuthorizationScope.create("{endpoint}get"), new LambdaAuthorization((authorizationContext, foxHttpAuthorizationScope) -> authorizationContext.getUrlConnection().setRequestProperty(HeaderTypes.USER_AGENT.toString(), "FOX-TEST-AGENT")))
                 .build();
 
         FoxHttpRequestBuilder builder = new FoxHttpRequestBuilder("{endpoint}get", RequestType.GET, client);
