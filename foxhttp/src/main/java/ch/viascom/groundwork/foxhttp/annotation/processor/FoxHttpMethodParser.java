@@ -160,6 +160,7 @@ class FoxHttpMethodParser {
         doParameterMatch(HeaderField.class, String.class, this.method);
         doParameterMatch(Query.class, String.class, this.method);
         doParameterMatch(QueryMap.class, Map.class, this.method);
+        doParameterMatch(QueryObject.class, Object.class, this.method);
         doParameterMatch(Path.class, String.class, this.method);
 
         //Body

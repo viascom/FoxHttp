@@ -76,10 +76,11 @@ public class FoxHttpRequestQuery {
      * @throws FoxHttpRequestException can throw an exception if a field does not exist
      */
     public void parseObjectAsQueryMap(List<String> params, Object o) throws FoxHttpRequestException {
-        try {
-            Class clazz = o.getClass();
-            HashMap<String, String> paramMap = new HashMap<>();
-            for (String param : params) {
+
+        Class clazz = o.getClass();
+        HashMap<String, String> paramMap = new HashMap<>();
+        for (String param : params) {
+            try {
                 Field field = clazz.getDeclaredField(param);
                 field.setAccessible(true);
                 String paramName = field.getName();
@@ -87,11 +88,11 @@ public class FoxHttpRequestQuery {
                 if (field.get(o) != null && !value.isEmpty()) {
                     paramMap.put(paramName, value);
                 }
+            } catch (Exception e) {
+                throw new FoxHttpRequestException(e);
             }
-            queryMap = paramMap;
-        } catch (Exception e) {
-            throw new FoxHttpRequestException(e);
         }
+        queryMap = paramMap;
     }
 
 }

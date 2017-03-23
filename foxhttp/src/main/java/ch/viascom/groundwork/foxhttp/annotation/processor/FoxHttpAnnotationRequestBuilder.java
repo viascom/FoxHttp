@@ -15,10 +15,7 @@ import java.io.FileNotFoundException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -43,7 +40,7 @@ class FoxHttpAnnotationRequestBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    static FoxHttpRequestQuery getFoxHttpRequestQuery(Method method, Object[] args) {
+    static FoxHttpRequestQuery getFoxHttpRequestQuery(Method method, Object[] args) throws FoxHttpRequestException {
         FoxHttpRequestQuery foxHttpRequestQuery = new FoxHttpRequestQuery();
 
         int parameterPos = 0;
@@ -53,6 +50,8 @@ class FoxHttpAnnotationRequestBuilder {
                     foxHttpRequestQuery.addQueryEntry(((Query) annotation).value(), (String) args[parameterPos]);
                 } else if (annotation instanceof QueryMap) {
                     foxHttpRequestQuery.addQueryMap((HashMap<String, String>) args[parameterPos]);
+                } else if (annotation instanceof QueryObject) {
+                    foxHttpRequestQuery.parseObjectAsQueryMap(Arrays.asList(((QueryObject) annotation).value()),(Object) args[parameterPos]);
                 }
             }
             parameterPos++;
