@@ -15,6 +15,7 @@ import ch.viascom.groundwork.foxhttp.interceptor.request.context.FoxHttpRequestH
 import ch.viascom.groundwork.foxhttp.interceptor.request.context.FoxHttpRequestInterceptorContext;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseCodeInterceptorContext;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseInterceptorContext;
+import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
@@ -68,26 +69,46 @@ public class FoxHttpRequest {
     private FoxHttpResponse foxHttpResponse;
 
     @Getter
-    @Setter
     private FoxHttpClient foxHttpClient;
 
     @Getter(AccessLevel.PROTECTED)
     private URLConnection connection;
 
+    @Getter
+    @Setter
+    private FoxHttpPlaceholderStrategy foxHttpPlaceholderStrategy;
 
-    public FoxHttpRequest() {
-        this.foxHttpClient = new FoxHttpClient();
+
+    public FoxHttpRequest() throws FoxHttpRequestException {
+        this(new FoxHttpClient());
     }
 
-    public FoxHttpRequest(FoxHttpClient foxHttpClient) {
+    public FoxHttpRequest(FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
         this.foxHttpClient = foxHttpClient;
+        // Copy configuration from client to request
+        try {
+            this.foxHttpPlaceholderStrategy = this.foxHttpClient.getFoxHttpPlaceholderStrategy().getClass().newInstance();
+            this.foxHttpPlaceholderStrategy.getPlaceholderMap().putAll(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new FoxHttpRequestException("Could not copy foxHttpPlaceholderStrategy from client to request: " + e.getMessage());
+        }
+
+    }
+
+    public void setFoxHttpClient(FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
+        if (foxHttpClient == null) {
+            throw new FoxHttpRequestException("FoxHttpClient can not be null");
+        }
+        this.foxHttpClient = foxHttpClient;
+        // Copy configuration from client to request
+        this.foxHttpPlaceholderStrategy.getPlaceholderMap().putAll(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap());
     }
 
     public void setUrl(String url) throws MalformedURLException, FoxHttpRequestException {
         if (foxHttpClient == null) {
             throw new FoxHttpRequestException("FoxHttpClient can not be null");
         }
-        String parsedURL = foxHttpClient.getFoxHttpPlaceholderStrategy().processPlaceholders(url, foxHttpClient);
+        String parsedURL = foxHttpPlaceholderStrategy.processPlaceholders(url, foxHttpClient);
         this.url = new URL(parsedURL);
     }
 
@@ -138,7 +159,7 @@ public class FoxHttpRequest {
             prepareQuery();
 
             foxHttpClient.getFoxHttpLogger().log("processPlaceholders()");
-            String parsedURL = foxHttpClient.getFoxHttpPlaceholderStrategy().processPlaceholders(getUrl().toString(), foxHttpClient);
+            String parsedURL = foxHttpPlaceholderStrategy.processPlaceholders(getUrl().toString(), foxHttpClient);
             url = new URL(parsedURL);
 
             checkPlaceholders();
@@ -265,7 +286,7 @@ public class FoxHttpRequest {
     }
 
     private void checkPlaceholders() throws FoxHttpRequestException {
-        Pattern pattern = Pattern.compile(foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMatchRegex());
+        Pattern pattern = Pattern.compile(foxHttpPlaceholderStrategy.getPlaceholderMatchRegex());
         Matcher matcher = pattern.matcher(getUrl().toString());
         if (matcher.find()) {
             throw new FoxHttpRequestException("The url dose still contain placeholders after finishing processing all defined placeholders.\n-> " + getUrl().toString());
@@ -297,7 +318,7 @@ public class FoxHttpRequest {
     }
 
     private void processAuthorizationStrategy() throws FoxHttpRequestException {
-        List<FoxHttpAuthorization> foxHttpAuthorizations = foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorization(connection, authScope, foxHttpClient);
+        List<FoxHttpAuthorization> foxHttpAuthorizations = foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorization(connection, authScope, foxHttpClient, foxHttpPlaceholderStrategy);
         FoxHttpAuthorizationContext authorizationContext = new FoxHttpAuthorizationContext(connection, this, foxHttpClient);
         for (FoxHttpAuthorization foxHttpAuthorization : foxHttpAuthorizations) {
             foxHttpClient.getFoxHttpLogger().log("-> doAuthorization(" + foxHttpAuthorization + ")");

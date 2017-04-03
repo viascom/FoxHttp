@@ -16,7 +16,7 @@ import java.util.HashMap;
  */
 public class DefaultOAuth2ClientCredentialRequestGenerator extends OAuth2RequestGenerator {
     @Override
-    public FoxHttpRequest getRequest(OAuth2Component oAuth2Component) throws MalformedURLException, FoxHttpRequestException {
+    public FoxHttpRequest getRequest(OAuth2Component oAuth2Component) throws MalformedURLException, FoxHttpRequestException, InstantiationException, IllegalAccessException {
         OAuth2Store oAuth2Store = oAuth2Component.getOAuth2Store();
         FoxHttpRequestBuilder foxHttpRequestBuilder = new FoxHttpRequestBuilder(oAuth2Store.getAuthUrl(), oAuth2Store.getAuthRequestType(), oAuth2Component.getFoxHttpClient());
 

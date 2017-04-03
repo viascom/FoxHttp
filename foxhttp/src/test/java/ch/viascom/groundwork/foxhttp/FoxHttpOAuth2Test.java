@@ -15,6 +15,7 @@ import ch.viascom.groundwork.foxhttp.response.serviceresult.FoxHttpServiceResult
 import ch.viascom.groundwork.foxhttp.type.RequestType;
 import org.joda.time.DateTime;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -22,7 +23,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 /**
  * @author patrick.boesch@viascom.ch
  */
-//@Ignore
+@Ignore
 public class FoxHttpOAuth2Test {
 
     // ==========================================================================
@@ -34,7 +35,7 @@ public class FoxHttpOAuth2Test {
     static FoxHttpClient httpClient;
     static OAuth2Component oAuth2Component;
     private static String solaraURL = "http://localhost:8080/solara-webservice-1.0-SNAPSHOT";
-    private static String solaraTestUser = "fox@viascom.ch";
+    private static String solaraTestUser = "patrick.boesch";
     private static String solaraTestPassword = "password1234";
     private static String solaraClient = "AluxApp";
     private static String solaraClientSecret = "7OVm8OeTPf6EZq3C";

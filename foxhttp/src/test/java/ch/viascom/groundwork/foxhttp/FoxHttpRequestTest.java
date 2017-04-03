@@ -57,14 +57,15 @@ public class FoxHttpRequestTest {
         }
 
         //FoxHttpClient of the request ist not defined
-        FoxHttpRequest foxHttpRequestClient = new FoxHttpRequest(null);
+        FoxHttpRequest foxHttpRequestClient = new FoxHttpRequest();
         foxHttpRequestClient.setUrl(new URL(endpoint + "get"));
 
         try {
+            foxHttpRequestClient.setFoxHttpClient(null);
             foxHttpRequestClient.execute();
             assertThat(false).isEqualTo(true);
         } catch (FoxHttpRequestException e) {
-            assertThat(e.getMessage()).isEqualTo("FoxHttpClient of the request ist not defined");
+            assertThat(e.getMessage()).isEqualTo("FoxHttpClient can not be null");
         }
 
     }
@@ -478,8 +479,8 @@ public class FoxHttpRequestTest {
         builder.addFoxHttpPlaceholderEntry("endpoint", endpoint);
 
         FoxHttpRequest request = builder.build();
-
-        assertThat(request.getUrl().toString()).isEqualTo(endpoint + "get");
+        FoxHttpResponse response = request.execute();
+        assertThat(response.getFoxHttpRequest().getUrl().toString()).isEqualTo(endpoint + "get");
     }
 
     @Test

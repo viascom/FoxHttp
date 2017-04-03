@@ -12,6 +12,7 @@ import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptor;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLogger;
+import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
@@ -27,8 +28,19 @@ import java.util.List;
  */
 public class FoxHttpRequestBuilder {
 
-    private FoxHttpRequest foxHttpRequest;
+    //private FoxHttpRequest foxHttpRequest;
     private String url;
+
+    private FoxHttpRequestQuery requestQuery = new FoxHttpRequestQuery();
+    private FoxHttpRequestBody requestBody;
+    private FoxHttpHeader requestHeader = new FoxHttpHeader();
+    private RequestType requestType = RequestType.GET;
+    private boolean skipResponseBody = false;
+    private boolean followRedirect = true;
+    private FoxHttpClient foxHttpClient;
+
+    private FoxHttpPlaceholderStrategy foxHttpPlaceholderStrategy;
+
 
     // -- Constructors
 
@@ -36,7 +48,6 @@ public class FoxHttpRequestBuilder {
      * Create a new builder with a default request
      */
     public FoxHttpRequestBuilder() {
-        foxHttpRequest = new FoxHttpRequest();
     }
 
     /**
@@ -44,7 +55,7 @@ public class FoxHttpRequestBuilder {
      *
      * @param url url of the request
      */
-    public FoxHttpRequestBuilder(URL url) throws MalformedURLException {
+    public FoxHttpRequestBuilder(URL url) throws FoxHttpRequestException {
         this(url.toString());
     }
 
@@ -54,7 +65,7 @@ public class FoxHttpRequestBuilder {
      * @param url url of the request
      * @throws MalformedURLException If the url is not well formed
      */
-    public FoxHttpRequestBuilder(String url) throws MalformedURLException {
+    public FoxHttpRequestBuilder(String url) throws FoxHttpRequestException {
         this(url, RequestType.GET);
     }
 
@@ -64,7 +75,7 @@ public class FoxHttpRequestBuilder {
      * @param url         url of the request
      * @param requestType request type
      */
-    public FoxHttpRequestBuilder(URL url, RequestType requestType) throws MalformedURLException {
+    public FoxHttpRequestBuilder(URL url, RequestType requestType) throws FoxHttpRequestException {
         this(url.toString(), requestType);
     }
 
@@ -75,7 +86,7 @@ public class FoxHttpRequestBuilder {
      * @param requestType request type
      * @throws MalformedURLException If the url is not well formed
      */
-    public FoxHttpRequestBuilder(String url, RequestType requestType) throws MalformedURLException {
+    public FoxHttpRequestBuilder(String url, RequestType requestType) throws FoxHttpRequestException {
         this(url, requestType, new FoxHttpClient());
     }
 
@@ -86,7 +97,7 @@ public class FoxHttpRequestBuilder {
      * @param requestType   request type
      * @param foxHttpClient FoxHttpClient in which the request gets executed
      */
-    public FoxHttpRequestBuilder(URL url, RequestType requestType, FoxHttpClient foxHttpClient) throws MalformedURLException {
+    public FoxHttpRequestBuilder(URL url, RequestType requestType, FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
         this(url.toString(), requestType, foxHttpClient);
     }
 
@@ -98,10 +109,18 @@ public class FoxHttpRequestBuilder {
      * @param foxHttpClient FoxHttpClient in which the request gets executed
      * @throws MalformedURLException If the url is not well formed
      */
-    public FoxHttpRequestBuilder(String url, RequestType requestType, FoxHttpClient foxHttpClient) throws MalformedURLException {
-        foxHttpRequest = new FoxHttpRequest(foxHttpClient);
-        this.url = url;
-        foxHttpRequest.setRequestType(requestType);
+    public FoxHttpRequestBuilder(String url, RequestType requestType, FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
+        try {
+            this.foxHttpClient = foxHttpClient;
+            this.url = url;
+            this.requestType = requestType;
+
+            // Copy configuration from client to request
+            this.foxHttpPlaceholderStrategy = this.foxHttpClient.getFoxHttpPlaceholderStrategy().getClass().newInstance();
+            this.foxHttpPlaceholderStrategy.getPlaceholderMap().putAll(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new FoxHttpRequestException("Could not copy foxHttpPlaceholderStrategy from client to request: " + e.getMessage());
+        }
     }
 
 
@@ -114,7 +133,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setFoxHttpClient(FoxHttpClient foxHttpClient) {
-        foxHttpRequest.setFoxHttpClient(foxHttpClient);
+        this.foxHttpClient = foxHttpClient;
         return this;
     }
 
@@ -125,7 +144,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setRequestType(RequestType requestType) {
-        foxHttpRequest.setRequestType(requestType);
+        this.requestType = requestType;
         return this;
     }
 
@@ -136,7 +155,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setRequestQuery(FoxHttpRequestQuery foxHttpRequestQuery) {
-        foxHttpRequest.setRequestQuery(foxHttpRequestQuery);
+        this.requestQuery = foxHttpRequestQuery;
         return this;
     }
 
@@ -148,7 +167,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder addRequestQueryEntry(String name, String value) {
-        foxHttpRequest.getRequestQuery().addQueryEntry(name, value);
+        this.requestQuery.addQueryEntry(name, value);
         return this;
     }
 
@@ -160,7 +179,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setRequestBody(FoxHttpRequestBody foxHttpRequestBody) {
-        foxHttpRequest.setRequestBody(foxHttpRequestBody);
+        this.requestBody = foxHttpRequestBody;
         return this;
     }
 
@@ -171,7 +190,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setRequestHeader(FoxHttpHeader foxHttpRequestHeader) {
-        foxHttpRequest.setRequestHeader(foxHttpRequestHeader);
+        this.requestHeader = foxHttpRequestHeader;
         return this;
     }
 
@@ -182,7 +201,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder addRequestHeader(HeaderEntry headerField) {
-        foxHttpRequest.getRequestHeader().addHeader(headerField.getName(), headerField.getValue());
+        this.requestHeader.addHeader(headerField.getName(), headerField.getValue());
         return this;
     }
 
@@ -194,7 +213,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder addRequestHeader(String name, String value) {
-        foxHttpRequest.getRequestHeader().addHeader(name, value);
+        this.requestHeader.addHeader(name, value);
         return this;
     }
 
@@ -206,7 +225,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder addRequestHeader(HeaderTypes name, String value) {
-        foxHttpRequest.getRequestHeader().addHeader(name, value);
+        this.requestHeader.addHeader(name, value);
         return this;
     }
 
@@ -217,7 +236,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setSkipResponseBody(boolean skipResponseBody) {
-        foxHttpRequest.setSkipResponseBody(skipResponseBody);
+        this.skipResponseBody = skipResponseBody;
         return this;
     }
 
@@ -228,7 +247,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setFollowRedirect(boolean followRedirect) {
-        foxHttpRequest.setFollowRedirect(followRedirect);
+        this.followRedirect = followRedirect;
         return this;
     }
 
@@ -241,7 +260,7 @@ public class FoxHttpRequestBuilder {
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
     public FoxHttpRequestBuilder addFoxHttpInterceptor(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
-        foxHttpRequest.getFoxHttpClient().register(interceptorType, foxHttpInterceptor);
+        this.foxHttpClient.register(interceptorType, foxHttpInterceptor);
         return this;
     }
 
@@ -253,50 +272,46 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpRequestBuilder addFoxHttpPlaceholderEntry(String placeholder, String value) {
-        foxHttpRequest.getFoxHttpClient().getFoxHttpPlaceholderStrategy().addPlaceholder(placeholder, value);
+        this.foxHttpPlaceholderStrategy.addPlaceholder(placeholder, value);
         return this;
     }
 
     /**
-     *
      * @param authorizationScope
      * @param foxHttpAuthorization
      * @return
      */
     public FoxHttpRequestBuilder addFoxHttpAuthorization(FoxHttpAuthorizationScope authorizationScope, FoxHttpAuthorization foxHttpAuthorization) {
-        foxHttpRequest.getFoxHttpClient().getFoxHttpAuthorizationStrategy().addAuthorization(authorizationScope, foxHttpAuthorization);
+        this.foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(authorizationScope, foxHttpAuthorization);
         return this;
     }
 
     /**
-     *
      * @param authorizationScopes
      * @param foxHttpAuthorization
      * @return
      */
     public FoxHttpRequestBuilder addFoxHttpAuthorization(List<FoxHttpAuthorizationScope> authorizationScopes, FoxHttpAuthorization foxHttpAuthorization) {
-        foxHttpRequest.getFoxHttpClient().getFoxHttpAuthorizationStrategy().addAuthorization(authorizationScopes, foxHttpAuthorization);
+        this.foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(authorizationScopes, foxHttpAuthorization);
         return this;
     }
 
     /**
-     *
      * @param foxHttpLogger
      * @return
      */
     public FoxHttpRequestBuilder setLogger(FoxHttpLogger foxHttpLogger) {
-        foxHttpRequest.getFoxHttpClient().setFoxHttpLogger(foxHttpLogger);
+        this.foxHttpClient.setFoxHttpLogger(foxHttpLogger);
         return this;
     }
 
     /**
-     *
      * @param foxHttpLogger
      * @param activate
      * @return
      */
     public FoxHttpRequestBuilder setLogger(FoxHttpLogger foxHttpLogger, boolean activate) {
-        foxHttpRequest.getFoxHttpClient().setFoxHttpLogger(foxHttpLogger);
+        this.foxHttpClient.setFoxHttpLogger(foxHttpLogger);
         activateFoxHttpLogger(activate);
         return this;
     }
@@ -308,7 +323,7 @@ public class FoxHttpRequestBuilder {
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpRequestBuilder activateFoxHttpLogger(boolean activate) {
-        foxHttpRequest.getFoxHttpClient().getFoxHttpLogger().setLoggingEnabled(activate);
+        this.foxHttpClient.getFoxHttpLogger().setLoggingEnabled(activate);
         return this;
     }
 
@@ -317,11 +332,30 @@ public class FoxHttpRequestBuilder {
      *
      * @return FoxHttpRequest
      */
-    public FoxHttpRequest build() throws MalformedURLException, FoxHttpRequestException {
-        if (this.url != null) {
-            foxHttpRequest.setUrl(this.url);
+    public FoxHttpRequest build() throws FoxHttpRequestException {
+        FoxHttpRequest request = new FoxHttpRequest();
+
+        if (this.foxHttpPlaceholderStrategy != null) {
+            request.getFoxHttpPlaceholderStrategy().getPlaceholderMap().putAll(this.foxHttpPlaceholderStrategy.getPlaceholderMap());
         }
-        return foxHttpRequest;
+
+        if (this.url == null || "".equals(this.url)) {
+            throw new FoxHttpRequestException("URL cant be null or empty.");
+        }
+        try {
+            request.setUrl(this.url);
+        } catch (MalformedURLException e) {
+            throw new FoxHttpRequestException("URL is malformed: " + this.url);
+        }
+        request.setRequestType(this.requestType);
+        request.setRequestHeader(this.requestHeader);
+        request.setRequestQuery(this.requestQuery);
+        request.setRequestBody(this.requestBody);
+        request.setFollowRedirect(this.followRedirect);
+        request.setSkipResponseBody(this.skipResponseBody);
+        request.setFoxHttpClient(this.foxHttpClient);
+
+        return request;
     }
 
 }

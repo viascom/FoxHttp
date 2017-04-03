@@ -36,5 +36,5 @@ public abstract class OAuth2RequestGenerator {
         }
     }
 
-    public abstract FoxHttpRequest getRequest(OAuth2Component oAuth2Component) throws MalformedURLException, FoxHttpRequestException;
+    public abstract FoxHttpRequest getRequest(OAuth2Component oAuth2Component) throws MalformedURLException, FoxHttpRequestException, InstantiationException, IllegalAccessException;
 }

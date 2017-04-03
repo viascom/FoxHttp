@@ -148,7 +148,7 @@ public class FoxHttpBuilderTest {
         assertThat(foxHttpClient.getFoxHttpUserAgent()).isEqualTo("FoxHttp v1.0");
         assertThat(foxHttpClient.getFoxHttpTimeoutStrategy().getConnectionTimeout()).isEqualTo(0);
         assertThat(foxHttpClient.getFoxHttpTimeoutStrategy().getReadTimeout()).isEqualTo(0);
-        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorization(null, FoxHttpAuthorizationScope.ANY, foxHttpClient).get(0)).isEqualTo(authorization);
+        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorization(null, FoxHttpAuthorizationScope.ANY, foxHttpClient, foxHttpClient.getFoxHttpPlaceholderStrategy()).get(0)).isEqualTo(authorization);
         assertThat(foxHttpClient.getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE)).isNotEmpty();
         assertThat(foxHttpClient.getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE).get(0).getWeight()).isEqualTo(100);
         assertThat(foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderEscapeCharStart()).isEqualTo("[");
@@ -238,14 +238,14 @@ public class FoxHttpBuilderTest {
 
         assertThat(foxHttpRequest.getRequestType()).isEqualTo(RequestType.POST);
         assertThat(foxHttpRequest.getUrl().toString()).isEqualTo("http://httpbin.org/post");
-        assertThat(foxHttpRequest.getFoxHttpClient().getFoxHttpPlaceholderStrategy().getPlaceholderMap().get("method")).isEqualTo("post");
+        assertThat(foxHttpRequest.getFoxHttpPlaceholderStrategy().getPlaceholderMap().get("method")).isEqualTo("post");
         assertThat(foxHttpRequest.getFoxHttpClient()).isEqualTo(foxHttpClient);
     }
 
     @Test
     public void requestConstructorBuilderTest() throws Exception {
 
-        FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder();
+        FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder("http://httpbin.org");
         FoxHttpRequest foxHttpRequest = requestBuilder.build();
         assertThat(foxHttpRequest.getFoxHttpClient()).isNotNull();
 

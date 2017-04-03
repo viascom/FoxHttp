@@ -66,7 +66,7 @@ public class OAuth2Component implements FoxHttpComponent {
     }
 
 
-    public FoxHttpRequest generateRequestForGrantType(GrantType grantType) throws MalformedURLException, FoxHttpRequestException {
+    public FoxHttpRequest generateRequestForGrantType(GrantType grantType) throws MalformedURLException, FoxHttpRequestException, IllegalAccessException, InstantiationException {
         OAuth2RequestGenerator oAuth2RequestGenerator = oAuth2RequestGenerators.get(grantType);
         return oAuth2RequestGenerator.getRequest(this);
     }
@@ -79,7 +79,7 @@ public class OAuth2Component implements FoxHttpComponent {
      * @throws FoxHttpException
      * @throws MalformedURLException
      */
-    public String getNewToken(GrantType grantType) throws FoxHttpException, MalformedURLException {
+    public String getNewToken(GrantType grantType) throws FoxHttpException, MalformedURLException, InstantiationException, IllegalAccessException {
         FoxHttpRequest request = this.generateRequestForGrantType(grantType);
         this.getOAuth2RequestExecutor().executeOAuth2Request(request, this);
         return getOAuth2Store().getAccessToken();
@@ -92,7 +92,7 @@ public class OAuth2Component implements FoxHttpComponent {
      * @throws FoxHttpException
      * @throws MalformedURLException
      */
-    public String getNewToken() throws FoxHttpException, MalformedURLException {
+    public String getNewToken() throws FoxHttpException, MalformedURLException, InstantiationException, IllegalAccessException {
         FoxHttpRequest request = this.generateRequestForGrantType(this.getOAuth2Store().getGrantType());
         this.getOAuth2RequestExecutor().executeOAuth2Request(request, this);
         return getOAuth2Store().getAccessToken();

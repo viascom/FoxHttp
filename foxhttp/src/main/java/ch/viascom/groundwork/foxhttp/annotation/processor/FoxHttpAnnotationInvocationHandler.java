@@ -39,7 +39,7 @@ public class FoxHttpAnnotationInvocationHandler implements InvocationHandler {
             FoxHttpRequest request = requestCache.get(method).build();
 
             //Resolve path
-            request.getFoxHttpClient().getFoxHttpPlaceholderStrategy().getPlaceholderMap().putAll(FoxHttpAnnotationRequestBuilder.getPathValues(method, args));
+            request.getFoxHttpPlaceholderStrategy().getPlaceholderMap().putAll(FoxHttpAnnotationRequestBuilder.getPathValues(method, args));
             //Set query
             request.setRequestQuery(FoxHttpAnnotationRequestBuilder.getFoxHttpRequestQuery(method, args));
             //Set headers
