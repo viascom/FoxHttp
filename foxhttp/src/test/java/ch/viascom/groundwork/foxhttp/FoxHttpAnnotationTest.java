@@ -234,7 +234,7 @@ public class FoxHttpAnnotationTest {
             assertThat(false).isEqualTo(true);
         } catch (FoxHttpRequestException e) {
             assertThat(e.getMessage()).isEqualTo("FoxHttpExceptionInterfaceTest.bodyInGet\n" +
-                    "-> Non-body HTTP method cannot contain @Body, @Field, @FieldMap, @Part or @PartMap.");
+                    "-> Non-body HTTP method can not contain @Body, @Field, @FieldMap, @Part or @PartMap.");
         }
     }
 }
