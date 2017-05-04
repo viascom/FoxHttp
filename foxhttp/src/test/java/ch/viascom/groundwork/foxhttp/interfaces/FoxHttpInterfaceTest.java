@@ -7,6 +7,7 @@ import ch.viascom.groundwork.foxhttp.body.request.RequestStringBody;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
 import ch.viascom.groundwork.foxhttp.models.GetResponse;
 import ch.viascom.groundwork.foxhttp.models.PostResponse;
+import ch.viascom.groundwork.foxhttp.models.User;
 import ch.viascom.groundwork.foxhttp.util.NamedInputStream;
 
 import java.util.ArrayList;
@@ -31,6 +32,12 @@ public interface FoxHttpInterfaceTest {
 
     @POST("post")
     PostResponse postBody(@Body RequestStringBody stringBody, @HeaderFieldMap ArrayList<HeaderEntry> headerFields);
+
+    @POST("post")
+    PostResponse postString(@Body String body);
+
+    @POST("post")
+    PostResponse postObject(@Body User body);
 
     @POST("post")
     @FormUrlEncodedBody

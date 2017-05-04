@@ -1,9 +1,7 @@
 package ch.viascom.groundwork.foxhttp.annotation.processor;
 
 import ch.viascom.groundwork.foxhttp.annotation.types.*;
-import ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody;
-import ch.viascom.groundwork.foxhttp.body.request.RequestMultipartBody;
-import ch.viascom.groundwork.foxhttp.body.request.RequestUrlEncodedFormBody;
+import ch.viascom.groundwork.foxhttp.body.request.*;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
@@ -12,10 +10,13 @@ import ch.viascom.groundwork.foxhttp.util.NamedInputStream;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.*;
+
+import static ch.viascom.groundwork.foxhttp.annotation.processor.FoxHttpAnnotationUtil.getParameterAnnotationTpe;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -51,7 +52,7 @@ class FoxHttpAnnotationRequestBuilder {
                 } else if (annotation instanceof QueryMap) {
                     foxHttpRequestQuery.addQueryMap((HashMap<String, String>) args[parameterPos]);
                 } else if (annotation instanceof QueryObject) {
-                    foxHttpRequestQuery.parseObjectAsQueryMap(Arrays.asList(((QueryObject) annotation).value()),(Object) args[parameterPos]);
+                    foxHttpRequestQuery.parseObjectAsQueryMap(Arrays.asList(((QueryObject) annotation).value()), (Object) args[parameterPos]);
                 }
             }
             parameterPos++;
@@ -86,7 +87,7 @@ class FoxHttpAnnotationRequestBuilder {
     }
 
     static FoxHttpRequestBody getFoxHttpRequestBody(Method method, Object[] args) throws FileNotFoundException, FoxHttpRequestException {
-        FoxHttpRequestBody foxHttpRequestBody;
+        FoxHttpRequestBody foxHttpRequestBody = null;
 
         if (FoxHttpAnnotationUtil.hasMethodAnnotation(MultipartBody.class, method)) {
             //@MultipartBody
@@ -96,19 +97,27 @@ class FoxHttpAnnotationRequestBuilder {
             foxHttpRequestBody = getRequestUrlEncodedFormBody(method, args);
         } else if (FoxHttpAnnotationUtil.hasParameterAnnotation(Body.class, method)) {
             //@Body
-            foxHttpRequestBody = getRequestBody(method, args);
-        } else {
-            foxHttpRequestBody = null;
+
+            Class<?> bodyClass = getParameterAnnotationTpe(Body.class, method);
+            Object bodyObject = getRequestBody(method, args);
+            if (FoxHttpRequestBody.class.isAssignableFrom(bodyClass)) {
+                foxHttpRequestBody = (FoxHttpRequestBody) bodyObject;
+            } else if (String.class.isAssignableFrom(bodyClass)) {
+                foxHttpRequestBody = new RequestStringBody((String) bodyObject);
+            } else if (Serializable.class.isAssignableFrom(bodyClass)) {
+                foxHttpRequestBody = new RequestObjectBody((Serializable) bodyObject);
+            }
         }
+
         return foxHttpRequestBody;
     }
 
-    private static FoxHttpRequestBody getRequestBody(Method method, Object[] args) {
+    private static Object getRequestBody(Method method, Object[] args) {
         int parameterPos = 0;
         for (Annotation[] annotations : method.getParameterAnnotations()) {
             for (Annotation annotation : annotations) {
                 if (annotation instanceof Body) {
-                    return (FoxHttpRequestBody) args[parameterPos];
+                    return args[parameterPos];
                 }
             }
             parameterPos++;

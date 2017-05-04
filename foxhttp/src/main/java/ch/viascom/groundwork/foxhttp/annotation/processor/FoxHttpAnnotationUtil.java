@@ -30,4 +30,18 @@ class FoxHttpAnnotationUtil {
         }
         return count;
     }
+
+    static Class<?> getParameterAnnotationTpe(Class<? extends Annotation> annotationClass, Method method) {
+        int parameterPos = 0;
+        for (Annotation[] annotations : method.getParameterAnnotations()) {
+            for (Annotation annotation : annotations) {
+                if (annotation.annotationType() == annotationClass) {
+                    return method.getParameterTypes()[parameterPos];
+                }
+            }
+            parameterPos++;
+        }
+
+        return void.class;
+    }
 }

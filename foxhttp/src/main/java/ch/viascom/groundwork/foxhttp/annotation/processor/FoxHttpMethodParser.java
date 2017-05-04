@@ -10,6 +10,7 @@ import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -153,7 +154,7 @@ class FoxHttpMethodParser {
         }
 
         if (!hasBody && hasBodyAnnotation()) {
-            throwFoxHttpRequestException("Non-body HTTP method cannot contain @Body, @Field, @FieldMap, @Part or @PartMap.");
+            throwFoxHttpRequestException("Non-body HTTP method can not contain @Body, @Field, @FieldMap, @Part or @PartMap.");
         }
 
         //Parameters
@@ -165,10 +166,21 @@ class FoxHttpMethodParser {
 
         //Body
         if (hasBody) {
-            if (getParameterAnnotation(Body.class, this.method) > 1) {
+
+            int bodyAnnotationCount = getParameterAnnotation(Body.class, this.method);
+            if (bodyAnnotationCount > 1) {
                 throwFoxHttpRequestException("Only one @Body is allowed.");
             }
-            doParameterMatch(Body.class, FoxHttpRequestBody.class, this.method);
+
+            if (bodyAnnotationCount == 1) {
+                Class<?> parameterClass = getParameterAnnotationTpe(Body.class, this.method);
+                if (!(FoxHttpRequestBody.class.isAssignableFrom(parameterClass) ||
+                        String.class.isAssignableFrom(parameterClass) ||
+                        Serializable.class.isAssignableFrom(parameterClass))) {
+                    throwFoxHttpRequestException("FoxHttpRequestBody, String, Serializable is not assignable from Parameter " + parameterClass +
+                            " (" + parameterClass.getSimpleName() + ") with annotation @Body");
+                }
+            }
         }
 
         //FormUrlEncodedBody
@@ -177,10 +189,10 @@ class FoxHttpMethodParser {
                 throwFoxHttpRequestException("Form-encoded method must contain at least one @Field or @FieldMap.");
             }
             if (hasParameterAnnotation(Part.class, this.method) || hasParameterAnnotation(PartMap.class, this.method)) {
-                throwFoxHttpRequestException("Form-encoded method cannot contain @Part or @PartMap.");
+                throwFoxHttpRequestException("Form-encoded method can not contain @Part or @PartMap.");
             }
             if (hasParameterAnnotation(Body.class, this.method)) {
-                throwFoxHttpRequestException("Form-encoded method cannot contain @Body.");
+                throwFoxHttpRequestException("Form-encoded method can not contain @Body.");
             }
             doParameterMatch(Field.class, String.class, this.method);
             doParameterMatch(FieldMap.class, Map.class, this.method);
@@ -192,10 +204,10 @@ class FoxHttpMethodParser {
                 throwFoxHttpRequestException("Multipart method must contain at least one @Part or @PartMap.");
             }
             if (hasParameterAnnotation(Field.class, this.method) || hasParameterAnnotation(FieldMap.class, this.method)) {
-                throwFoxHttpRequestException("Multipart method cannot contain @Field or @FieldMap.");
+                throwFoxHttpRequestException("Multipart method can not contain @Field or @FieldMap.");
             }
             if (hasParameterAnnotation(Body.class, this.method)) {
-                throwFoxHttpRequestException("Multipart method cannot contain @Body.");
+                throwFoxHttpRequestException("Multipart method can not contain @Body.");
             }
             doParameterMatch(PartMap.class, Map.class, this.method);
         }

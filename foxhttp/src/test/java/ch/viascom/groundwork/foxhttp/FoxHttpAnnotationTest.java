@@ -10,8 +10,10 @@ import ch.viascom.groundwork.foxhttp.interfaces.FoxHttpInterfaceTest;
 import ch.viascom.groundwork.foxhttp.log.SystemOutFoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.models.GetResponse;
 import ch.viascom.groundwork.foxhttp.models.PostResponse;
+import ch.viascom.groundwork.foxhttp.models.User;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
 import ch.viascom.groundwork.foxhttp.util.NamedInputStream;
+import com.google.gson.Gson;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -106,6 +108,35 @@ public class FoxHttpAnnotationTest {
         assertThat(postResponse.getData()).isEqualTo("Post Annotation Test");
         assertThat(postResponse.getHeaders().get("X-Version")).isEqualTo("v1.0");
         assertThat(postResponse.getHeaders().get("Product")).isEqualTo("FoxHttp");
+
+    }
+
+    @Test
+    public void postStringNative() throws Exception {
+        //Set Gson parser, register placeholder
+        FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()
+                .setFoxHttpResponseParser(new GsonParser())
+                .addFoxHttpPlaceholderEntry("host", endpoint);
+
+        //Request
+        FoxHttpInterfaceTest foxHttpInterfaceTest = new FoxHttpAnnotationParser().parseInterface(FoxHttpInterfaceTest.class, foxHttpClientBuilder.build());
+        PostResponse postResponse = foxHttpInterfaceTest.postString("Post Annotation Test");
+
+        assertThat(postResponse.getData()).isEqualTo("Post Annotation Test");
+
+    }
+
+    @Test
+    public void postObject() throws Exception {
+        //Set Gson parser, register placeholder
+        FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder(new GsonParser())
+                .addFoxHttpPlaceholderEntry("host", endpoint);
+
+        //Request
+        FoxHttpInterfaceTest foxHttpInterfaceTest = new FoxHttpAnnotationParser().parseInterface(FoxHttpInterfaceTest.class, foxHttpClientBuilder.build());
+        PostResponse postResponse = foxHttpInterfaceTest.postObject(new User());
+
+        assertThat(postResponse.getData()).isEqualTo(new Gson().toJson(new User()));
 
     }
 
