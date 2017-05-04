@@ -63,7 +63,7 @@ public class FoxHttpRequestBuilder {
      * Create a new builder with a default request and set the url
      *
      * @param url url of the request
-     * @throws MalformedURLException If the url is not well formed
+     * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(String url) throws FoxHttpRequestException {
         this(url, RequestType.GET);
@@ -84,7 +84,7 @@ public class FoxHttpRequestBuilder {
      *
      * @param url         url of the request
      * @param requestType request type
-     * @throws MalformedURLException If the url is not well formed
+     * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(String url, RequestType requestType) throws FoxHttpRequestException {
         this(url, requestType, new FoxHttpClient());
@@ -107,7 +107,7 @@ public class FoxHttpRequestBuilder {
      * @param url           url of the request
      * @param requestType   request type
      * @param foxHttpClient FoxHttpClient in which the request gets executed
-     * @throws MalformedURLException If the url is not well formed
+     * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(String url, RequestType requestType, FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
         try {
