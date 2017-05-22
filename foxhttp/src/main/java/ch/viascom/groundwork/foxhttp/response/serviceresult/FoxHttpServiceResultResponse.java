@@ -260,9 +260,16 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
     private void checkHash(boolean checkHash, String body, ServiceResult<?> result) throws FoxHttpResponseException {
         if (checkHash && objectHasher != null) {
             foxHttpClient.getFoxHttpLogger().log("checkHash(" + result.getHash() + ")");
-            if (!objectHasher.hash(result, body).equals(result.getHash())) {
+
+            String hashOne = objectHasher.hash(result, body);
+            String hashTwo = result.getHash();
+
+            boolean isTheSameHash = hashOne.equals(hashTwo);
+
+            if (!isTheSameHash) {
                 throw new FoxHttpResponseException("Hash not Equal!");
             }
+
             foxHttpClient.getFoxHttpLogger().log("-> successful");
         }
     }
