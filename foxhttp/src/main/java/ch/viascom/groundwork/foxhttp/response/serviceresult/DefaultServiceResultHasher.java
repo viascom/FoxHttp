@@ -8,7 +8,7 @@ import ch.viascom.groundwork.serviceresult.util.ObjectHasher;
  */
 public class DefaultServiceResultHasher implements FoxHttpServiceResultHasher {
     @Override
-    public String hash(ServiceResult result, String rawBody) {
-        return ObjectHasher.hash(result.getContent());
+    public String hash(Object result, String rawBody) {
+        return ObjectHasher.hash(((ServiceResult) result).getContent());
     }
 }

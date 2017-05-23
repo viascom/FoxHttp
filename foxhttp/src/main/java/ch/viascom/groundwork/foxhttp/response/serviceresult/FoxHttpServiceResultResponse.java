@@ -6,6 +6,7 @@ import ch.viascom.groundwork.foxhttp.FoxHttpResponse;
 import ch.viascom.groundwork.foxhttp.body.response.FoxHttpResponseBody;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpResponseException;
 import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
+import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
 import ch.viascom.groundwork.foxhttp.response.FoxHttpResponseParser;
 import ch.viascom.groundwork.foxhttp.response.serviceresult.adapters.DateTimeTypeAdapter;
 import ch.viascom.groundwork.foxhttp.response.serviceresult.adapters.MetaDataDeserializer;
@@ -95,6 +96,10 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
         this.responseHeaders = foxHttpResponse.getResponseHeaders();
         this.objectHasher = objectHasher;
 
+        if (!isDefaultServiceResultFaultInterceptorPresent()) {
+            foxHttpClient.getFoxHttpLogger().log("DefaultServiceResultFaultInterceptor is not registered on this client !");
+        }
+
         if (customParserBuilder == null) {
             customParserBuilder = new GsonBuilder();
         }
@@ -118,6 +123,11 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
         foxHttpClient.getFoxHttpLogger().log("FoxHttpServiceResultParser(" + foxHttpResponse + "," + objectHasher + ")");
     }
 
+    private boolean isDefaultServiceResultFaultInterceptorPresent() {
+        return !this.foxHttpClient.getFoxHttpInterceptors().isEmpty() &&
+                this.foxHttpClient.getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE).stream().anyMatch(interceptor -> interceptor.getClass().isAssignableFrom(DefaultServiceResultFaultInterceptor.class));
+    }
+
     /**
      * Constructor for annotation use
      *
@@ -131,7 +141,9 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Parser for annotation use
      *
      * @param foxHttpResponse response with a serialized service result
+     *
      * @return new FoxHttpResponseParser
+     *
      * @throws FoxHttpResponseException
      */
     public FoxHttpResponseParser parseResult(FoxHttpResponse foxHttpResponse) throws FoxHttpResponseException {
@@ -165,6 +177,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Get the response body as string
      *
      * @return body as string
+     *
      * @throws IOException if the stream is not accessible
      */
     public String getStringBody() throws IOException {
@@ -184,7 +197,9 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Get the content of the service result
      *
      * @param contentClass class of the return object
+     *
      * @return deserialized content of the service result
+     *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     public <T extends Serializable> T getContent(Class<T> contentClass) throws FoxHttpResponseException {
@@ -195,18 +210,13 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Get the content of the service result
      *
      * @param <T> Type of the content
+     *
      * @return deserialized content of the service result
+     *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     public <T extends Serializable> T getContentFromType() throws FoxHttpResponseException {
-        try {
-            return getContent((Class<T>) Class.forName(this.type), false);
-        } catch (FoxHttpResponseException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new FoxHttpResponseException(e);
-        }
-
+        return getContentFromType(false);
     }
 
     /**
@@ -214,7 +224,9 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      *
      * @param checkHash should the result be checked
      * @param <T>       Type of the content
+     *
      * @return deserialized content of the service result
+     *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     public <T extends Serializable> T getContentFromType(boolean checkHash) throws FoxHttpResponseException {
@@ -233,7 +245,9 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      *
      * @param contentClass class of the return object
      * @param checkHash    should the result be checked
+     *
      * @return deserialized content of the service result
+     *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     @SuppressWarnings("unchecked")
@@ -271,6 +285,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Get the fault of the service result
      *
      * @return deserialized fault of the service result
+     *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     public ServiceFault getFault() throws FoxHttpResponseException {
@@ -281,7 +296,9 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Get the fault of the service result
      *
      * @param checkHash should the result be checked
+     *
      * @return deserialized fault of the service result
+     *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     public ServiceFault getFault(boolean checkHash) throws FoxHttpResponseException {

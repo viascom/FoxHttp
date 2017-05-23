@@ -115,6 +115,21 @@ public class FoxHttpServiceResultTest {
     }
 
     @Test
+    public void serviceResultParseFromTypeTest() throws Exception {
+        FoxHttpResponse foxHttpResponse = new FoxHttpResponse(new ByteArrayInputStream(rawBody.getBytes()), new FoxHttpRequest(), 200, new FoxHttpClient());
+
+        FoxHttpServiceResultResponse resultResponse = new FoxHttpServiceResultResponse(foxHttpResponse, new DefaultServiceResultHasher());
+
+        User user = resultResponse.getContentFromType();
+        assertThat(user.getUsername()).isEqualTo("foxhttp@viascom.ch");
+        assertThat(user.getFirstname()).isEqualTo("Fox");
+        assertThat(resultResponse.getStatus()).isEqualTo(ServiceResultStatus.successful);
+        assertThat(resultResponse.getType()).isEqualTo("ch.viascom.groundwork.foxhttp.models.User");
+        assertThat(resultResponse.getHash()).isEqualTo("86d536d3ac63d8e0e81415f7efb8e9661388048");
+        assertThat(resultResponse.getDestination()).isEqualTo("ch.viascom.groundwork.foxhttp:method");
+    }
+
+    @Test
     public void serviceResultParseTestNoCheck() throws Exception {
         FoxHttpResponse foxHttpResponse = new FoxHttpResponse(new ByteArrayInputStream(rawBody.getBytes()), new FoxHttpRequest(), 200, new FoxHttpClient());
 

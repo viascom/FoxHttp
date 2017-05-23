@@ -72,7 +72,7 @@ public class FoxHttpRequest {
     private FoxHttpClient foxHttpClient;
 
     @Getter(AccessLevel.PROTECTED)
-    private URLConnection connection;
+    private HttpURLConnection connection;
 
     @Getter
     @Setter
@@ -120,6 +120,7 @@ public class FoxHttpRequest {
      * Execute a this request
      *
      * @return Response if this request
+     *
      * @throws FoxHttpException
      */
     public FoxHttpResponse execute() throws FoxHttpException {
@@ -130,7 +131,9 @@ public class FoxHttpRequest {
      * Execute a this request
      *
      * @param foxHttpClient a specific client which will be used for this request
+     *
      * @return Response if this request
+     *
      * @throws FoxHttpException
      */
     public FoxHttpResponse execute(FoxHttpClient foxHttpClient) throws FoxHttpException {
@@ -171,17 +174,17 @@ public class FoxHttpRequest {
             //Create connection
             foxHttpClient.getFoxHttpLogger().log("createConnection(" + getUrl() + ")");
             if (foxHttpClient.getFoxHttpProxyStrategy() == null) {
-                connection = getUrl().openConnection();
+                connection = (HttpURLConnection) getUrl().openConnection();
             } else {
                 foxHttpClient.getFoxHttpLogger().log("useProxy(" + foxHttpClient.getFoxHttpProxyStrategy() + ")");
-                connection = getUrl().openConnection(foxHttpClient.getFoxHttpProxyStrategy().getProxy(getUrl()));
+                connection = (HttpURLConnection) getUrl().openConnection(foxHttpClient.getFoxHttpProxyStrategy().getProxy(getUrl()));
                 if (foxHttpClient.getFoxHttpProxyStrategy().hasProxyAuthorization(getUrl())) {
                     setHeaderIfNotExist(HeaderTypes.PROXY_AUTHORIZATION, foxHttpClient.getFoxHttpProxyStrategy().getProxyAuthorization(getUrl()), connection);
                 }
             }
 
             foxHttpClient.getFoxHttpLogger().log("setRequestMethod(" + requestType.toString() + ")");
-            ((HttpURLConnection) connection).setRequestMethod(requestType.toString());
+            connection.setRequestMethod(requestType.toString());
 
             //Set headers
             foxHttpClient.getFoxHttpLogger().log("prepareHeader(" + getRequestHeader() + ")");
@@ -197,17 +200,22 @@ public class FoxHttpRequest {
             foxHttpClient.getFoxHttpLogger().log("setDoOutput(" + doOutput() + ")");
             connection.setDoOutput(doOutput());
             foxHttpClient.getFoxHttpLogger().log("setFollowRedirects(" + followRedirect + ")");
-            ((HttpURLConnection) connection).setInstanceFollowRedirects(followRedirect);
+            connection.setInstanceFollowRedirects(followRedirect);
             HttpURLConnection.setFollowRedirects(followRedirect);
             foxHttpClient.getFoxHttpLogger().log("setFoxHttpTimeoutStrategy(" + foxHttpClient.getFoxHttpTimeoutStrategy() + ")");
             connection.setConnectTimeout(foxHttpClient.getFoxHttpTimeoutStrategy().getConnectionTimeout());
             connection.setReadTimeout(foxHttpClient.getFoxHttpTimeoutStrategy().getReadTimeout());
 
             if (isHttps) {
-                foxHttpClient.getFoxHttpLogger().log("setSSLSocketFactory(" + foxHttpClient.getFoxHttpSSLTrustStrategy() + ")");
-                ((HttpsURLConnection) connection).setSSLSocketFactory(foxHttpClient.getFoxHttpSSLTrustStrategy().getSSLSocketFactory((HttpsURLConnection) connection));
-                foxHttpClient.getFoxHttpLogger().log("setHostnameVerifier(" + foxHttpClient.getFoxHttpHostTrustStrategy() + ")");
-                ((HttpsURLConnection) connection).setHostnameVerifier(foxHttpClient.getFoxHttpHostTrustStrategy());
+                if (foxHttpClient.getFoxHttpSSLTrustStrategy() != null) {
+                    foxHttpClient.getFoxHttpLogger().log("setSSLSocketFactory(" + foxHttpClient.getFoxHttpSSLTrustStrategy() + ")");
+                    ((HttpsURLConnection) connection).setSSLSocketFactory(foxHttpClient.getFoxHttpSSLTrustStrategy().getSSLSocketFactory((HttpsURLConnection) connection, foxHttpClient.getFoxHttpLogger()));
+                }
+                //TODO: re-enable getFoxHttpHostTrustStrategy()
+                /*if (foxHttpClient.getFoxHttpHostTrustStrategy() != null) {
+                    foxHttpClient.getFoxHttpLogger().log("setHostnameVerifier(" + foxHttpClient.getFoxHttpHostTrustStrategy() + ")");
+                    ((HttpsURLConnection) connection).setHostnameVerifier(foxHttpClient.getFoxHttpHostTrustStrategy());
+                }*/
             }
 
             //Process authorization strategy
@@ -233,7 +241,7 @@ public class FoxHttpRequest {
 
             foxHttpClient.getFoxHttpLogger().log("========= Response =========");
 
-            int responseCode = ((HttpURLConnection) connection).getResponseCode();
+            int responseCode = connection.getResponseCode();
             foxHttpClient.getFoxHttpLogger().log("responseCode(" + responseCode + ")");
 
             //Execute interceptor
@@ -251,7 +259,7 @@ public class FoxHttpRequest {
                 } else {
                     //On error response code
                     foxHttpClient.getFoxHttpLogger().log("getResponseBody(error)");
-                    is = ((HttpURLConnection) connection).getErrorStream();
+                    is = connection.getErrorStream();
                 }
 
                 foxHttpClient.getFoxHttpLogger().log("createFoxHttpResponse()");
@@ -280,7 +288,7 @@ public class FoxHttpRequest {
         } finally {
 
             if (connection != null) {
-                ((HttpURLConnection) connection).disconnect();
+                connection.disconnect();
             }
         }
     }

@@ -7,6 +7,14 @@ import java.lang.reflect.Method;
  * @author patrick.boesch@viascom.ch
  */
 class FoxHttpAnnotationUtil {
+
+    /**
+     * Utility classes, which are a collection of static members, are not meant to be instantiated.
+     */
+    private FoxHttpAnnotationUtil() {
+        throw new IllegalAccessError("Utility class");
+    }
+
     static boolean hasMethodAnnotation(Class<? extends Annotation> annotationClass, Method method) {
         return method.getAnnotation(annotationClass) != null;
     }

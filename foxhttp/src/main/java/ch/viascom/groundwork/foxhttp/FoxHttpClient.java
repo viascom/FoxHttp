@@ -14,7 +14,6 @@ import ch.viascom.groundwork.foxhttp.parser.FoxHttpParser;
 import ch.viascom.groundwork.foxhttp.placeholder.DefaultPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.proxy.FoxHttpProxyStrategy;
-import ch.viascom.groundwork.foxhttp.ssl.DefaultHostTrustStrategy;
 import ch.viascom.groundwork.foxhttp.ssl.DefaultSSLTrustStrategy;
 import ch.viascom.groundwork.foxhttp.ssl.FoxHttpHostTrustStrategy;
 import ch.viascom.groundwork.foxhttp.ssl.FoxHttpSSLTrustStrategy;
@@ -67,7 +66,9 @@ public class FoxHttpClient {
     @Getter
     @Setter
     //HostnameVerifier
-    private FoxHttpHostTrustStrategy foxHttpHostTrustStrategy = new DefaultHostTrustStrategy();
+    //NOT READY YET
+    @Deprecated
+    private FoxHttpHostTrustStrategy foxHttpHostTrustStrategy;// = new DefaultHostTrustStrategy();
 
     @Getter
     @Setter
@@ -97,7 +98,7 @@ public class FoxHttpClient {
     @Getter
     @Setter
     //UserAgent
-    private String foxHttpUserAgent = "FoxHTTP v1.2";
+    private String foxHttpUserAgent = "FoxHTTP v1.2.2";
 
 
     /**
@@ -105,6 +106,7 @@ public class FoxHttpClient {
      *
      * @param interceptorType    Type of the interceptor
      * @param foxHttpInterceptor Interceptor instance
+     *
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
     public void register(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
@@ -119,5 +121,13 @@ public class FoxHttpClient {
     public void activateComponent(FoxHttpComponent foxHttpComponent) throws FoxHttpException {
         foxHttpComponents.add(foxHttpComponent);
         foxHttpComponent.initiation(this);
+    }
+
+    public void activateSSLDebugLog() {
+        System.setProperty("javax.net.debug", "all");
+    }
+
+    public void disableSSLDebugLog() {
+        System.clearProperty("javax.net.debug");
     }
 }

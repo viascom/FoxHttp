@@ -1,5 +1,7 @@
 package ch.viascom.groundwork.foxhttp.ssl;
 
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLogger;
+
 import javax.net.ssl.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +24,7 @@ public class OnwSSLCertificateTrustStrategy implements FoxHttpSSLTrustStrategy {
     }
 
     @Override
-    public SSLSocketFactory getSSLSocketFactory(HttpsURLConnection httpsURLConnection) {
+    public SSLSocketFactory getSSLSocketFactory(HttpsURLConnection httpsURLConnection, FoxHttpLogger logger) {
         final char[] jksPasswordCharArray = jksPassword.toCharArray();
         final char[] keyPasswordCharArray = keyPassword.toCharArray();
         try {
@@ -42,6 +44,7 @@ public class OnwSSLCertificateTrustStrategy implements FoxHttpSSLTrustStrategy {
              * Creates a socket factory for HttpsURLConnection using JKS
              * contents
              */
+            logger.log("createSocketFactoryUsingJKS("+kmf.getProvider().getName()+")");
             final SSLContext sc = SSLContext.getInstance("TLS");
             sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new java.security.SecureRandom());
             return sc.getSocketFactory();

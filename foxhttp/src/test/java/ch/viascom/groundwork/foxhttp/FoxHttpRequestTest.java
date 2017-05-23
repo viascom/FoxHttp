@@ -18,6 +18,7 @@ import ch.viascom.groundwork.foxhttp.parser.GsonParser;
 import ch.viascom.groundwork.foxhttp.placeholder.DefaultPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.proxy.FoxHttpProxyStrategy;
 import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
+import ch.viascom.groundwork.foxhttp.ssl.AllowAllSSLCertificateTrustStrategy;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
 import org.junit.Test;
@@ -446,6 +447,33 @@ public class FoxHttpRequestTest {
 
         assertThat(getResponse.getUrl()).isEqualTo(sslEndpoint + "get");
         */
+    }
+
+    @Test
+    public void allowAllCertificatesTest() throws Exception {
+
+
+        FoxHttpClient foxHttpClient = new FoxHttpClient();
+        foxHttpClient.setFoxHttpResponseParser(new GsonParser());
+        foxHttpClient.setFoxHttpSSLTrustStrategy(new AllowAllSSLCertificateTrustStrategy());
+        foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true,"allowAllCertificatesTest"));
+
+        FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
+        foxHttpRequest.setUrl(new URL(sslEndpoint + "get"));
+        foxHttpRequest.setRequestType(RequestType.GET);
+        foxHttpRequest.setFollowRedirect(true);
+
+        FoxHttpResponse foxHttpResponse = foxHttpRequest.execute();
+
+        assertThat(foxHttpResponse.getResponseCode()).isEqualTo(200);
+        assertThat(foxHttpResponse.getByteArrayOutputStreamBody().size()).isGreaterThan(0);
+        assertThat(foxHttpResponse.getFoxHttpRequest().getRequestType()).isEqualTo(RequestType.GET);
+        assertThat(foxHttpResponse.getFoxHttpRequest().getUrl()).isEqualTo(new URL(sslEndpoint + "get"));
+
+        GetResponse getResponse = foxHttpResponse.getParsedBody(GetResponse.class);
+
+        assertThat(getResponse.getUrl()).isEqualTo(sslEndpoint + "get");
+
     }
 
     @Test

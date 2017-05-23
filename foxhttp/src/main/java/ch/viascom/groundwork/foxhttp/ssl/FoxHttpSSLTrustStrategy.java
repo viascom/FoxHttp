@@ -1,6 +1,7 @@
 package ch.viascom.groundwork.foxhttp.ssl;
 
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpSSLTrustStrategyException;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLogger;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
@@ -10,5 +11,6 @@ import javax.net.ssl.SSLSocketFactory;
  */
 @FunctionalInterface
 public interface FoxHttpSSLTrustStrategy {
-    SSLSocketFactory getSSLSocketFactory(HttpsURLConnection httpsURLConnection) throws FoxHttpSSLTrustStrategyException;
+
+    SSLSocketFactory getSSLSocketFactory(HttpsURLConnection httpsURLConnection, FoxHttpLogger logger) throws FoxHttpSSLTrustStrategyException;
 }
