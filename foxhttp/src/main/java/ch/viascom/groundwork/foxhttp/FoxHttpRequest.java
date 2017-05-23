@@ -72,7 +72,7 @@ public class FoxHttpRequest {
     private FoxHttpClient foxHttpClient;
 
     @Getter(AccessLevel.PROTECTED)
-    private HttpURLConnection connection;
+    private URLConnection connection;
 
     @Getter
     @Setter
@@ -184,7 +184,7 @@ public class FoxHttpRequest {
             }
 
             foxHttpClient.getFoxHttpLogger().log("setRequestMethod(" + requestType.toString() + ")");
-            connection.setRequestMethod(requestType.toString());
+            ((HttpURLConnection) connection).setRequestMethod(requestType.toString());
 
             //Set headers
             foxHttpClient.getFoxHttpLogger().log("prepareHeader(" + getRequestHeader() + ")");
@@ -200,7 +200,7 @@ public class FoxHttpRequest {
             foxHttpClient.getFoxHttpLogger().log("setDoOutput(" + doOutput() + ")");
             connection.setDoOutput(doOutput());
             foxHttpClient.getFoxHttpLogger().log("setFollowRedirects(" + followRedirect + ")");
-            connection.setInstanceFollowRedirects(followRedirect);
+            ((HttpURLConnection) connection).setInstanceFollowRedirects(followRedirect);
             HttpURLConnection.setFollowRedirects(followRedirect);
             foxHttpClient.getFoxHttpLogger().log("setFoxHttpTimeoutStrategy(" + foxHttpClient.getFoxHttpTimeoutStrategy() + ")");
             connection.setConnectTimeout(foxHttpClient.getFoxHttpTimeoutStrategy().getConnectionTimeout());
@@ -241,7 +241,7 @@ public class FoxHttpRequest {
 
             foxHttpClient.getFoxHttpLogger().log("========= Response =========");
 
-            int responseCode = connection.getResponseCode();
+            int responseCode = ((HttpURLConnection) connection).getResponseCode();
             foxHttpClient.getFoxHttpLogger().log("responseCode(" + responseCode + ")");
 
             //Execute interceptor
@@ -259,7 +259,7 @@ public class FoxHttpRequest {
                 } else {
                     //On error response code
                     foxHttpClient.getFoxHttpLogger().log("getResponseBody(error)");
-                    is = connection.getErrorStream();
+                    is = ((HttpURLConnection) connection).getErrorStream();
                 }
 
                 foxHttpClient.getFoxHttpLogger().log("createFoxHttpResponse()");
@@ -288,7 +288,7 @@ public class FoxHttpRequest {
         } finally {
 
             if (connection != null) {
-                connection.disconnect();
+                ((HttpURLConnection) connection).disconnect();
             }
         }
     }
