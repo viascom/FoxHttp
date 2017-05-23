@@ -1,5 +1,6 @@
 package ch.viascom.groundwork.foxhttp.query;
 
+import ch.viascom.groundwork.foxhttp.annotation.types.QueryName;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.util.QueryBuilder;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -79,11 +82,25 @@ public class FoxHttpRequestQuery {
 
         Class clazz = o.getClass();
         HashMap<String, String> paramMap = new HashMap<>();
-        for (String param : params) {
+
+        ArrayList<String> paramNames = new ArrayList<>();
+        paramNames.addAll(params);
+
+        if(paramNames.get(0).isEmpty()) {
+            paramNames.clear();
+            Arrays.stream(clazz.getDeclaredFields()).forEachOrdered(field -> paramNames.add(field.getName()));
+        }
+
+        for (String param : paramNames) {
             try {
                 Field field = clazz.getDeclaredField(param);
                 field.setAccessible(true);
+
                 String paramName = field.getName();
+                if (field.getAnnotationsByType(QueryName.class).length != 0) {
+                    paramName = field.getAnnotationsByType(QueryName.class)[0].value();
+                }
+
                 String value = String.valueOf(field.get(o));
                 if (field.get(o) != null && !value.isEmpty()) {
                     paramMap.put(paramName, value);
@@ -92,6 +109,7 @@ public class FoxHttpRequestQuery {
                 throw new FoxHttpRequestException(e);
             }
         }
+
         queryMap = paramMap;
     }
 

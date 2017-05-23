@@ -10,6 +10,7 @@ import ch.viascom.groundwork.foxhttp.interfaces.FoxHttpInterfaceTest;
 import ch.viascom.groundwork.foxhttp.log.SystemOutFoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.models.GetResponse;
 import ch.viascom.groundwork.foxhttp.models.PostResponse;
+import ch.viascom.groundwork.foxhttp.models.QueryObjectModel;
 import ch.viascom.groundwork.foxhttp.models.User;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
 import ch.viascom.groundwork.foxhttp.util.NamedInputStream;
@@ -68,6 +69,28 @@ public class FoxHttpAnnotationTest {
         assertThat(getResponse.getArgs().get("version")).isEqualTo("v1.0");
         assertThat(getResponse.getArgs().get("date")).isEqualTo("01.01.2000");
         assertThat(getResponse.getHeaders().get("Product")).isEqualTo("FoxHttp");
+
+    }
+
+    @Test
+    public void objectGet() throws Exception {
+        //Set Gson parser, register placeholder
+        FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()
+                .setFoxHttpResponseParser(new GsonParser())
+                .addFoxHttpPlaceholderEntry("host", endpoint);
+
+
+        QueryObjectModel model = new QueryObjectModel();
+        model.setUserId("Fox");
+        model.setPassword("password");
+
+
+        //Request
+        FoxHttpInterfaceTest foxHttpInterfaceTest = new FoxHttpAnnotationParser().parseInterface(FoxHttpInterfaceTest.class, foxHttpClientBuilder.build());
+        GetResponse getResponse = foxHttpInterfaceTest.objectGet(model);
+
+        assertThat(getResponse.getArgs().get("user-id")).isEqualTo("Fox");
+        assertThat(getResponse.getArgs().get("password")).isEqualTo("password");
 
     }
 

@@ -7,6 +7,7 @@ import ch.viascom.groundwork.foxhttp.body.request.RequestStringBody;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
 import ch.viascom.groundwork.foxhttp.models.GetResponse;
 import ch.viascom.groundwork.foxhttp.models.PostResponse;
+import ch.viascom.groundwork.foxhttp.models.QueryObjectModel;
 import ch.viascom.groundwork.foxhttp.models.User;
 import ch.viascom.groundwork.foxhttp.util.NamedInputStream;
 
@@ -25,6 +26,10 @@ public interface FoxHttpInterfaceTest {
     @GET("get")
     @Header(name = "foo", value = "bar")
     GetResponse bigGet(@QueryMap HashMap<String, String> queryMap, @HeaderField("Product") String product);
+
+    @GET("get")
+    @Header(name = "foo", value = "bar")
+    GetResponse objectGet(@QueryObject QueryObjectModel queryObjectModel);
 
     @GET("{path}")
     @Header(name = "foo", value = "bar")
