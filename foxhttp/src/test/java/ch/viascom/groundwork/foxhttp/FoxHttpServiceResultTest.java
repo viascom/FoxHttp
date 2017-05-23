@@ -201,5 +201,8 @@ public class FoxHttpServiceResultTest {
             assertThat(e.getServiceFault().getCode()).isEqualTo("F-6345");
         }
 
+        assertThat(new FoxHttpServiceResultException("ERROR").getMessage()).isEqualTo("ERROR");
+        assertThat(new FoxHttpServiceResultException(new Throwable("ERROR")).getMessage()).isEqualTo("java.lang.Throwable: ERROR");
+        assertThat(new FoxHttpServiceResultException("ERROR", new Throwable("ERROR")).getMessage()).isEqualTo("ERROR");
     }
 }
