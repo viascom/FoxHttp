@@ -73,11 +73,11 @@ public class FoxHttpServiceResultTest {
             "        \"message\": \"Fox is not ready yet!\",\n" +
             "        \"requestUrl\": \"http://localhost/fault.json\",\n" +
             "        \"requestedType\": \"GET\",\n" +
-            "        \"responseStatusCode\": \"500\",\n" +
+            "        \"responseCode\": \"500\",\n" +
             "        \"requestParams\": [],\n" +
             "        \"exception\": \"NotReadyYetException\"\n" +
             "      },\n" +
-            "      \"hash\": \"9def316512e095ee2f578588e4c492beda88b3b3\",\n" +
+            "      \"hash\": \"597c28b3cbdc6d365722a1cabb78a1ca9384a\",\n" +
             "      \"destination\": \"\",\n" +
             "      \"metadata\": {}\n" +
             "  }\n";
@@ -90,7 +90,7 @@ public class FoxHttpServiceResultTest {
             "        \"message\": \"Fox is not ready yet!\",\n" +
             "        \"requestUrl\": \"http://localhost/fault.json\",\n" +
             "        \"requestedType\": \"GET\",\n" +
-            "        \"responseStatusCode\": \"500\",\n" +
+            "        \"responseCode\": \"500\",\n" +
             "        \"requestParams\": [],\n" +
             "        \"exception\": \"NotReadyYetException\"\n" +
             "      },\n" +
