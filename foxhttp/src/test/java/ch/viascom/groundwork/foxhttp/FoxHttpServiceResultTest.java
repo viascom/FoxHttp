@@ -101,9 +101,13 @@ public class FoxHttpServiceResultTest {
 
     @Test
     public void serviceResultParseTest() throws Exception {
-        FoxHttpResponse foxHttpResponse = new FoxHttpResponse(new ByteArrayInputStream(rawBody.getBytes()), new FoxHttpRequest(), 200, new FoxHttpClient());
+        FoxHttpClient foxHttpClient = new FoxHttpClient();
+        FoxHttpRequest foxHttpRequest = new FoxHttpRequest();
+        DefaultServiceResultHasher resultHasher = new DefaultServiceResultHasher();
 
-        FoxHttpServiceResultResponse resultResponse = new FoxHttpServiceResultResponse(foxHttpResponse, new DefaultServiceResultHasher());
+        FoxHttpResponse foxHttpResponse = new FoxHttpResponse(new ByteArrayInputStream(rawBody.getBytes()), foxHttpRequest, 200, foxHttpClient);
+
+        FoxHttpServiceResultResponse resultResponse = new FoxHttpServiceResultResponse(foxHttpResponse, resultHasher);
 
         User user = resultResponse.getContent(User.class, true);
         assertThat(user.getUsername()).isEqualTo("foxhttp@viascom.ch");
@@ -112,6 +116,9 @@ public class FoxHttpServiceResultTest {
         assertThat(resultResponse.getType()).isEqualTo("ch.viascom.groundwork.foxhttp.models.User");
         assertThat(resultResponse.getHash()).isEqualTo("86d536d3ac63d8e0e81415f7efb8e9661388048");
         assertThat(resultResponse.getDestination()).isEqualTo("ch.viascom.groundwork.foxhttp:method");
+        assertThat(resultResponse.getFoxHttpClient()).isEqualTo(foxHttpClient);
+        assertThat(resultResponse.getFoxHttpRequest()).isEqualTo(foxHttpRequest);
+        assertThat(resultResponse.getObjectHasher()).isEqualTo(resultHasher);
     }
 
     @Test

@@ -5,11 +5,11 @@ import org.junit.Test;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
- * Created by stankovic on 23.05.2017.
+ * @author nikola.stankovic@viascom.ch
  */
 public class FoxHttpClientTest {
 
-    FoxHttpClient client = new FoxHttpClient();
+    private FoxHttpClient client = new FoxHttpClient();
 
     @Test
     public void testSSLDebugLogIsActivated() {
