@@ -67,7 +67,12 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
 
     @Override
     public ArrayList<FoxHttpInterceptor> getInterceptorByClass(FoxHttpInterceptorType type, Class<? extends FoxHttpInterceptor> clazz) {
-        return new ArrayList<>(Arrays.asList((FoxHttpInterceptor[]) foxHttpInterceptors.get(type).entrySet().stream().filter(interceptor -> interceptor.getClass().isAssignableFrom(clazz)).toArray()));
+        ArrayList<FoxHttpInterceptor> interceptorList = new ArrayList<>();
+        foxHttpInterceptors.get(type).entrySet()
+                .stream()
+                .filter((Map.Entry<String, FoxHttpInterceptor> interceptor) -> interceptor.getClass().isAssignableFrom(clazz))
+                .forEach(interceptorEntry -> interceptorList.add(interceptorEntry.getValue()));
+        return interceptorList;
     }
 
     @Override
