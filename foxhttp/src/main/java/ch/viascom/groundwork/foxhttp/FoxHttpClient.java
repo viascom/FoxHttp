@@ -108,9 +108,9 @@ public class FoxHttpClient {
      *
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
+    @Deprecated
     public void register(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
         FoxHttpInterceptorType.verifyInterceptor(interceptorType, foxHttpInterceptor);
-
         foxHttpInterceptorStrategy.addInterceptor(interceptorType, foxHttpInterceptor, String.valueOf(UUID.randomUUID()));
     }
 
