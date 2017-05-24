@@ -6,8 +6,7 @@ import ch.viascom.groundwork.foxhttp.component.FoxHttpComponent;
 import ch.viascom.groundwork.foxhttp.cookie.DefaultCookieStore;
 import ch.viascom.groundwork.foxhttp.cookie.FoxHttpCookieStore;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
-import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptor;
-import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
+import ch.viascom.groundwork.foxhttp.interceptor.*;
 import ch.viascom.groundwork.foxhttp.log.DefaultFoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.parser.FoxHttpParser;
@@ -42,7 +41,7 @@ public class FoxHttpClient {
     @Getter
     @Setter
     //Interceptors
-    private Map<FoxHttpInterceptorType, ArrayList<FoxHttpInterceptor>> foxHttpInterceptors = new EnumMap<>(FoxHttpInterceptorType.class);
+    private FoxHttpInterceptorStrategy foxHttpInterceptorStrategy = new DefaultInterceptorStrategy();
 
     //@Getter
     //Caching
@@ -111,11 +110,8 @@ public class FoxHttpClient {
      */
     public void register(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
         FoxHttpInterceptorType.verifyInterceptor(interceptorType, foxHttpInterceptor);
-        if (foxHttpInterceptors.containsKey(interceptorType)) {
-            foxHttpInterceptors.get(interceptorType).add(foxHttpInterceptor);
-        } else {
-            foxHttpInterceptors.put(interceptorType, new ArrayList<>(Arrays.asList(foxHttpInterceptor)));
-        }
+
+        foxHttpInterceptorStrategy.addInterceptor(interceptorType, foxHttpInterceptor, String.valueOf(UUID.randomUUID()));
     }
 
     public void activateComponent(FoxHttpComponent foxHttpComponent) throws FoxHttpException {
@@ -130,4 +126,30 @@ public class FoxHttpClient {
     public void disableSSLDebugLog() {
         System.clearProperty("javax.net.debug");
     }
+
+
+    //Backwards compatibility
+
+    @Deprecated
+    public Map<FoxHttpInterceptorType, ArrayList<FoxHttpInterceptor>> getFoxHttpInterceptors() {
+        Map<FoxHttpInterceptorType, ArrayList<FoxHttpInterceptor>> interceptorList = new EnumMap<>(FoxHttpInterceptorType.class);
+
+        foxHttpInterceptorStrategy.getFoxHttpInterceptors().forEach((key, value) -> {
+            ArrayList<FoxHttpInterceptor> innerInterceptorList = new ArrayList<>();
+            value.forEach((key1, value1) -> innerInterceptorList.add(value1));
+            innerInterceptorList.sort(new FoxHttpInterceptorComparator());
+            interceptorList.put(key, innerInterceptorList);
+        });
+
+        return interceptorList;
+    }
+
+    @Deprecated
+    public void setFoxHttpInterceptors(Map<FoxHttpInterceptorType, ArrayList<FoxHttpInterceptor>> interceptors) {
+        foxHttpInterceptorStrategy.setFoxHttpInterceptors(new EnumMap<>(FoxHttpInterceptorType.class));
+        interceptors.forEach((key, value) -> value.forEach(interceptor -> {
+            foxHttpInterceptorStrategy.addInterceptor(key, interceptor, String.valueOf(UUID.randomUUID()));
+        }));
+    }
+
 }
