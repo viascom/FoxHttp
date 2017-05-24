@@ -13,13 +13,13 @@ public class FoxHttpClientTest {
 
     @Test
     public void testSSLDebugLogIsActivated() {
-        client.activateSSLDebugLog();
+        client.getFoxHttpSSLTrustStrategy().activateSSLDebugLog();
         assertThat(System.getProperty("javax.net.debug")).isEqualTo("all");
     }
 
     @Test
     public void testSSLDebugLogIsDisabled() {
-        client.disableSSLDebugLog();
+        client.getFoxHttpSSLTrustStrategy().disableSSLDebugLog();
         assertThat(System.getProperty("javax.net.debug")).isNullOrEmpty();
     }
 

@@ -99,34 +99,10 @@ public class FoxHttpClient {
     //UserAgent
     private String foxHttpUserAgent = "FoxHTTP v1.2.2";
 
-
-    /**
-     * Register an interceptor
-     *
-     * @param interceptorType    Type of the interceptor
-     * @param foxHttpInterceptor Interceptor instance
-     *
-     * @throws FoxHttpException Throws an exception if the interceptor does not match the type
-     */
-    @Deprecated
-    public void register(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
-        FoxHttpInterceptorType.verifyInterceptor(interceptorType, foxHttpInterceptor);
-        foxHttpInterceptorStrategy.addInterceptor(interceptorType, foxHttpInterceptor, String.valueOf(UUID.randomUUID()));
-    }
-
     public void activateComponent(FoxHttpComponent foxHttpComponent) throws FoxHttpException {
         foxHttpComponents.add(foxHttpComponent);
         foxHttpComponent.initiation(this);
     }
-
-    public void activateSSLDebugLog() {
-        System.setProperty("javax.net.debug", "all");
-    }
-
-    public void disableSSLDebugLog() {
-        System.clearProperty("javax.net.debug");
-    }
-
 
     //Backwards compatibility
 
@@ -150,6 +126,20 @@ public class FoxHttpClient {
         interceptors.forEach((key, value) -> value.forEach(interceptor -> {
             foxHttpInterceptorStrategy.addInterceptor(key, interceptor, String.valueOf(UUID.randomUUID()));
         }));
+    }
+
+    /**
+     * Register an interceptor
+     *
+     * @param interceptorType    Type of the interceptor
+     * @param foxHttpInterceptor Interceptor instance
+     *
+     * @throws FoxHttpException Throws an exception if the interceptor does not match the type
+     */
+    @Deprecated
+    public void register(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
+        FoxHttpInterceptorType.verifyInterceptor(interceptorType, foxHttpInterceptor);
+        foxHttpInterceptorStrategy.addInterceptor(interceptorType, foxHttpInterceptor, String.valueOf(UUID.randomUUID()));
     }
 
 }

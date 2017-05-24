@@ -12,5 +12,13 @@ import javax.net.ssl.SSLSocketFactory;
 @FunctionalInterface
 public interface FoxHttpSSLTrustStrategy {
 
+    default void activateSSLDebugLog() {
+        System.setProperty("javax.net.debug", "all");
+    }
+
+    default void disableSSLDebugLog() {
+        System.clearProperty("javax.net.debug");
+    }
+
     SSLSocketFactory getSSLSocketFactory(HttpsURLConnection httpsURLConnection, FoxHttpLogger logger) throws FoxHttpSSLTrustStrategyException;
 }
