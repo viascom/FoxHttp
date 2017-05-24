@@ -172,7 +172,7 @@ public class FoxHttpRequestTest {
 
 
         FoxHttpRequestQuery requestQuery = new FoxHttpRequestQuery();
-        requestQuery.parseObjectAsQueryMap(new ArrayList<>(Arrays.asList("name", "index", "key")), queryDataHolder);
+        requestQuery.parseObjectAsQueryMap(new ArrayList<>(Arrays.asList("name", "index", "key")), queryDataHolder, false);
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(endpoint + "get"));
@@ -456,7 +456,7 @@ public class FoxHttpRequestTest {
         FoxHttpClient foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
         foxHttpClient.setFoxHttpSSLTrustStrategy(new AllowAllSSLCertificateTrustStrategy());
-        foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true,"allowAllCertificatesTest"));
+        foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "allowAllCertificatesTest"));
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(sslEndpoint + "get"));
@@ -520,7 +520,7 @@ public class FoxHttpRequestTest {
 
         FoxHttpRequestBuilder builder = new FoxHttpRequestBuilder("{endpoint}get", RequestType.GET, client);
         builder.addFoxHttpPlaceholderEntry("endpoint", endpoint);
-        builder.addRequestQueryEntry("id","12345");
+        builder.addRequestQueryEntry("id", "12345");
         FoxHttpRequest request = builder.build();
 
         FoxHttpResponse foxHttpResponse = request.execute();

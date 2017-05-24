@@ -3,6 +3,7 @@ package ch.viascom.groundwork.foxhttp.query;
 import ch.viascom.groundwork.foxhttp.annotation.types.QueryName;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.util.QueryBuilder;
+import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -78,7 +79,7 @@ public class FoxHttpRequestQuery {
      * @param o      object with the attributes
      * @throws FoxHttpRequestException can throw an exception if a field does not exist
      */
-    public void parseObjectAsQueryMap(List<String> params, Object o) throws FoxHttpRequestException {
+    public void parseObjectAsQueryMap(List<String> params, Object o, boolean parseSerializedName) throws FoxHttpRequestException {
 
         Class clazz = o.getClass();
         HashMap<String, String> paramMap = new HashMap<>();
@@ -97,6 +98,10 @@ public class FoxHttpRequestQuery {
                 field.setAccessible(true);
 
                 String paramName = field.getName();
+                if(parseSerializedName && field.getAnnotationsByType(SerializedName.class).length != 0){
+                    paramName = field.getAnnotationsByType(SerializedName.class)[0].value();
+                }
+
                 if (field.getAnnotationsByType(QueryName.class).length != 0) {
                     paramName = field.getAnnotationsByType(QueryName.class)[0].value();
                 }

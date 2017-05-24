@@ -17,4 +17,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface QueryObject {
     String[] value() default "";
+    boolean parseSerializedName() default false;
 }
