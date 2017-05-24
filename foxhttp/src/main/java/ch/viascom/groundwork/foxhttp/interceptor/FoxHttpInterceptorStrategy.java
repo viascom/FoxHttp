@@ -19,13 +19,17 @@ public interface FoxHttpInterceptorStrategy {
 
     void removeInterceptorByKey(FoxHttpInterceptorType type, String key);
 
-    void removeInterceptorByClass(FoxHttpInterceptorType type, Class<FoxHttpInterceptor> clazz);
+    void removeInterceptorByClass(FoxHttpInterceptorType type, Class<? extends FoxHttpInterceptor> clazz);
 
     void replaceInterceptor(FoxHttpInterceptorType type, FoxHttpInterceptor newInterceptor, String key);
 
     FoxHttpInterceptor getInterceptorByKey(FoxHttpInterceptorType type, String key);
 
+    ArrayList<FoxHttpInterceptor> getInterceptorByClass(FoxHttpInterceptorType type, Class<? extends FoxHttpInterceptor> clazz);
+
     HashMap<String, FoxHttpInterceptor> getAllInterceptorsFromType(FoxHttpInterceptorType type);
 
     ArrayList<FoxHttpInterceptor> getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType type, boolean sorted);
+
+    boolean doesTypeExist(FoxHttpInterceptorType type);
 }

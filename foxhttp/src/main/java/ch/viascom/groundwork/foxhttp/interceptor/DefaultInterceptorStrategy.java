@@ -43,7 +43,7 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
     }
 
     @Override
-    public void removeInterceptorByClass(FoxHttpInterceptorType type, Class<FoxHttpInterceptor> clazz) {
+    public void removeInterceptorByClass(FoxHttpInterceptorType type, Class<? extends FoxHttpInterceptor> clazz) {
         HashMap<String, FoxHttpInterceptor> clearedMap = new HashMap<>();
         foxHttpInterceptors.get(type).entrySet()
                 .stream()
@@ -66,6 +66,11 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
     }
 
     @Override
+    public ArrayList<FoxHttpInterceptor> getInterceptorByClass(FoxHttpInterceptorType type, Class<? extends FoxHttpInterceptor> clazz) {
+        return new ArrayList<>(Arrays.asList((FoxHttpInterceptor[]) foxHttpInterceptors.get(type).entrySet().stream().filter(interceptor -> interceptor.getClass().isAssignableFrom(clazz)).toArray()));
+    }
+
+    @Override
     public HashMap<String, FoxHttpInterceptor> getAllInterceptorsFromType(FoxHttpInterceptorType type) {
         return foxHttpInterceptors.get(type);
     }
@@ -79,6 +84,11 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
             innerInterceptorList.sort(new FoxHttpInterceptorComparator());
         }
         return innerInterceptorList;
+    }
+
+    @Override
+    public boolean doesTypeExist(FoxHttpInterceptorType type) {
+        return foxHttpInterceptors.containsKey(type);
     }
 
 }

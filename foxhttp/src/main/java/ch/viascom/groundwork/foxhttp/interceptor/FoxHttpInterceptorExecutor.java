@@ -16,8 +16,6 @@ import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpRespons
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseCodeInterceptorContext;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseInterceptorContext;
 
-import java.util.Collections;
-
 /**
  * @author patrick.boesch@viascom.ch
  */
@@ -31,9 +29,8 @@ public class FoxHttpInterceptorExecutor {
     }
 
     public static void executeRequestInterceptor(FoxHttpRequestInterceptorContext context) throws FoxHttpException {
-        if (context.getClient().getFoxHttpInterceptors().containsKey(FoxHttpInterceptorType.REQUEST)) {
-            Collections.sort(context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.REQUEST), new FoxHttpInterceptorComparator());
-            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.REQUEST)) {
+        if (context.getClient().getFoxHttpInterceptorStrategy().doesTypeExist(FoxHttpInterceptorType.REQUEST)) {
+            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.REQUEST,true)) {
                 context.getClient().getFoxHttpLogger().log("-> [REQUEST] " + interceptor);
                 ((FoxHttpRequestInterceptor) interceptor).onIntercept(context);
             }
@@ -41,9 +38,8 @@ public class FoxHttpInterceptorExecutor {
     }
 
     public static void executeRequestConnectionInterceptor(FoxHttpRequestConnectionInterceptorContext context) throws FoxHttpException {
-        if (context.getClient().getFoxHttpInterceptors().containsKey(FoxHttpInterceptorType.REQUEST_CONNECTION)) {
-            Collections.sort(context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.REQUEST_CONNECTION), new FoxHttpInterceptorComparator());
-            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.REQUEST_CONNECTION)) {
+        if (context.getClient().getFoxHttpInterceptorStrategy().doesTypeExist(FoxHttpInterceptorType.REQUEST_CONNECTION)) {
+            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.REQUEST_CONNECTION,true)) {
                 context.getClient().getFoxHttpLogger().log("-> [REQUEST_CONNECTION] " + interceptor);
                 ((FoxHttpRequestConnectionInterceptor) interceptor).onIntercept(context);
             }
@@ -51,9 +47,8 @@ public class FoxHttpInterceptorExecutor {
     }
 
     public static void executeRequestHeaderInterceptor(FoxHttpRequestHeaderInterceptorContext context) throws FoxHttpException {
-        if (context.getClient().getFoxHttpInterceptors().containsKey(FoxHttpInterceptorType.REQUEST_HEADER)) {
-            Collections.sort(context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.REQUEST_HEADER), new FoxHttpInterceptorComparator());
-            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.REQUEST_HEADER)) {
+        if (context.getClient().getFoxHttpInterceptorStrategy().doesTypeExist(FoxHttpInterceptorType.REQUEST_HEADER)) {
+            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.REQUEST_HEADER,true)) {
                 context.getClient().getFoxHttpLogger().log("-> [REQUEST_HEADER] " + interceptor);
                 ((FoxHttpRequestHeaderInterceptor) interceptor).onIntercept(context);
             }
@@ -61,9 +56,8 @@ public class FoxHttpInterceptorExecutor {
     }
 
     public static void executeRequestBodyInterceptor(FoxHttpRequestBodyInterceptorContext context) throws FoxHttpException {
-        if (context.getClient().getFoxHttpInterceptors().containsKey(FoxHttpInterceptorType.REQUEST_BODY)) {
-            Collections.sort(context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.REQUEST_BODY), new FoxHttpInterceptorComparator());
-            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.REQUEST_BODY)) {
+        if (context.getClient().getFoxHttpInterceptorStrategy().doesTypeExist(FoxHttpInterceptorType.REQUEST_BODY)) {
+            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.REQUEST_BODY,true)) {
                 context.getClient().getFoxHttpLogger().log("-> [REQUEST_BODY] " + interceptor);
                 ((FoxHttpRequestBodyInterceptor) interceptor).onIntercept(context);
             }
@@ -71,9 +65,8 @@ public class FoxHttpInterceptorExecutor {
     }
 
     public static void executeResponseInterceptor(FoxHttpResponseInterceptorContext context) throws FoxHttpException {
-        if (context.getClient().getFoxHttpInterceptors().containsKey(FoxHttpInterceptorType.RESPONSE)) {
-            Collections.sort(context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE), new FoxHttpInterceptorComparator());
-            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE)) {
+        if (context.getClient().getFoxHttpInterceptorStrategy().doesTypeExist(FoxHttpInterceptorType.RESPONSE)) {
+            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE,true)) {
                 context.getClient().getFoxHttpLogger().log("-> [RESPONSE] " + interceptor);
                 ((FoxHttpResponseInterceptor) interceptor).onIntercept(context);
             }
@@ -81,9 +74,8 @@ public class FoxHttpInterceptorExecutor {
     }
 
     public static void executeResponseBodyInterceptor(FoxHttpResponseBodyInterceptorContext context) throws FoxHttpException {
-        if (context.getClient().getFoxHttpInterceptors().containsKey(FoxHttpInterceptorType.RESPONSE_BODY)) {
-            Collections.sort(context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE_BODY), new FoxHttpInterceptorComparator());
-            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE_BODY)) {
+        if (context.getClient().getFoxHttpInterceptorStrategy().doesTypeExist(FoxHttpInterceptorType.RESPONSE_BODY)) {
+            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE_BODY,true)) {
                 context.getClient().getFoxHttpLogger().log("-> [RESPONSE_BODY] " + interceptor);
                 ((FoxHttpResponseBodyInterceptor) interceptor).onIntercept(context);
             }
@@ -91,9 +83,8 @@ public class FoxHttpInterceptorExecutor {
     }
 
     public static void executeResponseCodeInterceptor(FoxHttpResponseCodeInterceptorContext context) throws FoxHttpException {
-        if (context.getClient().getFoxHttpInterceptors().containsKey(FoxHttpInterceptorType.RESPONSE_CODE)) {
-            Collections.sort(context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE_CODE), new FoxHttpInterceptorComparator());
-            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE_CODE)) {
+        if (context.getClient().getFoxHttpInterceptorStrategy().doesTypeExist(FoxHttpInterceptorType.RESPONSE_CODE)) {
+            for (FoxHttpInterceptor interceptor : context.getClient().getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE_CODE,true)) {
                 context.getClient().getFoxHttpLogger().log("-> [RESPONSE_CODE] " + interceptor);
                 ((FoxHttpResponseCodeInterceptor) interceptor).onIntercept(context);
             }

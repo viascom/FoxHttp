@@ -123,11 +123,6 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
         foxHttpClient.getFoxHttpLogger().log("FoxHttpServiceResultParser(" + foxHttpResponse + "," + objectHasher + ")");
     }
 
-    private boolean isDefaultServiceResultFaultInterceptorPresent() {
-        return !this.foxHttpClient.getFoxHttpInterceptors().isEmpty() &&
-                this.foxHttpClient.getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE).stream().anyMatch(interceptor -> interceptor.getClass().isAssignableFrom(DefaultServiceResultFaultInterceptor.class));
-    }
-
     /**
      * Constructor for annotation use
      *
@@ -135,6 +130,11 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      */
     public FoxHttpServiceResultResponse(FoxHttpServiceResultHasher objectHasher) {
         this.objectHasher = objectHasher;
+    }
+
+    private boolean isDefaultServiceResultFaultInterceptorPresent() {
+        return !this.foxHttpClient.getFoxHttpInterceptorStrategy().getFoxHttpInterceptors().isEmpty() &&
+                !this.foxHttpClient.getFoxHttpInterceptorStrategy().getInterceptorByClass(FoxHttpInterceptorType.RESPONSE, DefaultServiceResultFaultInterceptor.class).isEmpty();
     }
 
     /**
