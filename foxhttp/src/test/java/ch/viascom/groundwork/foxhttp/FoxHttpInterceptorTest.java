@@ -4,7 +4,9 @@ import ch.viascom.groundwork.foxhttp.body.request.RequestStringBody;
 import ch.viascom.groundwork.foxhttp.builder.FoxHttpClientBuilder;
 import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
+import ch.viascom.groundwork.foxhttp.exception.FoxHttpResponseException;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
+import ch.viascom.groundwork.foxhttp.interceptor.request.DefaultHttpErrorResponseInterceptor;
 import ch.viascom.groundwork.foxhttp.interceptors.*;
 import ch.viascom.groundwork.foxhttp.lambda.LambdaLogger;
 import ch.viascom.groundwork.foxhttp.models.GetResponse;
@@ -117,6 +119,63 @@ public class FoxHttpInterceptorTest {
             assertThat(false).isEqualTo(true);
         } catch (FoxHttpRequestException e) {
             assertThat(e.getMessage()).isEqualTo("Found 404");
+        }
+    }
+
+    @Test
+    public void responseCodeDefaultInterceptorTest() throws Exception {
+        FoxHttpClientBuilder clientBuilder = new FoxHttpClientBuilder();
+        clientBuilder.setFoxHttpResponseParser(new GsonParser());
+
+        //Throw exception on error response code
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE_CODE, new DefaultHttpErrorResponseInterceptor());
+
+        FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "status/404", RequestType.GET, clientBuilder.build());
+        FoxHttpRequest request = requestBuilder.build();
+
+        try {
+            request.execute().getParsedBody(GetResponse.class);
+            assertThat(false).isEqualTo(true);
+        } catch (FoxHttpResponseException e) {
+            assertThat(e.getMessage()).isEqualTo("Response Error-Code: 404");
+        }
+    }
+
+    @Test
+    public void responseBodyDefaultInterceptorTest() throws Exception {
+        FoxHttpClientBuilder clientBuilder = new FoxHttpClientBuilder();
+        clientBuilder.setFoxHttpResponseParser(new GsonParser());
+
+        //Throw exception on error response code
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE_BODY, new DefaultHttpErrorResponseInterceptor());
+
+        FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "status/404", RequestType.GET, clientBuilder.build());
+        FoxHttpRequest request = requestBuilder.build();
+
+        try {
+            request.execute().getParsedBody(GetResponse.class);
+            assertThat(false).isEqualTo(true);
+        } catch (FoxHttpResponseException e) {
+            assertThat(e.getMessage()).isEqualTo("Response Error-Code: 404");
+        }
+    }
+
+    @Test
+    public void responseDefaultInterceptorTest() throws Exception {
+        FoxHttpClientBuilder clientBuilder = new FoxHttpClientBuilder();
+        clientBuilder.setFoxHttpResponseParser(new GsonParser());
+
+        //Throw exception on error response code
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE, new DefaultHttpErrorResponseInterceptor());
+
+        FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "status/404", RequestType.GET, clientBuilder.build());
+        FoxHttpRequest request = requestBuilder.build();
+
+        try {
+            request.execute().getParsedBody(GetResponse.class);
+            assertThat(false).isEqualTo(true);
+        } catch (FoxHttpResponseException e) {
+            assertThat(e.getMessage()).isEqualTo("Response Error-Code: 404");
         }
     }
 
