@@ -6,7 +6,7 @@ import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpResponseException;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
-import ch.viascom.groundwork.foxhttp.interceptor.request.DefaultHttpErrorResponseInterceptor;
+import ch.viascom.groundwork.foxhttp.interceptor.response.HttpErrorResponseInterceptor;
 import ch.viascom.groundwork.foxhttp.interceptors.*;
 import ch.viascom.groundwork.foxhttp.lambda.LambdaLogger;
 import ch.viascom.groundwork.foxhttp.models.GetResponse;
@@ -128,7 +128,7 @@ public class FoxHttpInterceptorTest {
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
 
         //Throw exception on error response code
-        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE_CODE, new DefaultHttpErrorResponseInterceptor());
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE_CODE, new HttpErrorResponseInterceptor());
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "status/404", RequestType.GET, clientBuilder.build());
         FoxHttpRequest request = requestBuilder.build();
@@ -147,7 +147,7 @@ public class FoxHttpInterceptorTest {
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
 
         //Throw exception on error response code
-        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE_BODY, new DefaultHttpErrorResponseInterceptor());
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE_BODY, new HttpErrorResponseInterceptor());
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "status/404", RequestType.GET, clientBuilder.build());
         FoxHttpRequest request = requestBuilder.build();
@@ -166,7 +166,7 @@ public class FoxHttpInterceptorTest {
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
 
         //Throw exception on error response code
-        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE, new DefaultHttpErrorResponseInterceptor());
+        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE, new HttpErrorResponseInterceptor());
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "status/404", RequestType.GET, clientBuilder.build());
         FoxHttpRequest request = requestBuilder.build();

@@ -1,10 +1,7 @@
-package ch.viascom.groundwork.foxhttp.interceptor.request;
+package ch.viascom.groundwork.foxhttp.interceptor.response;
 
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpResponseException;
-import ch.viascom.groundwork.foxhttp.interceptor.response.FoxHttpResponseBodyInterceptor;
-import ch.viascom.groundwork.foxhttp.interceptor.response.FoxHttpResponseCodeInterceptor;
-import ch.viascom.groundwork.foxhttp.interceptor.response.FoxHttpResponseInterceptor;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseBodyInterceptorContext;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseCodeInterceptorContext;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseInterceptorContext;
@@ -12,10 +9,10 @@ import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpRespons
 /**
  * @author patrick.boesch@viascom.ch
  */
-public class DefaultHttpErrorResponseInterceptor implements FoxHttpResponseInterceptor, FoxHttpResponseCodeInterceptor, FoxHttpResponseBodyInterceptor {
+public class HttpErrorResponseInterceptor implements FoxHttpResponseInterceptor, FoxHttpResponseCodeInterceptor, FoxHttpResponseBodyInterceptor {
 
     /**
-     * Sets the weight to 1'000 of the DefaultHttpErrorResponseInterceptor
+     * Sets the weight to 1'000 of the HttpErrorResponseInterceptor
      * <p>
      * Interceptors with a smaller weight number will be executed before this one
      * and interceptors with a higher weight number will be executed after this interceptor.
