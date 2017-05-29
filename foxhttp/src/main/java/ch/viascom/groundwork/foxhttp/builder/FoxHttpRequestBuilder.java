@@ -334,6 +334,7 @@ public class FoxHttpRequestBuilder {
      */
     public FoxHttpRequest build() throws FoxHttpRequestException {
         FoxHttpRequest request = new FoxHttpRequest();
+        request.setFoxHttpClient(this.foxHttpClient);
 
         if (this.foxHttpPlaceholderStrategy != null) {
             request.getFoxHttpPlaceholderStrategy().getPlaceholderMap().putAll(this.foxHttpPlaceholderStrategy.getPlaceholderMap());
@@ -353,7 +354,6 @@ public class FoxHttpRequestBuilder {
         request.setRequestBody(this.requestBody);
         request.setFollowRedirect(this.followRedirect);
         request.setSkipResponseBody(this.skipResponseBody);
-        request.setFoxHttpClient(this.foxHttpClient);
 
         return request;
     }

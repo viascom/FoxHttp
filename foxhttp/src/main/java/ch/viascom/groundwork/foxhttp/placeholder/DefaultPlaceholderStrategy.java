@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -49,11 +50,20 @@ public class DefaultPlaceholderStrategy implements FoxHttpPlaceholderStrategy {
     }
 
 
-    public String processPlaceholders(String processedURL, FoxHttpClient foxHttpClient) {
+    public String processPlaceholders(final String processedURL, FoxHttpClient foxHttpClient) {
+        String parsedString = processedURL;
+        Pattern p = Pattern.compile(placeholderEscapeCharEnd);
         for (Map.Entry<String, String> entry : this.getPlaceholderMap().entrySet()) {
-            foxHttpClient.getFoxHttpLogger().log("-> " + this.getPlaceholderEscapeCharStart() + entry.getKey() + this.getPlaceholderEscapeCharEnd() + " -> " + entry.getValue());
-            processedURL = processedURL.replace(this.getPlaceholderEscapeCharStart() + entry.getKey() + this.getPlaceholderEscapeCharEnd(), entry.getValue());
+            if (p.matcher(parsedString).find()) {
+                parsedString = parsedString.replace(this.getPlaceholderEscapeCharStart() + entry.getKey() + this.getPlaceholderEscapeCharEnd(), entry.getValue());
+                foxHttpClient.getFoxHttpLogger().log(
+                        processedURL +
+                                " -> (" + this.getPlaceholderEscapeCharStart() + entry.getKey() + this.getPlaceholderEscapeCharEnd() + " -> " + entry.getValue() +
+                                ") -> " + parsedString);
+            } else {
+                break;
+            }
         }
-        return processedURL;
+        return parsedString;
     }
 }
