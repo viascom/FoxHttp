@@ -5,11 +5,22 @@ import ch.viascom.groundwork.foxhttp.exception.FoxHttpResponseException;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseBodyInterceptorContext;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseCodeInterceptorContext;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseInterceptorContext;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
 
 /**
  * @author patrick.boesch@viascom.ch
  */
 public class HttpErrorResponseInterceptor implements FoxHttpResponseInterceptor, FoxHttpResponseCodeInterceptor, FoxHttpResponseBodyInterceptor {
+
+    /**
+     * Defines codes which will be skipped by the interceptor.
+     */
+    @Getter
+    @Setter
+    private ArrayList<Integer> skippedCodes = new ArrayList<>();
 
     /**
      * Sets the weight to 1'000 of the HttpErrorResponseInterceptor
@@ -24,6 +35,10 @@ public class HttpErrorResponseInterceptor implements FoxHttpResponseInterceptor,
     @Override
     public int getWeight() {
         return 1_000;
+    }
+
+    public void addCodeToSkip(int errorCode) {
+        skippedCodes.add(errorCode);
     }
 
     @Override
@@ -54,8 +69,8 @@ public class HttpErrorResponseInterceptor implements FoxHttpResponseInterceptor,
      *
      * @return true if the status code is valid.
      */
-    public boolean isValidResponseCode(int statuscode) {
-        return (statuscode >= 200 && statuscode < 300);
+    private boolean isValidResponseCode(int statuscode) {
+        return ((statuscode >= 200 && statuscode < 300) && !skippedCodes.contains(statuscode));
     }
 
 }
