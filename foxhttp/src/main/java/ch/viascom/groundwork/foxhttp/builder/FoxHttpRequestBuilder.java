@@ -260,7 +260,7 @@ public class FoxHttpRequestBuilder {
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
     public FoxHttpRequestBuilder addFoxHttpInterceptor(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
-        this.foxHttpClient.register(interceptorType, foxHttpInterceptor);
+        this.foxHttpClient.getFoxHttpInterceptorStrategy().addInterceptor(interceptorType, foxHttpInterceptor);
         return this;
     }
 

@@ -89,7 +89,7 @@ public class FoxHttpInterceptorTest {
     public void requestBodyInterceptorTest() throws Exception {
         FoxHttpClientBuilder clientBuilder = new FoxHttpClientBuilder();
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
-        clientBuilder.setFoxHttpLogger(new LambdaLogger((message,e) -> System.out.println(message)));
+        clientBuilder.setFoxHttpLogger(new LambdaLogger((message, e) -> System.out.println(message)));
 
         //Add new string body
         clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_BODY, new RequestBodyInterceptor());
@@ -217,11 +217,11 @@ public class FoxHttpInterceptorTest {
         clientBuilder.setFoxHttpResponseParser(new GsonParser());
 
         //Add query entry
-        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_HEADER, new RequestHeaderInterceptor(10));
+        clientBuilder.addFoxHttpInterceptor("INTERCEPTOR-1", FoxHttpInterceptorType.REQUEST_HEADER, new RequestHeaderInterceptor(10));
 
         //Add header entry
         RequestHeaderInterceptor headerInterceptor = new RequestHeaderInterceptor(5);
-        clientBuilder.addFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_HEADER, headerInterceptor);
+        clientBuilder.addFoxHttpInterceptor("INTERCEPTOR-2", FoxHttpInterceptorType.REQUEST_HEADER, headerInterceptor);
 
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "get", RequestType.GET, clientBuilder.build());
@@ -229,8 +229,8 @@ public class FoxHttpInterceptorTest {
 
         GetResponse response = request.execute().getParsedBody(GetResponse.class);
 
-        assertThat(request.getFoxHttpClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.REQUEST_HEADER).get(0).getWeight()).isEqualTo(5);
-        assertThat(request.getFoxHttpClient().getFoxHttpInterceptors().get(FoxHttpInterceptorType.REQUEST_HEADER).get(1).getWeight()).isEqualTo(10);
+        assertThat(request.getFoxHttpClient().getFoxHttpInterceptorStrategy().getInterceptorByKey(FoxHttpInterceptorType.REQUEST_HEADER,"INTERCEPTOR-2").getWeight()).isEqualTo(5);
+        assertThat(request.getFoxHttpClient().getFoxHttpInterceptorStrategy().getInterceptorByKey(FoxHttpInterceptorType.REQUEST_HEADER,"INTERCEPTOR-1").getWeight()).isEqualTo(10);
     }
 
 }

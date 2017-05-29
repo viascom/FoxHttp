@@ -13,7 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class GsonParser implements FoxHttpParser {
 
-    Gson gson = new Gson();
+    private Gson gson = new Gson();
 
     @Override
     public Serializable serializedToObject(String json, Class<Serializable> type) {
