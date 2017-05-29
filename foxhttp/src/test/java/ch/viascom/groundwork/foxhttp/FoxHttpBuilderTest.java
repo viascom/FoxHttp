@@ -149,8 +149,8 @@ public class FoxHttpBuilderTest {
         assertThat(foxHttpClient.getFoxHttpTimeoutStrategy().getConnectionTimeout()).isEqualTo(0);
         assertThat(foxHttpClient.getFoxHttpTimeoutStrategy().getReadTimeout()).isEqualTo(0);
         assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorization(null, FoxHttpAuthorizationScope.ANY, foxHttpClient, foxHttpClient.getFoxHttpPlaceholderStrategy()).get(0)).isEqualTo(authorization);
-        assertThat(foxHttpClient.getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE)).isNotEmpty();
-        assertThat(foxHttpClient.getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE).get(0).getWeight()).isEqualTo(100);
+        assertThat(foxHttpClient.getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE, false)).isNotEmpty();
+        assertThat(foxHttpClient.getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE, false).get(0).getWeight()).isEqualTo(100);
         assertThat(foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderEscapeCharStart()).isEqualTo("[");
 
         foxHttpClientBuilder.activateFoxHttpLogger(true);
@@ -161,8 +161,8 @@ public class FoxHttpBuilderTest {
         FoxHttpClient foxHttpClient2 = foxHttpClientBuilder.build();
 
         assertThat(foxHttpClient2.getFoxHttpTimeoutStrategy().getConnectionTimeout()).isEqualTo(0);
-        assertThat(foxHttpClient2.getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE)).isNotEmpty();
-        assertThat(foxHttpClient2.getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE).get(0).getWeight()).isEqualTo(100);
+        assertThat(foxHttpClient2.getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE, false)).isNotEmpty();
+        assertThat(foxHttpClient2.getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE, false).get(0).getWeight()).isEqualTo(100);
 
         foxHttpClientBuilder.setFoxHttpInterceptors(new EnumMap<>(FoxHttpInterceptorType.class));
         foxHttpClientBuilder.activateDeflateResponseInterceptor(true);
@@ -170,8 +170,8 @@ public class FoxHttpBuilderTest {
 
         FoxHttpClient foxHttpClient3 = foxHttpClientBuilder.build();
         assertThat(foxHttpClient3.getFoxHttpTimeoutStrategy().getConnectionTimeout()).isEqualTo(0);
-        assertThat(foxHttpClient3.getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE)).isNotEmpty();
-        assertThat(foxHttpClient3.getFoxHttpInterceptors().get(FoxHttpInterceptorType.RESPONSE).size()).isEqualTo(2);
+        assertThat(foxHttpClient3.getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE, false)).isNotEmpty();
+        assertThat(foxHttpClient3.getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE, false).size()).isEqualTo(2);
     }
 
     @Test
@@ -198,7 +198,7 @@ public class FoxHttpBuilderTest {
 
         FoxHttpClient foxHttpClient = foxHttpClientBuilder.build();
 
-        assertThat(foxHttpClient.getFoxHttpInterceptors().get(FoxHttpInterceptorType.REQUEST_BODY).get(0)).isEqualTo(foxHttpInterceptor);
+        assertThat(foxHttpClient.getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.REQUEST_BODY, false).get(0)).isEqualTo(foxHttpInterceptor);
 
     }
 

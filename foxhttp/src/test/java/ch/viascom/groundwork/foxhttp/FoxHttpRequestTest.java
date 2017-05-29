@@ -379,7 +379,7 @@ public class FoxHttpRequestTest {
                 new RemoveMeAuthorization()
         );
 
-        foxHttpClient.getFoxHttpAuthorizationStrategy().removeAuthorization(FoxHttpAuthorizationScope.ANY, new RemoveMeAuthorization());
+        foxHttpClient.getFoxHttpAuthorizationStrategy().removeAuthorizationByClass(FoxHttpAuthorizationScope.ANY, RemoveMeAuthorization.class);
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(endpoint + "get"));

@@ -28,7 +28,7 @@ public class DefaultOAuth2RequestExecutor implements OAuth2RequestExecutor {
             oAuth2Component.getOAuth2Store().setScopes(tokenResponse.getScope());
 
             for (FoxHttpAuthorizationScope scope : oAuth2Component.getOAuth2Store().getAuthScopes()) {
-                oAuth2Component.getFoxHttpClient().getFoxHttpAuthorizationStrategy().removeAuthorization(scope, oAuth2Component.getOAuth2Authorization());
+                oAuth2Component.getFoxHttpClient().getFoxHttpAuthorizationStrategy().removeAuthorizationByClass(scope, oAuth2Component.getOAuth2Authorization().getClass());
                 oAuth2Component.getOAuth2Authorization().setValue(oAuth2Component.getOAuth2Store().getAccessToken());
                 oAuth2Component.getFoxHttpClient().getFoxHttpAuthorizationStrategy().addAuthorization(scope, oAuth2Component.getOAuth2Authorization());
             }

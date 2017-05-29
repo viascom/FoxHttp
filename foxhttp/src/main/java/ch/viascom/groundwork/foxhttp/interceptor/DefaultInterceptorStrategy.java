@@ -70,7 +70,7 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
         ArrayList<FoxHttpInterceptor> interceptorList = new ArrayList<>();
         foxHttpInterceptors.get(type).entrySet()
                 .stream()
-                .filter((Map.Entry<String, FoxHttpInterceptor> interceptor) -> interceptor.getClass().isAssignableFrom(clazz))
+                .filter((Map.Entry<String, FoxHttpInterceptor> interceptor) -> interceptor.getValue().getClass().isAssignableFrom(clazz))
                 .forEach(interceptorEntry -> interceptorList.add(interceptorEntry.getValue()));
         return interceptorList;
     }

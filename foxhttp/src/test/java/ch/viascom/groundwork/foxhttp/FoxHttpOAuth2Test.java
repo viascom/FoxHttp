@@ -83,7 +83,7 @@ public class FoxHttpOAuth2Test {
                 );
 
                 for (FoxHttpAuthorizationScope scope : oAuth2Component1.getOAuth2Store().getAuthScopes()) {
-                    oAuth2Component1.getFoxHttpClient().getFoxHttpAuthorizationStrategy().removeAuthorization(scope, oAuth2Component1.getOAuth2Authorization());
+                    oAuth2Component1.getFoxHttpClient().getFoxHttpAuthorizationStrategy().removeAuthorizationByClass(scope, oAuth2Component1.getOAuth2Authorization().getClass());
                     oAuth2Component1.getOAuth2Authorization().setValue(oAuth2Component1.getOAuth2Store().getAccessToken());
                     oAuth2Component1.getFoxHttpClient().getFoxHttpAuthorizationStrategy().addAuthorization(scope, oAuth2Component1.getOAuth2Authorization());
                 }
