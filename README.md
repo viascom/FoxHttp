@@ -1,4 +1,4 @@
-![FoxHttp-Logo](https://github.com/Viascom/FoxHttp/blob/develop/foxhttp/FoxHttp.png?raw=true)
+![FoxHttp-Logo](https://github.com/Viascom/FoxHttp/blob/develop/FoxHttp.png?raw=true)
 
 ## Build-Status [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=master)](https://travis-ci.org/Viascom/FoxHttp) [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=develop)](https://travis-ci.org/Viascom/FoxHttp)
 
