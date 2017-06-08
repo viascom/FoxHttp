@@ -12,11 +12,11 @@ public class RegexUtil {
         throw new IllegalAccessError("Utility class");
     }
 
-    public static boolean doesURLMatch(String url, String compareUrl) {
-        if (url.equals(compareUrl)) {
+    public static boolean doesURLMatch(String input, String pattern) {
+        if (input.equals(pattern)) {
             return true;
         }
-        String matchRegex = compareUrl.replaceAll("\\*", "[ -~]*").replaceAll("\\.", "\\\\.").replaceAll("\\/", "\\\\/");
-        return url.matches(matchRegex);
+        String matchRegex = pattern.replaceAll("(?<!(\\[ -~\\]))(\\*)", "[ -~]*").replaceAll("\\.", "\\\\.").replaceAll("\\/", "\\\\/");
+        return input.matches(matchRegex);
     }
 }

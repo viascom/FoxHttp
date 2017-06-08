@@ -61,7 +61,7 @@ public class OAuth2Component implements FoxHttpComponent {
         }
         foxHttpClient.getFoxHttpLogger().log("-> Register interceptor");
         //Register interceptor
-        foxHttpClient.register(FoxHttpInterceptorType.REQUEST_CONNECTION, new OAuth2RequestInterceptor(this, 100));
+        foxHttpClient.getFoxHttpInterceptorStrategy().addInterceptor(FoxHttpInterceptorType.REQUEST_CONNECTION, new OAuth2RequestInterceptor(this, 100));
         foxHttpClient.getFoxHttpLogger().log("=============================================");
     }
 

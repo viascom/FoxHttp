@@ -229,6 +229,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
+    @SuppressWarnings("unchecked")
     public <T extends Serializable> T getContentFromType(boolean checkHash) throws FoxHttpResponseException {
         try {
             return getContent((Class<T>) Class.forName(this.type), checkHash);

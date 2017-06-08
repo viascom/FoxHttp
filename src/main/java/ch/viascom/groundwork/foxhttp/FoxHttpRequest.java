@@ -337,13 +337,11 @@ public class FoxHttpRequest {
     private void processResponseHeader() {
         FoxHttpHeader responseHeaders = new FoxHttpHeader();
         Map<String, List<String>> map = connection.getHeaderFields();
-        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-            if (entry.getKey() != null) {
-                responseHeaders.addHeader(entry.getKey(), entry.getValue().get(0));
-                foxHttpClient.getFoxHttpLogger().log("-> ResponseHeader(" + entry.getKey() + ":" + entry.getValue().get(0) + ")");
-            }
-        }
 
+        map.entrySet().stream().filter(entry -> entry.getKey() != null).forEach(entry -> {
+            responseHeaders.addHeader(entry.getKey(), entry.getValue().get(0));
+            foxHttpClient.getFoxHttpLogger().log("-> ResponseHeader(" + entry.getKey() + ":" + entry.getValue().get(0) + ")");
+        });
         foxHttpResponse.setResponseHeaders(responseHeaders);
     }
 

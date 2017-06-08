@@ -15,6 +15,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class FoxHttpParserTest {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void gsonTest() throws Exception {
         User user = new User();
 
@@ -25,6 +26,7 @@ public class FoxHttpParserTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void xstreamTest() throws Exception {
         User user = new User();
 
