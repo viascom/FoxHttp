@@ -1,11 +1,10 @@
 ![FoxHttp-Logo](https://github.com/Viascom/FoxHttp/blob/develop/FoxHttp.png?raw=true)
 
-## Build-Status 
-master: [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=master)](https://travis-ci.org/Viascom/FoxHttp) develop: [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=develop)](https://travis-ci.org/Viascom/FoxHttp)
+## Build-Status [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=master)](https://travis-ci.org/Viascom/FoxHttp) [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=develop)](https://travis-ci.org/Viascom/FoxHttp)
 
 **FoxHttp provides a fast and easy http client for Java and Android. It's part of the GroundWork Project by Viascom.**
 
-[![release](https://img.shields.io/badge/release-v1.2.1-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/master)
+[![master](https://img.shields.io/badge/master-v1.2.1-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/master)
 [![develop](https://img.shields.io/badge/develop-v1.3--RC1-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/develop)
 [![Maven Central](https://img.shields.io/maven-central/v/ch.viascom.groundwork/foxhttp.svg)]()
 [![Bintray](https://img.shields.io/bintray/v/viascom/GroundWork/ch.viascom.groundwork%3Afoxhttp.svg)]()<br/>
