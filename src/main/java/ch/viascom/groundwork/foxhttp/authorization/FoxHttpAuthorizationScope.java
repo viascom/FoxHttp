@@ -12,59 +12,61 @@ import lombok.Getter;
  */
 public class FoxHttpAuthorizationScope {
 
-    public static final FoxHttpAuthorizationScope ANY = new FoxHttpAuthorizationScope("*", null);
+    public static final FoxHttpAuthorizationScope ANY = new FoxHttpAuthorizationScope("[ -~]*", null);
 
     @Getter
-    private final String url;
+    private final String pattern;
     @Getter
     private final String requestType;
 
 
     /**
-     * Given an url and requestType, constructs a FoxHttpAuthorizationScope.
+     * Given an pattern and requestType, constructs a FoxHttpAuthorizationScope.
      *
-     * @param url         The url to use for the FoxHttpAuthorizationScope.
+     * @param pattern     The pattern to use for the FoxHttpAuthorizationScope.
      * @param requestType The requestType to use for the FoxHttpAuthorizationScope.
      */
-    FoxHttpAuthorizationScope(final String url, final String requestType) {
-        this.url = url;
+    FoxHttpAuthorizationScope(final String pattern, final String requestType) {
+        this.pattern = pattern;
         this.requestType = requestType;
     }
 
     /**
      * Creates a new instance of {@link FoxHttpAuthorizationScope}.
      *
-     * @param url         The url to use for the FoxHttpAuthorizationScope.
+     * @param pattern     The pattern to use for the FoxHttpAuthorizationScope.
      * @param requestType The requestType to use for the FoxHttpAuthorizationScope.
+     *
      * @return FoxHttpAuthorizationScope
      */
-    public static FoxHttpAuthorizationScope create(final String url, final RequestType requestType) {
-        if (url == null) {
-            throw new IllegalArgumentException("url can not be null");
+    public static FoxHttpAuthorizationScope create(final String pattern, final RequestType requestType) {
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be pattern");
         }
         if (requestType == null) {
             throw new IllegalArgumentException("requestType can not be null");
         }
-        if (url.length() == 0) {
-            throw new IllegalArgumentException("url can not be empty");
+        if (pattern.length() == 0) {
+            throw new IllegalArgumentException("pattern can not be empty");
         }
-        return new FoxHttpAuthorizationScope(url, requestType.toString());
+        return new FoxHttpAuthorizationScope(pattern, requestType.toString());
     }
 
     /**
      * Creates a new instance of {@link FoxHttpAuthorizationScope} with requestType ANY.
      *
-     * @param url         The url to use for the FoxHttpAuthorizationScope.
+     * @param pattern The pattern to use for the FoxHttpAuthorizationScope.
+     *
      * @return FoxHttpAuthorizationScope
      */
-    public static FoxHttpAuthorizationScope create(final String url) {
-        if (url == null) {
-            throw new IllegalArgumentException("url can not be null");
+    public static FoxHttpAuthorizationScope create(final String pattern) {
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern can not be null");
         }
-        if (url.length() == 0) {
-            throw new IllegalArgumentException("url can not be empty");
+        if (pattern.length() == 0) {
+            throw new IllegalArgumentException("pattern can not be empty");
         }
-        return new FoxHttpAuthorizationScope(url, "*");
+        return new FoxHttpAuthorizationScope(pattern, null);
     }
 
     /**
@@ -72,7 +74,7 @@ public class FoxHttpAuthorizationScope {
      */
     @Override
     public String toString() {
-        return ((this.getRequestType() == null) ? "" : this.getRequestType() + " ") + this.getUrl();
+        return ((this.getRequestType() == null) ? "[ -~]* " : this.getRequestType() + " ") + this.getPattern();
     }
 
 }

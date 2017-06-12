@@ -54,6 +54,8 @@ public class FoxHttpRequestBuilder {
      * Create a new builder with a default request and set the url
      *
      * @param url url of the request
+     *
+     * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(URL url) throws FoxHttpRequestException {
         this(url.toString());
@@ -63,6 +65,7 @@ public class FoxHttpRequestBuilder {
      * Create a new builder with a default request and set the url
      *
      * @param url url of the request
+     *
      * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(String url) throws FoxHttpRequestException {
@@ -84,6 +87,7 @@ public class FoxHttpRequestBuilder {
      *
      * @param url         url of the request
      * @param requestType request type
+     *
      * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(String url, RequestType requestType) throws FoxHttpRequestException {
@@ -96,6 +100,8 @@ public class FoxHttpRequestBuilder {
      * @param url           url of the request
      * @param requestType   request type
      * @param foxHttpClient FoxHttpClient in which the request gets executed
+     *
+     * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(URL url, RequestType requestType, FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
         this(url.toString(), requestType, foxHttpClient);
@@ -107,6 +113,7 @@ public class FoxHttpRequestBuilder {
      * @param url           url of the request
      * @param requestType   request type
      * @param foxHttpClient FoxHttpClient in which the request gets executed
+     *
      * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(String url, RequestType requestType, FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
@@ -130,6 +137,7 @@ public class FoxHttpRequestBuilder {
      * Set a FoxHttpClient
      *
      * @param foxHttpClient a FoxHttpClient
+     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setFoxHttpClient(FoxHttpClient foxHttpClient) {
@@ -141,6 +149,7 @@ public class FoxHttpRequestBuilder {
      * Set a request type
      *
      * @param requestType a request type
+     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setRequestType(RequestType requestType) {
@@ -152,6 +161,7 @@ public class FoxHttpRequestBuilder {
      * Set a FoxHttpRequestQuery
      *
      * @param foxHttpRequestQuery a FoxHttpRequestQuery
+     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setRequestQuery(FoxHttpRequestQuery foxHttpRequestQuery) {
@@ -164,6 +174,7 @@ public class FoxHttpRequestBuilder {
      *
      * @param name  name of the query entry
      * @param value value of the query entry
+     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder addRequestQueryEntry(String name, String value) {
@@ -176,6 +187,7 @@ public class FoxHttpRequestBuilder {
      * <i>Do not set this if you have a request type other than POST or PUT</i>
      *
      * @param foxHttpRequestBody a body
+     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setRequestBody(FoxHttpRequestBody foxHttpRequestBody) {
@@ -187,6 +199,7 @@ public class FoxHttpRequestBuilder {
      * Set a header for this request
      *
      * @param foxHttpRequestHeader a header
+     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setRequestHeader(FoxHttpHeader foxHttpRequestHeader) {
@@ -198,6 +211,7 @@ public class FoxHttpRequestBuilder {
      * Add a new header entry
      *
      * @param headerField a header field
+     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder addRequestHeader(HeaderEntry headerField) {
@@ -210,6 +224,7 @@ public class FoxHttpRequestBuilder {
      *
      * @param name  name of the header entry
      * @param value value of the header entry
+     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder addRequestHeader(String name, String value) {
@@ -222,6 +237,7 @@ public class FoxHttpRequestBuilder {
      *
      * @param name  name of the header entry
      * @param value value of the header entry
+     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder addRequestHeader(HeaderTypes name, String value) {
@@ -233,6 +249,7 @@ public class FoxHttpRequestBuilder {
      * Sets if the response body should be skiped
      *
      * @param skipResponseBody should skip response body?
+     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setSkipResponseBody(boolean skipResponseBody) {
@@ -244,6 +261,7 @@ public class FoxHttpRequestBuilder {
      * Sets if the request should follow redirects
      *
      * @param followRedirect should follow redirects?
+     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setFollowRedirect(boolean followRedirect) {
@@ -256,7 +274,9 @@ public class FoxHttpRequestBuilder {
      *
      * @param interceptorType    Type of the interceptor
      * @param foxHttpInterceptor Interceptor instance
+     *
      * @return FoxHttpClientBuilder (this)
+     *
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
     public FoxHttpRequestBuilder addFoxHttpInterceptor(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
@@ -269,6 +289,7 @@ public class FoxHttpRequestBuilder {
      *
      * @param placeholder name of the placeholder (without escape char)
      * @param value       value of the placeholder
+     *
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpRequestBuilder addFoxHttpPlaceholderEntry(String placeholder, String value) {
@@ -279,6 +300,7 @@ public class FoxHttpRequestBuilder {
     /**
      * @param authorizationScope
      * @param foxHttpAuthorization
+     *
      * @return
      */
     public FoxHttpRequestBuilder addFoxHttpAuthorization(FoxHttpAuthorizationScope authorizationScope, FoxHttpAuthorization foxHttpAuthorization) {
@@ -289,6 +311,7 @@ public class FoxHttpRequestBuilder {
     /**
      * @param authorizationScopes
      * @param foxHttpAuthorization
+     *
      * @return
      */
     public FoxHttpRequestBuilder addFoxHttpAuthorization(List<FoxHttpAuthorizationScope> authorizationScopes, FoxHttpAuthorization foxHttpAuthorization) {
@@ -298,6 +321,7 @@ public class FoxHttpRequestBuilder {
 
     /**
      * @param foxHttpLogger
+     *
      * @return
      */
     public FoxHttpRequestBuilder setLogger(FoxHttpLogger foxHttpLogger) {
@@ -308,6 +332,7 @@ public class FoxHttpRequestBuilder {
     /**
      * @param foxHttpLogger
      * @param activate
+     *
      * @return
      */
     public FoxHttpRequestBuilder setLogger(FoxHttpLogger foxHttpLogger, boolean activate) {
@@ -320,6 +345,7 @@ public class FoxHttpRequestBuilder {
      * Activate defined Logger
      *
      * @param activate activate logger
+     *
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpRequestBuilder activateFoxHttpLogger(boolean activate) {

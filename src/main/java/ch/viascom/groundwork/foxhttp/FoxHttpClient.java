@@ -97,7 +97,7 @@ public class FoxHttpClient {
     @Getter
     @Setter
     //UserAgent
-    private String foxHttpUserAgent = "FoxHTTP v1.2.2";
+    private String foxHttpUserAgent = "FoxHTTP v1.3";
 
     public void activateComponent(FoxHttpComponent foxHttpComponent) throws FoxHttpException {
         foxHttpComponents.add(foxHttpComponent);

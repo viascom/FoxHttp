@@ -3,6 +3,7 @@ package ch.viascom.groundwork.foxhttp;
 import ch.viascom.groundwork.foxhttp.authorization.BasicAuthAuthorization;
 import ch.viascom.groundwork.foxhttp.authorization.BearerTokenAuthorization;
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationScope;
+import ch.viascom.groundwork.foxhttp.authorization.RegExAuthorizationStrategy;
 import ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody;
 import ch.viascom.groundwork.foxhttp.body.request.RequestStringBody;
 import ch.viascom.groundwork.foxhttp.builder.FoxHttpClientBuilder;
@@ -316,6 +317,34 @@ public class FoxHttpRequestTest {
 
         foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
                 FoxHttpAuthorizationScope.create(endpoint + "*basic-auth/*", RequestType.GET),
+                new BasicAuthAuthorization("FoxHttp", "GroundWork123")
+        );
+
+        FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
+        foxHttpRequest.setUrl(new URL(endpoint + "basic-auth/FoxHttp/GroundWork123"));
+        foxHttpRequest.setRequestType(RequestType.GET);
+        foxHttpRequest.setFollowRedirect(true);
+
+        FoxHttpResponse foxHttpResponse = foxHttpRequest.execute();
+
+        assertThat(foxHttpResponse.getResponseCode()).isEqualTo(200);
+        assertThat(foxHttpResponse.getByteArrayOutputStreamBody().size()).isGreaterThan(0);
+
+        BasicAuthResponse basicAuthResponse = foxHttpResponse.getParsedBody(BasicAuthResponse.class);
+
+        assertThat(basicAuthResponse.getUser()).isEqualTo("FoxHttp");
+    }
+
+    @Test
+    public void basicRegexAuthRequest() throws Exception {
+        FoxHttpClient foxHttpClient = new FoxHttpClient();
+        foxHttpClient.setFoxHttpResponseParser(new GsonParser());
+
+        //Change to RegExAuthorizationStrategy
+        foxHttpClient.setFoxHttpAuthorizationStrategy(new RegExAuthorizationStrategy());
+
+        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
+                FoxHttpAuthorizationScope.create(".*(basic-auth)/.*"),
                 new BasicAuthAuthorization("FoxHttp", "GroundWork123")
         );
 
