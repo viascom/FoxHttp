@@ -12,6 +12,8 @@ import ch.viascom.groundwork.foxhttp.interceptor.response.DeflateResponseInterce
 import ch.viascom.groundwork.foxhttp.interceptor.response.GZipResponseInterceptor;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.parser.FoxHttpParser;
+import ch.viascom.groundwork.foxhttp.parser.GsonParser;
+import ch.viascom.groundwork.foxhttp.parser.XStreamParser;
 import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.proxy.FoxHttpProxyStrategy;
 import ch.viascom.groundwork.foxhttp.ssl.FoxHttpHostTrustStrategy;
@@ -109,6 +111,39 @@ public class FoxHttpClientBuilder {
      */
     public FoxHttpClientBuilder setFoxHttpRequestParser(FoxHttpParser foxHttpRequestParser) {
         foxHttpClient.setFoxHttpRequestParser(foxHttpRequestParser);
+        return this;
+    }
+
+    /**
+     * Set the request and response parser
+     *
+     * @param foxHttpParser a FoxHttpParser
+     *
+     * @return FoxHttpClientBuilder (this)
+     */
+    public FoxHttpClientBuilder setFoxHttpParser(FoxHttpParser foxHttpParser){
+        setFoxHttpRequestParser(foxHttpParser);
+        setFoxHttpResponseParser(foxHttpParser);
+        return this;
+    }
+
+    /**
+     * Activate default gson parser for json
+     *
+     * @return FoxHttpClientBuilder (this)
+     */
+    public FoxHttpClientBuilder activateGsonParser(){
+        setFoxHttpParser(new GsonParser());
+        return this;
+    }
+
+    /**
+     * Activate default xstream parser for xml
+     *
+     * @return FoxHttpClientBuilder (this)
+     */
+    public FoxHttpClientBuilder activateXStreamParser(){
+        setFoxHttpParser(new XStreamParser());
         return this;
     }
 

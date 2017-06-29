@@ -4,8 +4,8 @@
 
 **FoxHttp provides a fast and easy http client for Java and Android. It's part of the GroundWork Project by Viascom.**
 
-[![master](https://img.shields.io/badge/master-v1.2.1-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/master)
-[![develop](https://img.shields.io/badge/develop-v1.3--RC1-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/develop)
+[![master](https://img.shields.io/badge/master-v1.3--RC1-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/master)
+[![develop](https://img.shields.io/badge/develop-v1.3--RC2-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/develop)
 [![Maven Central](https://img.shields.io/maven-central/v/ch.viascom.groundwork/foxhttp.svg)]()
 [![Bintray](https://img.shields.io/bintray/v/viascom/GroundWork/ch.viascom.groundwork%3Afoxhttp.svg)]()<br/>
 [![Size](https://img.shields.io/badge/size-197.2_KB-brightgreen.svg)]()
@@ -39,3 +39,62 @@ Request against [httpbin](https://httpbin.org/) which was installed on localhost
 * URL placeholder support
 * _Advanced cache strategy (coming soon)_
 * _GroundWork Server-Security support (coming soon)_
+* _HAL support (coming soon)_
+
+## Quick Start:
+
+### Dependency
+
+#### maven
+```xml
+<dependency>
+    <groupId>ch.viascom.groundwork</groupId>
+    <artifactId>foxhttp</artifactId>
+    <version>1.3-RC2</version>
+</dependency>
+```
+
+#### gradle
+```
+compile 'ch.viascom.groundwork:foxhttp:1.3-RC2'
+```
+
+### Send a request with JSON response deserialization
+To run this example you need to add Gson to your dependency management!
+```java
+// Define Http-Client and set parser for serialization/deserialization
+FoxHttpClient foxHttpClient = new FoxHttpClientBuilder(new GsonParser()).build();
+
+// Define a System-Out logger
+foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "FoxHttp-Logger"));
+
+// Create and Execute GET Request
+FoxHttpResponse response = new FoxHttpRequestBuilder("http://httpbin.org/get?search=Viascom", RequestType.GET, foxHttpClient).executeNow();
+
+// Deserialization response
+GetResponse object = repsponse.getParsedBody(GetResponse.class);
+
+// Print result
+System.out.println("Parsed-Output: " + object);
+```
+
+To deserialize the response you need the following model:
+```java
+public class GetResponse implements Serializable {
+
+    public HashMap<String, String> args;
+    public HashMap<String, String> headers;
+    public String origin;
+    public String url;
+
+    @Override
+    public String toString() {
+        return "GetResponse{" +
+                "args=" + args +
+                ", headers=" + headers +
+                ", origin='" + origin + '\'' +
+                ", url='" + url + '\'' +
+                '}';
+    }
+}
+```

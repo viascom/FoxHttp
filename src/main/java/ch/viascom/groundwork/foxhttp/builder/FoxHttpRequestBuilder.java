@@ -2,6 +2,7 @@ package ch.viascom.groundwork.foxhttp.builder;
 
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
 import ch.viascom.groundwork.foxhttp.FoxHttpRequest;
+import ch.viascom.groundwork.foxhttp.FoxHttpResponse;
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorization;
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationScope;
 import ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody;
@@ -382,6 +383,15 @@ public class FoxHttpRequestBuilder {
         request.setSkipResponseBody(this.skipResponseBody);
 
         return request;
+    }
+
+    /**
+     * Build and execute the FoxHttpRequest of this builder
+     *
+     * @return FoxHttpResponse response of the request
+     */
+    public FoxHttpResponse executeNow() throws FoxHttpException {
+        return build().execute();
     }
 
 }

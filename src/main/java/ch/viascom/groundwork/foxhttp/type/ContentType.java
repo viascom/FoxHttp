@@ -16,6 +16,7 @@ public class ContentType {
     public static final ContentType APPLICATION_ATOM_XML = create("application/atom+xml", Charset.forName(UTF8));
     public static final ContentType APPLICATION_FORM_URLENCODED = create("application/x-www-form-urlencoded", Charset.forName(UTF8));
     public static final ContentType APPLICATION_JSON = create("application/json", Charset.forName(UTF8));
+    public static final ContentType APPLICATION_HAL_JSON = create("application/hal+json", Charset.forName(UTF8));
     public static final ContentType APPLICATION_OCTET_STREAM = create("application/octet-stream", (Charset) null);
     public static final ContentType APPLICATION_SVG_XML = create("application/svg+xml", Charset.forName(UTF8));
     public static final ContentType APPLICATION_XHTML_XML = create("application/xhtml+xml", Charset.forName(UTF8));

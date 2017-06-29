@@ -1,5 +1,6 @@
 # target folders
 */target/
+/target
 
 # Mac
 .DS_Store
