@@ -8,7 +8,7 @@
 [![develop](https://img.shields.io/badge/develop-v1.3--RC2-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/develop)
 [![Maven Central](https://img.shields.io/maven-central/v/ch.viascom.groundwork/foxhttp.svg)]()
 [![Bintray](https://img.shields.io/bintray/v/viascom/GroundWork/ch.viascom.groundwork%3Afoxhttp.svg)]()<br/>
-[![Size](https://img.shields.io/badge/size-197.2_KB-brightgreen.svg)]()
+[![Size](https://img.shields.io/badge/size-200.2_KB-brightgreen.svg)]()
 [![tests](https://img.shields.io/badge/tests-79/79-brightgreen.svg)]()
 [![coverage](https://img.shields.io/badge/test--coverage-78%25-yellow.svg)]()<br/><br/>
 Request against [httpbin](https://httpbin.org/) which was installed on localhost:<br/>

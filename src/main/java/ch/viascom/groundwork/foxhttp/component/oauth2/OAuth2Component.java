@@ -11,6 +11,7 @@ import ch.viascom.groundwork.foxhttp.component.oauth2.request.*;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -52,17 +53,17 @@ public class OAuth2Component implements FoxHttpComponent {
     @Override
     public void initiation(FoxHttpClient foxHttpClient) throws FoxHttpException {
         this.foxHttpClient = foxHttpClient;
-        foxHttpClient.getFoxHttpLogger().log("========= Initiate  OAuth2Component =========");
-        foxHttpClient.getFoxHttpLogger().log("-> Register authorizations");
+        foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "========= Initiate  OAuth2Component =========");
+        foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "-> Register authorizations");
         //Register authorization
         oAuth2Authorization = new OAuth2BearerTokenAuthorization(oAuth2Store.getAccessToken());
         for (FoxHttpAuthorizationScope scope : oAuth2Store.getAuthScopes()) {
             foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(scope, oAuth2Authorization);
         }
-        foxHttpClient.getFoxHttpLogger().log("-> Register interceptor");
+        foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "-> Register interceptor");
         //Register interceptor
         foxHttpClient.getFoxHttpInterceptorStrategy().addInterceptor(FoxHttpInterceptorType.REQUEST_CONNECTION, new OAuth2RequestInterceptor(this, 100));
-        foxHttpClient.getFoxHttpLogger().log("=============================================");
+        foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "=============================================");
     }
 
 
@@ -75,7 +76,9 @@ public class OAuth2Component implements FoxHttpComponent {
      * Request a new token based on the configuration
      *
      * @param grantType grant type to use
+     *
      * @return access token from the response
+     *
      * @throws FoxHttpException
      * @throws MalformedURLException
      */
@@ -89,6 +92,7 @@ public class OAuth2Component implements FoxHttpComponent {
      * Request a new token based on the configuration
      *
      * @return access token from the response
+     *
      * @throws FoxHttpException
      * @throws MalformedURLException
      */

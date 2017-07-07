@@ -38,14 +38,13 @@ public class AllowAllSSLCertificateTrustStrategy implements FoxHttpSSLTrustStrat
     @Override
     public SSLSocketFactory getSSLSocketFactory(HttpsURLConnection httpsURLConnection, FoxHttpLogger logger) throws FoxHttpSSLTrustStrategyException {
         this.logger = logger;
-        SSLContext sc = null;
+        SSLContext sc;
         try {
             sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCertificates, new SecureRandom());
+            return sc.getSocketFactory();
         } catch (Exception e) {
             throw new FoxHttpSSLTrustStrategyException(e);
         }
-
-        return sc.getSocketFactory();
     }
 }

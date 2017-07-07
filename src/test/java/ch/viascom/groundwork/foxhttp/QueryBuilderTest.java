@@ -14,7 +14,7 @@ public class QueryBuilderTest {
     @Test
     public void buildQueryTest_Empty() throws Exception {
         String expectedQuery = "";
-        String outputQuery = "";
+        String outputQuery;
         HashMap<String, String> inputEntries = new HashMap<>();
 
         outputQuery = QueryBuilder.buildQuery(inputEntries);
@@ -25,7 +25,7 @@ public class QueryBuilderTest {
     @Test
     public void buildQueryTest() throws Exception {
         String expectedQuery = "name2=value2&name1=value1";
-        String outputQuery = "";
+        String outputQuery;
         HashMap<String, String> inputEntries = new HashMap<>();
 
         inputEntries.put("name1","value1");

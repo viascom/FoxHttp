@@ -12,6 +12,7 @@ import ch.viascom.groundwork.foxhttp.cookie.DefaultCookieStore;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.lambda.LambdaAuthorization;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.log.SystemOutFoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.models.*;
 import ch.viascom.groundwork.foxhttp.objects.RemoveMeAuthorization;
@@ -147,10 +148,10 @@ public class FoxHttpRequestTest {
         FoxHttpClient foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
         foxHttpClient.getFoxHttpPlaceholderStrategy().addPlaceholder("endpoint", endpoint);
-        foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "test"));
+        foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "test", FoxHttpLoggerLevel.INFO));
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
-        foxHttpRequest.setUrl("{endpoint}/get");
+        foxHttpRequest.setUrl("{endpoint}get");
         foxHttpRequest.setRequestType(RequestType.GET);
         foxHttpRequest.setFollowRedirect(true);
 
@@ -485,7 +486,7 @@ public class FoxHttpRequestTest {
         FoxHttpClient foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
         foxHttpClient.setFoxHttpSSLTrustStrategy(new AllowAllSSLCertificateTrustStrategy());
-        foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "allowAllCertificatesTest"));
+        foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "allowAllCertificatesTest", FoxHttpLoggerLevel.INFO));
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(sslEndpoint + "get"));
@@ -515,7 +516,7 @@ public class FoxHttpRequestTest {
 
         System.setOut(ps);
 
-        SystemOutFoxHttpLogger logger = new SystemOutFoxHttpLogger(true, "TEST-CASE");
+        SystemOutFoxHttpLogger logger = new SystemOutFoxHttpLogger(true, "TEST-CASE", FoxHttpLoggerLevel.INFO);
         logger.log("Test 1");
         logger.log("Test 2", "TEST-CASE-Override");
         logger.log("Test3");

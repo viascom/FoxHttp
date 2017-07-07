@@ -141,11 +141,10 @@ class FoxHttpMethodParser {
     }
 
     private void setHeader(Header annotation) throws FoxHttpRequestException {
-        Header header = annotation;
-        if (header.name().isEmpty() || header.value().isEmpty()) {
+        if (annotation.name().isEmpty() || annotation.value().isEmpty()) {
             throwFoxHttpRequestException("@Header annotation is empty.");
         }
-        headerFields.addHeader(header.name(), header.value());
+        headerFields.addHeader(annotation.name(), annotation.value());
     }
 
     private void setRequestTypeAndUrl(String requestType, String value, boolean hasBody) throws FoxHttpRequestException {
@@ -245,15 +244,13 @@ class FoxHttpMethodParser {
 
     private void throwFoxHttpRequestException(String message) throws FoxHttpRequestException {
 
-        StringBuilder outputMessage = new StringBuilder();
+        String outputMessage = method.getDeclaringClass().getSimpleName() +
+                "." +
+                method.getName() +
+                "\n-> " +
+                message;
 
-        outputMessage.append(method.getDeclaringClass().getSimpleName());
-        outputMessage.append(".");
-        outputMessage.append(method.getName());
-        outputMessage.append("\n-> ");
-        outputMessage.append(message);
-
-        throw new FoxHttpRequestException(outputMessage.toString());
+        throw new FoxHttpRequestException(outputMessage);
     }
 
 }

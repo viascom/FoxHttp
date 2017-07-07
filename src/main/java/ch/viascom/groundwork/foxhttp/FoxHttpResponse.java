@@ -6,6 +6,7 @@ import ch.viascom.groundwork.foxhttp.exception.FoxHttpResponseException;
 import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorExecutor;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseBodyInterceptorContext;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,10 +39,10 @@ public class FoxHttpResponse {
 
         if (!foxHttpRequest.isSkipResponseBody()) {
             this.responseBody.setBody(body);
-            foxHttpClient.getFoxHttpLogger().log("setResponseBody(" + getStringBody() + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG,"setResponseBody(" + getStringBody() + ")");
 
             //Execute interceptor
-            foxHttpClient.getFoxHttpLogger().log("executeResponseBodyInterceptor()");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG,"executeResponseBodyInterceptor()");
             FoxHttpInterceptorExecutor.executeResponseBodyInterceptor(
                     new FoxHttpResponseBodyInterceptorContext(responseCode, this, foxHttpRequest, foxHttpClient)
             );

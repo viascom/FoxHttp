@@ -15,7 +15,13 @@ import java.util.Date;
 public class SystemOutFoxHttpLogger implements FoxHttpLogger {
 
     private boolean enabled = false;
-    private String loggerName = "";
+    private String loggerName = "FoxHttp";
+    private FoxHttpLoggerLevel foxHttpLoggerLevel = FoxHttpLoggerLevel.INFO;
+
+    public SystemOutFoxHttpLogger(boolean enabled, String loggerName) {
+        this.enabled = enabled;
+        this.loggerName = loggerName;
+    }
 
     @Override
     public void setLoggingEnabled(boolean enabled) {
@@ -28,13 +34,29 @@ public class SystemOutFoxHttpLogger implements FoxHttpLogger {
     }
 
     @Override
+    public void setLogLevel(FoxHttpLoggerLevel logLevel) {
+        this.foxHttpLoggerLevel = logLevel;
+    }
+
+    @Override
     public void log(String message) {
         log(message, loggerName);
     }
 
+    @Override
+    public void log(FoxHttpLoggerLevel logLevel, String message) {
+        log(logLevel, message, loggerName);
+    }
+
     public void log(String message, String name) {
+        log(foxHttpLoggerLevel, message, name);
+    }
+
+    public void log(FoxHttpLoggerLevel logLevel, String message, String name) {
         if (enabled) {
-            System.out.println("[" + getTime() + "] - " + name + ": " + message);
+            if (foxHttpLoggerLevel.equals(logLevel) || FoxHttpLoggerLevel.DEBUG.equals(foxHttpLoggerLevel)) {
+                System.out.println("[" + getTime() + "] - " + logLevel + " - " + name + ": " + message);
+            }
         }
     }
 

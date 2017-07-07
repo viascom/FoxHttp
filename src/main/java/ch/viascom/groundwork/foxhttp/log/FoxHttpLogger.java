@@ -8,5 +8,7 @@ package ch.viascom.groundwork.foxhttp.log;
 public interface FoxHttpLogger {
     void setLoggingEnabled(boolean enabled);
     void setName(String name);
+    void setLogLevel(FoxHttpLoggerLevel logLevel);
     void log(String message);
+    void log(FoxHttpLoggerLevel logLevel, String message);
 }

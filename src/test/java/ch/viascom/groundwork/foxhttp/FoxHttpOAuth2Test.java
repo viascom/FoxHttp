@@ -7,6 +7,7 @@ import ch.viascom.groundwork.foxhttp.component.oauth2.GrantType;
 import ch.viascom.groundwork.foxhttp.component.oauth2.OAuth2Component;
 import ch.viascom.groundwork.foxhttp.component.oauth2.OAuth2StoreBuilder;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.log.SystemOutFoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.models.OAuth2Response;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
@@ -43,7 +44,7 @@ public class FoxHttpOAuth2Test {
     @BeforeClass
     public static void prepareTestInstance() throws Exception {
         httpClient = new FoxHttpClientBuilder(new GsonParser(), new GsonParser())
-                .setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "OAuth2"))
+                .setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "OAuth2", FoxHttpLoggerLevel.INFO))
                 .addFoxHttpPlaceholderEntry("solara", solaraURL)
                 .addFoxHttpInterceptor(FoxHttpInterceptorType.RESPONSE,new DefaultServiceResultFaultInterceptor())
                 .build();
