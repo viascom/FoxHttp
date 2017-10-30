@@ -24,12 +24,27 @@ public class LambdaLogger implements FoxHttpLogger {
     }
 
     @Override
+    public boolean isLoggingEnabled() {
+        return enabled;
+    }
+
+    @Override
     public void setName(String name) {
+    }
+
+    @Override
+    public String getName() {
+        return "";
     }
 
     @Override
     public void setLogLevel(FoxHttpLoggerLevel logLevel) {
         this.foxHttpLoggerLevel = logLevel;
+    }
+
+    @Override
+    public FoxHttpLoggerLevel getLogLevel() {
+        return foxHttpLoggerLevel;
     }
 
     @Override
@@ -39,6 +54,11 @@ public class LambdaLogger implements FoxHttpLogger {
 
     @Override
     public void log(FoxHttpLoggerLevel logLevel, String message) {
+        log(logLevel, message, enabled);
+    }
+
+    @Override
+    public void log(FoxHttpLoggerLevel logLevel, String message, boolean overrideEnabled) {
         if (enabled) {
             logMessage.accept(message, foxHttpLoggerLevel);
         }

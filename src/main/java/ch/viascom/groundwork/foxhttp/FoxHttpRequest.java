@@ -40,6 +40,8 @@ public class FoxHttpRequest {
     @Getter
     private URL url;
 
+    @Getter
+    @Setter
     private FoxHttpAuthorizationScope authScope;
 
     @Getter
@@ -79,21 +81,17 @@ public class FoxHttpRequest {
     @Setter
     private FoxHttpPlaceholderStrategy foxHttpPlaceholderStrategy;
 
+    @Getter
+    @Setter
+    private boolean overrideLoggerEnabled;
+
 
     public FoxHttpRequest() throws FoxHttpRequestException {
         this(new FoxHttpClient());
     }
 
     public FoxHttpRequest(FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
-        this.foxHttpClient = foxHttpClient;
-        // Copy configuration from client to request
-        try {
-            this.foxHttpPlaceholderStrategy = this.foxHttpClient.getFoxHttpPlaceholderStrategy().getClass().newInstance();
-            this.foxHttpPlaceholderStrategy.getPlaceholderMap().putAll(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap());
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new FoxHttpRequestException("Could not copy foxHttpPlaceholderStrategy from client to request: " + e.getMessage());
-        }
-
+        setFoxHttpClient(foxHttpClient);
     }
 
     public void setFoxHttpClient(FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
@@ -102,7 +100,14 @@ public class FoxHttpRequest {
         }
         this.foxHttpClient = foxHttpClient;
         // Copy configuration from client to request
-        this.foxHttpPlaceholderStrategy.getPlaceholderMap().putAll(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap());
+        try {
+            this.setFoxHttpPlaceholderStrategy(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getClass().newInstance());
+            this.getFoxHttpPlaceholderStrategy().getPlaceholderMap().putAll(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new FoxHttpRequestException("Could not copy foxHttpPlaceholderStrategy from client to request: " + e.getMessage());
+        }
+
+        this.overrideLoggerEnabled = this.foxHttpClient.getFoxHttpLogger().isLoggingEnabled();
     }
 
     public void setUrl(String url) throws MalformedURLException, FoxHttpRequestException {
@@ -113,6 +118,15 @@ public class FoxHttpRequest {
         this.url = new URL(parsedURL);
     }
 
+    /**
+     * Activate defined Logger
+     *
+     * @param activate activate logger
+     */
+    public void activateFoxHttpLogger(boolean activate) {
+        this.overrideLoggerEnabled = activate;
+    }
+
     public void setUrl(URL url) {
         this.url = url;
     }
@@ -121,7 +135,6 @@ public class FoxHttpRequest {
      * Execute a this request
      *
      * @return Response if this request
-     *
      * @throws FoxHttpException
      */
     public FoxHttpResponse execute() throws FoxHttpException {
@@ -132,9 +145,7 @@ public class FoxHttpRequest {
      * Execute a this request
      *
      * @param foxHttpClient a specific client which will be used for this request
-     *
      * @return Response if this request
-     *
      * @throws FoxHttpException
      */
     public FoxHttpResponse execute(FoxHttpClient foxHttpClient) throws FoxHttpException {
@@ -157,7 +168,7 @@ public class FoxHttpRequest {
             CookieHandler.setDefault((CookieManager) foxHttpClient.getFoxHttpCookieStore());
 
             // Create Scope
-            authScope = FoxHttpAuthorizationScope.create(getUrl().toString(), requestType);
+            setAuthScope(FoxHttpAuthorizationScope.create(getUrl().toString(), requestType));
 
             foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "prepareQuery(" + getRequestQuery() + ")");
             prepareQuery();
@@ -300,7 +311,6 @@ public class FoxHttpRequest {
         if (matcher.find()) {
             throw new FoxHttpRequestException("The url dose still contain placeholders after finishing processing all defined placeholders.\n-> " + getUrl().toString());
         }
-
     }
 
     private void prepareHeader() {

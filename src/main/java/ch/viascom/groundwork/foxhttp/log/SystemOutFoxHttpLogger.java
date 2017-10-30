@@ -18,6 +18,9 @@ public class SystemOutFoxHttpLogger implements FoxHttpLogger {
     private String loggerName = "FoxHttp";
     private FoxHttpLoggerLevel foxHttpLoggerLevel = FoxHttpLoggerLevel.INFO;
 
+    public SystemOutFoxHttpLogger() {
+    }
+
     public SystemOutFoxHttpLogger(boolean enabled, String loggerName) {
         this.enabled = enabled;
         this.loggerName = loggerName;
@@ -29,13 +32,28 @@ public class SystemOutFoxHttpLogger implements FoxHttpLogger {
     }
 
     @Override
+    public boolean isLoggingEnabled() {
+        return this.enabled;
+    }
+
+    @Override
     public void setName(String name) {
         loggerName = name;
     }
 
     @Override
+    public String getName() {
+        return this.loggerName;
+    }
+
+    @Override
     public void setLogLevel(FoxHttpLoggerLevel logLevel) {
         this.foxHttpLoggerLevel = logLevel;
+    }
+
+    @Override
+    public FoxHttpLoggerLevel getLogLevel() {
+        return this.foxHttpLoggerLevel;
     }
 
     @Override
@@ -48,12 +66,21 @@ public class SystemOutFoxHttpLogger implements FoxHttpLogger {
         log(logLevel, message, loggerName);
     }
 
+    @Override
+    public void log(FoxHttpLoggerLevel logLevel, String message, boolean overrideEnabled) {
+        log(logLevel, message, loggerName, overrideEnabled);
+    }
+
     public void log(String message, String name) {
         log(foxHttpLoggerLevel, message, name);
     }
 
     public void log(FoxHttpLoggerLevel logLevel, String message, String name) {
-        if (enabled) {
+        log(logLevel, message, name, enabled);
+    }
+
+    public void log(FoxHttpLoggerLevel logLevel, String message, String name, boolean overrideEnabled) {
+        if (overrideEnabled) {
             if (foxHttpLoggerLevel.equals(logLevel) || FoxHttpLoggerLevel.DEBUG.equals(foxHttpLoggerLevel)) {
                 System.out.println("[" + getTime() + "] - " + logLevel + " - " + name + ": " + message);
             }

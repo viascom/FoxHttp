@@ -390,7 +390,7 @@ public class FoxHttpRequestBuilder {
      *
      * @return FoxHttpResponse response of the request
      */
-    public FoxHttpResponse executeNow() throws FoxHttpException {
+    public FoxHttpResponse buildAndExecute() throws FoxHttpException {
         return build().execute();
     }
 

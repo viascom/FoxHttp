@@ -581,4 +581,22 @@ public class FoxHttpRequestTest {
         assertThat(dps.getPlaceholderMap()).isEqualTo(placeholderMap);
         assertThat(dps.getPlaceholderMatchRegex()).isEqualTo(regex);
     }
+
+    @Test
+    public void loggerOverrideTest() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+
+        PrintStream old = System.out;
+
+        System.setOut(ps);
+
+        SystemOutFoxHttpLogger logger = new SystemOutFoxHttpLogger(false, "TEST-CASE", FoxHttpLoggerLevel.INFO);
+        logger.log(FoxHttpLoggerLevel.INFO,"Test 1",true);
+
+        System.out.flush();
+        System.setOut(old);
+
+        assertThat(baos.toString()).contains("TEST-CASE: Test 1");
+    }
 }
