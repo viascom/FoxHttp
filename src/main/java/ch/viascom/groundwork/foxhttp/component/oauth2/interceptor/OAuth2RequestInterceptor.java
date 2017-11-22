@@ -50,7 +50,7 @@ public class OAuth2RequestInterceptor implements FoxHttpRequestConnectionInterce
         }
     }
 
-    private boolean isScopePresent(FoxHttpRequestConnectionInterceptorContext context) {
+    private boolean isScopePresent(FoxHttpRequestConnectionInterceptorContext context) throws FoxHttpRequestException {
         boolean isPresent = false;
         for (FoxHttpAuthorizationScope scope : oAuth2Component.getOAuth2Store().getAuthScopes()) {
             isPresent = RegexUtil.doesURLMatch(context.getRequest().getRequestType() + " " + context.getClient().getFoxHttpPlaceholderStrategy().processPlaceholders(context.getUrl().toString(), context.getClient()),

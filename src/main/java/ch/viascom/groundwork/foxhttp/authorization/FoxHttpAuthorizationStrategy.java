@@ -1,6 +1,7 @@
 package ch.viascom.groundwork.foxhttp.authorization;
 
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
+import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
 
 import java.net.URLConnection;
@@ -19,7 +20,7 @@ public interface FoxHttpAuthorizationStrategy {
 
     void setFoxHttpAuthorizations(HashMap<String, HashMap<String, FoxHttpAuthorization>> authorizations);
 
-    List<FoxHttpAuthorization> getAuthorization(URLConnection connection, FoxHttpAuthorizationScope searchScope, FoxHttpClient foxHttpClient, FoxHttpPlaceholderStrategy foxHttpPlaceholderStrategy);
+    List<FoxHttpAuthorization> getAuthorization(URLConnection connection, FoxHttpAuthorizationScope searchScope, FoxHttpClient foxHttpClient, FoxHttpPlaceholderStrategy foxHttpPlaceholderStrategy) throws FoxHttpRequestException;
 
     void addAuthorization(FoxHttpAuthorizationScope scope, FoxHttpAuthorization authorization);
 
