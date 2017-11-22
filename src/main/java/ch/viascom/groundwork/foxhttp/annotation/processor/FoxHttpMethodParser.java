@@ -157,11 +157,11 @@ class FoxHttpMethodParser {
         }
 
         //Parameters
-        doParameterMatch(HeaderField.class, String.class, this.method);
-        doParameterMatch(Query.class, String.class, this.method);
-        doParameterMatch(QueryMap.class, Map.class, this.method);
-        doParameterMatch(QueryObject.class, Object.class, this.method);
-        doParameterMatch(Path.class, String.class, this.method);
+        doParameterMatch(HeaderField.class, new Class[]{String.class, Enum.class, int.class, Integer.class, long.class, Long.class}, this.method);
+        doParameterMatch(Query.class, new Class[]{String.class, Enum.class, int.class, Integer.class, long.class, Long.class}, this.method);
+        doParameterMatch(QueryMap.class, new Class[]{Map.class}, this.method);
+        doParameterMatch(QueryObject.class, new Class[]{Object.class}, this.method);
+        doParameterMatch(Path.class, new Class[]{String.class, Enum.class, int.class, Integer.class, long.class, Long.class}, this.method);
 
         //Body
         if (hasBody) {
@@ -193,8 +193,8 @@ class FoxHttpMethodParser {
             if (hasParameterAnnotation(Body.class, this.method)) {
                 throwFoxHttpRequestException("Form-encoded method can not contain @Body.");
             }
-            doParameterMatch(Field.class, String.class, this.method);
-            doParameterMatch(FieldMap.class, Map.class, this.method);
+            doParameterMatch(Field.class, new Class[]{String.class, Enum.class, int.class, Integer.class, long.class, Long.class}, this.method);
+            doParameterMatch(FieldMap.class, new Class[]{Map.class}, this.method);
         }
 
         //Multipart
@@ -208,7 +208,7 @@ class FoxHttpMethodParser {
             if (hasParameterAnnotation(Body.class, this.method)) {
                 throwFoxHttpRequestException("Multipart method can not contain @Body.");
             }
-            doParameterMatch(PartMap.class, Map.class, this.method);
+            doParameterMatch(PartMap.class, new Class[]{Map.class}, this.method);
         }
 
 
@@ -227,14 +227,24 @@ class FoxHttpMethodParser {
     }
 
 
-    private void doParameterMatch(Class<? extends Annotation> annotationClass, Class<?> aClass, Method method) throws FoxHttpRequestException {
+    private void doParameterMatch(Class<? extends Annotation> annotationClass, Class<?>[] allowedClasses, Method method) throws FoxHttpRequestException {
         int parameterPos = 0;
         for (Annotation[] annotations : method.getParameterAnnotations()) {
             for (Annotation annotation : annotations) {
                 if (annotation.annotationType() == annotationClass) {
-                    if (!aClass.isAssignableFrom(method.getParameterTypes()[parameterPos])) {
-                        throwFoxHttpRequestException(aClass.getSimpleName() + " is not assignable from Parameter " + method.getParameterTypes()[parameterPos] +
+                    boolean foundMatchingType = false;
+                    Class<?> checkedClass = Object.class;
+                    for (Class<?> aClass : allowedClasses) {
+                        checkedClass = aClass;
+                        if (aClass.isAssignableFrom(method.getParameterTypes()[parameterPos])) {
+                            foundMatchingType = true;
+                            break;
+                        }
+                    }
+                    if (!foundMatchingType) {
+                        throwFoxHttpRequestException(checkedClass.getSimpleName() + " is not assignable from Parameter " + method.getParameterTypes()[parameterPos] +
                                 " (" + method.getParameterTypes()[parameterPos].getSimpleName() + ") with annotation @" + annotationClass.getSimpleName());
+
                     }
                 }
             }
