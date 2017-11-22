@@ -111,6 +111,7 @@
         <dependency>
             <groupId>ch.viascom.groundwork</groupId>
             <artifactId>restclient-http</artifactId>
+            <version>1.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
