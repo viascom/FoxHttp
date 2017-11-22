@@ -30,8 +30,7 @@ class FoxHttpAnnotationRequestBuilder {
         for (Annotation[] annotations : method.getParameterAnnotations()) {
             for (Annotation annotation : annotations) {
                 if (annotation instanceof Path) {
-
-                    pathValues.put(((Path) annotation).value(), (String) args[parameterPos]);
+                    pathValues.put(((Path) annotation).value(), (args[parameterPos] != null ? args[parameterPos].toString() : null));
                 }
             }
             parameterPos++;
@@ -48,7 +47,7 @@ class FoxHttpAnnotationRequestBuilder {
         for (Annotation[] annotations : method.getParameterAnnotations()) {
             for (Annotation annotation : annotations) {
                 if (annotation instanceof Query) {
-                    foxHttpRequestQuery.addQueryEntry(((Query) annotation).value(), (String) args[parameterPos]);
+                    foxHttpRequestQuery.addQueryEntry(((Query) annotation).value(), (args[parameterPos] != null ? args[parameterPos].toString() : null));
                 } else if (annotation instanceof QueryMap) {
                     foxHttpRequestQuery.addQueryMap((HashMap<String, String>) args[parameterPos]);
                 } else if (annotation instanceof QueryObject) {
@@ -68,7 +67,7 @@ class FoxHttpAnnotationRequestBuilder {
         for (Annotation[] annotations : method.getParameterAnnotations()) {
             for (Annotation annotation : annotations) {
                 if (annotation instanceof HeaderField) {
-                    foxHttpRequestHeader.addHeader(((HeaderField) annotation).value(), (String) args[parameterPos]);
+                    foxHttpRequestHeader.addHeader(((HeaderField) annotation).value(), (args[parameterPos] != null ? args[parameterPos].toString() : null));
                 } else if (annotation instanceof HeaderFieldMap) {
                     if (args[parameterPos] instanceof Map) {
                         foxHttpRequestHeader.addHeader((Map<String, String>) args[parameterPos]);
@@ -141,7 +140,7 @@ class FoxHttpAnnotationRequestBuilder {
                     if (args[parameterPos] instanceof File) {
                         requestMultipartBody.addFilePart(part.value(), (File) args[parameterPos]);
                     } else if (args[parameterPos] instanceof String) {
-                        requestMultipartBody.addFormField(part.value(), (String) args[parameterPos]);
+                        requestMultipartBody.addFormField(part.value(), (args[parameterPos] != null ? args[parameterPos].toString() : null));
                     } else if (args[parameterPos] instanceof NamedInputStream) {
                         NamedInputStream namedInputStream = (NamedInputStream) args[parameterPos];
                         requestMultipartBody.addInputStreamPart(part.value(),
@@ -177,7 +176,7 @@ class FoxHttpAnnotationRequestBuilder {
             for (Annotation annotation : annotations) {
                 if (annotation instanceof Field) {
                     Field field = (Field) annotation;
-                    requestUrlEncodedFormBody.addFormEntry(field.value(), (String) args[parameterPos]);
+                    requestUrlEncodedFormBody.addFormEntry(field.value(), (args[parameterPos] != null ? args[parameterPos].toString() : null));
                 } else if (annotation instanceof FieldMap) {
                     requestUrlEncodedFormBody.addFormMap((HashMap<String, String>) args[parameterPos]);
                 }
