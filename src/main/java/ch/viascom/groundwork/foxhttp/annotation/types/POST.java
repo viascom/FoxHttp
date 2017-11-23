@@ -15,4 +15,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface POST {
     String value() default "";
+    boolean completePath() default false;
 }

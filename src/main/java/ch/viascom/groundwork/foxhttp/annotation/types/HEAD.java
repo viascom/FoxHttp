@@ -15,4 +15,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HEAD {
     String value() default "";
+    boolean completePath() default false;
 }

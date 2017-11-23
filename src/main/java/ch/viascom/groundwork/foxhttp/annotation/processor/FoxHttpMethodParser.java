@@ -27,6 +27,7 @@ class FoxHttpMethodParser {
 
     private Method method;
     private String path;
+    private boolean completePath;
     private URL url;
     private RequestType requestType;
     private boolean hasBody;
@@ -93,7 +94,7 @@ class FoxHttpMethodParser {
         Path basePath = method.getDeclaringClass().getAnnotation(Path.class);
 
         String url = path;
-        if (basePath != null) {
+        if (!completePath && basePath != null) {
             url = basePath.value() + url;
         }
 
@@ -123,17 +124,17 @@ class FoxHttpMethodParser {
 
     private void parsetMethodAnnotation(Annotation annotation) throws FoxHttpRequestException {
         if (annotation instanceof DELETE) {
-            setRequestTypeAndUrl("DELETE", ((DELETE) annotation).value(), false);
+            setRequestTypeAndUrl("DELETE", ((DELETE) annotation).value(),((DELETE) annotation).completePath(), false);
         } else if (annotation instanceof GET) {
-            setRequestTypeAndUrl("GET", ((GET) annotation).value(), false);
+            setRequestTypeAndUrl("GET", ((GET) annotation).value(),((GET) annotation).completePath(), false);
         } else if (annotation instanceof HEAD) {
-            setRequestTypeAndUrl("HEAD", ((HEAD) annotation).value(), false);
+            setRequestTypeAndUrl("HEAD", ((HEAD) annotation).value(),((HEAD) annotation).completePath(), false);
         } else if (annotation instanceof POST) {
-            setRequestTypeAndUrl("POST", ((POST) annotation).value(), true);
+            setRequestTypeAndUrl("POST", ((POST) annotation).value(),((POST) annotation).completePath(), true);
         } else if (annotation instanceof PUT) {
-            setRequestTypeAndUrl("PUT", ((PUT) annotation).value(), true);
+            setRequestTypeAndUrl("PUT", ((PUT) annotation).value(),((PUT) annotation).completePath(), true);
         } else if (annotation instanceof OPTIONS) {
-            setRequestTypeAndUrl("OPTIONS", ((OPTIONS) annotation).value(), false);
+            setRequestTypeAndUrl("OPTIONS", ((OPTIONS) annotation).value(),((OPTIONS) annotation).completePath(), false);
         } else if (annotation instanceof Header) {
             setHeader((Header) annotation);
         }
@@ -147,7 +148,7 @@ class FoxHttpMethodParser {
         headerFields.addHeader(annotation.name(), annotation.value());
     }
 
-    private void setRequestTypeAndUrl(String requestType, String value, boolean hasBody) throws FoxHttpRequestException {
+    private void setRequestTypeAndUrl(String requestType, String value, boolean completePath, boolean hasBody) throws FoxHttpRequestException {
         if (this.requestType != null) {
             throwFoxHttpRequestException("Only one HTTP method is allowed. Found: " + this.requestType + " and " + requestType + ".");
         }
@@ -215,6 +216,7 @@ class FoxHttpMethodParser {
         this.requestType = RequestType.valueOf(requestType);
         this.hasBody = hasBody;
         this.path = value;
+        this.completePath = completePath;
     }
 
 

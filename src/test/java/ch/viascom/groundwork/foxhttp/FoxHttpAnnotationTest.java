@@ -52,7 +52,8 @@ public class FoxHttpAnnotationTest {
         //Set Gson parser, register placeholder
         FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()
                 .setFoxHttpResponseParser(new GsonParser())
-                .addFoxHttpPlaceholderEntry("host", endpoint);
+                .addFoxHttpPlaceholderEntry("host", endpoint)
+                .setFoxHttpLogger(new SystemOutFoxHttpLogger(true,"log"));
 
 
         HashMap<String, String> hashMap = new HashMap<>();
