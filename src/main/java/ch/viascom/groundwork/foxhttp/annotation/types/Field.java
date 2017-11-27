@@ -13,4 +13,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Field {
     String value();
+    boolean allowOptional() default false;
 }

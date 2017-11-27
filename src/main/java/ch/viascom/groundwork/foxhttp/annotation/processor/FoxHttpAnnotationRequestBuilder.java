@@ -47,11 +47,16 @@ class FoxHttpAnnotationRequestBuilder {
         for (Annotation[] annotations : method.getParameterAnnotations()) {
             for (Annotation annotation : annotations) {
                 if (annotation instanceof Query) {
-                    foxHttpRequestQuery.addQueryEntry(((Query) annotation).value(), (args[parameterPos] != null ? args[parameterPos].toString() : null));
+                    if (!((Query) annotation).allowOptional() && args[parameterPos] == null) {
+                        throw new FoxHttpRequestException("The query parameter " + ((Query) annotation).value() + " is not optional and can't be null because of this.");
+                    }
+                    if (!(((Query) annotation).allowOptional() && args[parameterPos] == null)) {
+                        foxHttpRequestQuery.addQueryEntry(((Query) annotation).value(), args[parameterPos].toString());
+                    }
                 } else if (annotation instanceof QueryMap) {
                     foxHttpRequestQuery.addQueryMap((HashMap<String, String>) args[parameterPos]);
                 } else if (annotation instanceof QueryObject) {
-                    foxHttpRequestQuery.parseObjectAsQueryMap(Arrays.asList(((QueryObject) annotation).value()), args[parameterPos], ((QueryObject) annotation).parseSerializedName());
+                    foxHttpRequestQuery.parseObjectAsQueryMap(Arrays.asList(((QueryObject) annotation).value()), args[parameterPos], ((QueryObject) annotation).parseSerializedName(), ((QueryObject) annotation).allowOptional());
                 }
             }
             parameterPos++;
@@ -67,7 +72,12 @@ class FoxHttpAnnotationRequestBuilder {
         for (Annotation[] annotations : method.getParameterAnnotations()) {
             for (Annotation annotation : annotations) {
                 if (annotation instanceof HeaderField) {
-                    foxHttpRequestHeader.addHeader(((HeaderField) annotation).value(), (args[parameterPos] != null ? args[parameterPos].toString() : null));
+                    if (!((HeaderField) annotation).allowOptional() && args[parameterPos] == null) {
+                        throw new FoxHttpRequestException("The header field " + ((HeaderField) annotation).value() + " is not optional and can't be null because of this.");
+                    }
+                    if (!(((HeaderField) annotation).allowOptional() && args[parameterPos] == null)) {
+                        foxHttpRequestHeader.addHeader(((HeaderField) annotation).value(), args[parameterPos].toString());
+                    }
                 } else if (annotation instanceof HeaderFieldMap) {
                     if (args[parameterPos] instanceof Map) {
                         foxHttpRequestHeader.addHeader((Map<String, String>) args[parameterPos]);
@@ -168,7 +178,7 @@ class FoxHttpAnnotationRequestBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    private static RequestUrlEncodedFormBody getRequestUrlEncodedFormBody(Method method, Object[] args) {
+    private static RequestUrlEncodedFormBody getRequestUrlEncodedFormBody(Method method, Object[] args) throws FoxHttpRequestException {
         RequestUrlEncodedFormBody requestUrlEncodedFormBody = new RequestUrlEncodedFormBody();
 
         int parameterPos = 0;
@@ -176,7 +186,12 @@ class FoxHttpAnnotationRequestBuilder {
             for (Annotation annotation : annotations) {
                 if (annotation instanceof Field) {
                     Field field = (Field) annotation;
-                    requestUrlEncodedFormBody.addFormEntry(field.value(), (args[parameterPos] != null ? args[parameterPos].toString() : null));
+                    if (!field.allowOptional() && args[parameterPos] == null) {
+                        throw new FoxHttpRequestException("The query parameter " + field.value() + " is not optional and can't be null because of this.");
+                    }
+                    if (!(((Field) annotation).allowOptional() && args[parameterPos] == null)) {
+                        requestUrlEncodedFormBody.addFormEntry(field.value(), args[parameterPos].toString());
+                    }
                 } else if (annotation instanceof FieldMap) {
                     requestUrlEncodedFormBody.addFormMap((HashMap<String, String>) args[parameterPos]);
                 }

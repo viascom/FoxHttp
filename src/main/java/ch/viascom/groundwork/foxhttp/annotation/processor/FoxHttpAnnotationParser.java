@@ -26,7 +26,7 @@ public class FoxHttpAnnotationParser {
 
     public FoxHttpAnnotationParser() {
         //Register @ServiceResult
-        getResponseParsers().put(ServiceResult.class, new FoxHttpServiceResultResponse(new DefaultServiceResultHasher()));
+        addResponseParser(ServiceResult.class, new FoxHttpServiceResultResponse(new DefaultServiceResultHasher()));
     }
 
     /**

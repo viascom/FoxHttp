@@ -48,6 +48,21 @@ public class FoxHttpAnnotationTest {
     }
 
     @Test
+    public void getOptional() throws Exception {
+        //Set Gson parser, register placeholder
+        FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()
+                .setFoxHttpResponseParser(new GsonParser())
+                .addFoxHttpPlaceholderEntry("host", endpoint)
+                .setFoxHttpLogger(new SystemOutFoxHttpLogger(true,"TEST"));
+
+        //Request
+        FoxHttpInterfaceTest foxHttpInterfaceTest = new FoxHttpAnnotationParser().parseInterface(FoxHttpInterfaceTest.class, foxHttpClientBuilder.build());
+        GetResponse getResponse = foxHttpInterfaceTest.get(null);
+
+        assertThat(getResponse.getArgs().isEmpty());
+    }
+
+    @Test
     public void bigGet() throws Exception {
         //Set Gson parser, register placeholder
         FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()

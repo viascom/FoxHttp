@@ -21,7 +21,7 @@ import java.util.HashMap;
 public interface FoxHttpInterfaceTest {
 
     @GET("get")
-    GetResponse get(@Query("key") String key);
+    GetResponse get(@Query(value = "key", allowOptional = true) String key);
 
     @GET(value = "{host}get", completePath = true)
     @Header(name = "foo", value = "bar")

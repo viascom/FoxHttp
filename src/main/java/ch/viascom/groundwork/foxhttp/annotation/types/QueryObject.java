@@ -18,4 +18,5 @@ import java.lang.annotation.*;
 public @interface QueryObject {
     String[] value() default "";
     boolean parseSerializedName() default false;
+    boolean allowOptional() default false;
 }

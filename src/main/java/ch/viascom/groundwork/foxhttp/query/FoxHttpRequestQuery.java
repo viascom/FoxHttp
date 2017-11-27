@@ -79,7 +79,7 @@ public class FoxHttpRequestQuery {
      * @param o      object with the attributes
      * @throws FoxHttpRequestException can throw an exception if a field does not exist
      */
-    public void parseObjectAsQueryMap(List<String> params, Object o, boolean parseSerializedName) throws FoxHttpRequestException {
+    public void parseObjectAsQueryMap(List<String> params, Object o, boolean parseSerializedName, boolean allowOptional) throws FoxHttpRequestException {
 
         Class clazz = o.getClass();
         HashMap<String, String> paramMap = new HashMap<>();
@@ -87,7 +87,7 @@ public class FoxHttpRequestQuery {
         ArrayList<String> paramNames = new ArrayList<>();
         paramNames.addAll(params);
 
-        if(paramNames.get(0).isEmpty()) {
+        if (paramNames.get(0).isEmpty()) {
             paramNames.clear();
             Arrays.stream(clazz.getDeclaredFields()).forEachOrdered(field -> paramNames.add(field.getName()));
         }
@@ -98,7 +98,7 @@ public class FoxHttpRequestQuery {
                 field.setAccessible(true);
 
                 String paramName = field.getName();
-                if(parseSerializedName && field.getAnnotationsByType(SerializedName.class).length != 0){
+                if (parseSerializedName && field.getAnnotationsByType(SerializedName.class).length != 0) {
                     paramName = field.getAnnotationsByType(SerializedName.class)[0].value();
                 }
 
@@ -107,6 +107,9 @@ public class FoxHttpRequestQuery {
                 }
 
                 String value = String.valueOf(field.get(o));
+                if (!allowOptional && value == null) {
+                    throw new FoxHttpRequestException("The query parameter " + paramName + " is not optional and can't be null because of this.");
+                }
                 if (field.get(o) != null && !value.isEmpty()) {
                     paramMap.put(paramName, value);
                 }

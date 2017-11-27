@@ -174,7 +174,7 @@ public class FoxHttpRequestTest {
 
 
         FoxHttpRequestQuery requestQuery = new FoxHttpRequestQuery();
-        requestQuery.parseObjectAsQueryMap(new ArrayList<>(Arrays.asList("name", "index", "key")), queryDataHolder, false);
+        requestQuery.parseObjectAsQueryMap(new ArrayList<>(Arrays.asList("name", "index", "key")), queryDataHolder, false, false);
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(endpoint + "get"));
@@ -592,7 +592,7 @@ public class FoxHttpRequestTest {
         System.setOut(ps);
 
         SystemOutFoxHttpLogger logger = new SystemOutFoxHttpLogger(false, "TEST-CASE", FoxHttpLoggerLevel.INFO);
-        logger.log(FoxHttpLoggerLevel.INFO,"Test 1",true);
+        logger.log(FoxHttpLoggerLevel.INFO, "Test 1", true);
 
         System.out.flush();
         System.setOut(old);
