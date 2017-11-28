@@ -1,6 +1,5 @@
 package ch.viascom.groundwork.foxhttp.query;
 
-import ch.viascom.groundwork.foxhttp.annotation.types.Query;
 import ch.viascom.groundwork.foxhttp.annotation.types.QueryName;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;

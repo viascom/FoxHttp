@@ -1,7 +1,6 @@
 package ch.viascom.groundwork.foxhttp.log;
 
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
-import lombok.Getter;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

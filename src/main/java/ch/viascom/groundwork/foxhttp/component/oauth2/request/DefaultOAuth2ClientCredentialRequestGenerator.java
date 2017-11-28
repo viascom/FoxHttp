@@ -1,9 +1,9 @@
 package ch.viascom.groundwork.foxhttp.component.oauth2.request;
 
 import ch.viascom.groundwork.foxhttp.FoxHttpRequest;
+import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.component.oauth2.OAuth2Component;
 import ch.viascom.groundwork.foxhttp.component.oauth2.OAuth2Store;
-import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.util.BasicAuthUtil;
