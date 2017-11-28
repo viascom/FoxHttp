@@ -195,6 +195,29 @@ public class FoxHttpRequestTest {
         assertThat(getResponse.getArgs().get("key")).isEqualTo("java");
     }
 
+    @Test
+    public void getObjectAsOptionalQueryMapRequest() throws Exception {
+
+        FoxHttpClient foxHttpClient = new FoxHttpClient();
+        foxHttpClient.setFoxHttpResponseParser(new GsonParser());
+
+        FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
+        foxHttpRequest.setUrl(new URL(endpoint + "get"));
+        foxHttpRequest.setRequestType(RequestType.GET);
+        foxHttpRequest.setRequestQuery(null);
+        foxHttpRequest.setFollowRedirect(true);
+
+        FoxHttpResponse foxHttpResponse = foxHttpRequest.execute();
+
+        assertThat(foxHttpResponse.getResponseCode()).isEqualTo(200);
+        assertThat(foxHttpResponse.getByteArrayOutputStreamBody().size()).isGreaterThan(0);
+
+        GetResponse getResponse = foxHttpResponse.getParsedBody(GetResponse.class);
+
+        assertThat(getResponse.getArgs().entrySet().isEmpty()).isTrue();
+
+    }
+
 
     @Test
     public void getHeaderRequest() throws Exception {

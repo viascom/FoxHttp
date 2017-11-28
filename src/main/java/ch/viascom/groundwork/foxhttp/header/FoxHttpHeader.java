@@ -30,7 +30,9 @@ public class FoxHttpHeader implements Iterable<HeaderEntry> {
      * @param value value of the header entry
      */
     public void addHeader(String name, String value) {
-        headerEntries.add(new HeaderEntry(name, value));
+        if (value != null) {
+            headerEntries.add(new HeaderEntry(name, value));
+        }
     }
 
     /**
@@ -40,7 +42,9 @@ public class FoxHttpHeader implements Iterable<HeaderEntry> {
      * @param value value of the header entry
      */
     public void addHeader(HeaderTypes name, String value) {
-        headerEntries.add(new HeaderEntry(name.toString(), value));
+        if (value != null) {
+            headerEntries.add(new HeaderEntry(name.toString(), value));
+        }
     }
 
     /**
@@ -50,7 +54,9 @@ public class FoxHttpHeader implements Iterable<HeaderEntry> {
      */
     public void addHeader(Map<String, String> entries) {
         for (Map.Entry<String, String> entry : entries.entrySet()) {
-            headerEntries.add(new HeaderEntry(entry.getKey(), entry.getValue()));
+            if (entry.getValue() != null) {
+                headerEntries.add(new HeaderEntry(entry.getKey(), entry.getValue()));
+            }
         }
     }
 

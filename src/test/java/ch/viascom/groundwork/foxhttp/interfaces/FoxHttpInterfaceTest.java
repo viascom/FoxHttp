@@ -4,6 +4,7 @@ import ch.viascom.groundwork.foxhttp.FoxHttpRequest;
 import ch.viascom.groundwork.foxhttp.FoxHttpResponse;
 import ch.viascom.groundwork.foxhttp.annotation.types.*;
 import ch.viascom.groundwork.foxhttp.body.request.RequestStringBody;
+import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
 import ch.viascom.groundwork.foxhttp.models.GetResponse;
 import ch.viascom.groundwork.foxhttp.models.PostResponse;
@@ -29,7 +30,11 @@ public interface FoxHttpInterfaceTest {
 
     @GET("get")
     @Header(name = "foo", value = "bar")
-    GetResponse objectGet(@QueryObject QueryObjectModel queryObjectModel);
+    GetResponse objectGet(@QueryObject QueryObjectModel queryObjectModel) throws FoxHttpException;
+
+    @GET("get")
+    @Header(name = "foo", value = "bar")
+    GetResponse objectOptionalGet(@QueryObject(allowOptional = true) QueryObjectModel queryObjectModel);
 
     @GET("{path}")
     @Header(name = "foo", value = "bar")

@@ -324,7 +324,7 @@ public class FoxHttpRequest {
     }
 
     private void prepareQuery() throws FoxHttpRequestException, MalformedURLException {
-        if (getRequestQuery().hasQueryEntries()) {
+        if (getRequestQuery() != null && getRequestQuery().hasQueryEntries()) {
             String query = getRequestQuery().getQueryString();
             url = new URL(getUrl().toString() + query);
         }
