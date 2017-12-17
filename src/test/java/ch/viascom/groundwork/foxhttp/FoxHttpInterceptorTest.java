@@ -5,10 +5,12 @@ import ch.viascom.groundwork.foxhttp.builder.FoxHttpClientBuilder;
 import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpResponseException;
+import ch.viascom.groundwork.foxhttp.interceptor.DefaultInterceptorStrategy;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
 import ch.viascom.groundwork.foxhttp.interceptor.response.HttpErrorResponseInterceptor;
 import ch.viascom.groundwork.foxhttp.interceptors.*;
 import ch.viascom.groundwork.foxhttp.lambda.LambdaLogger;
+import ch.viascom.groundwork.foxhttp.lambda.interceptor.LambdaResponseInterceptor;
 import ch.viascom.groundwork.foxhttp.models.GetResponse;
 import ch.viascom.groundwork.foxhttp.models.PostResponse;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
@@ -229,8 +231,43 @@ public class FoxHttpInterceptorTest {
 
         GetResponse response = request.execute().getParsedBody(GetResponse.class);
 
-        assertThat(request.getFoxHttpClient().getFoxHttpInterceptorStrategy().getInterceptorByKey(FoxHttpInterceptorType.REQUEST_HEADER,"INTERCEPTOR-2").getWeight()).isEqualTo(5);
-        assertThat(request.getFoxHttpClient().getFoxHttpInterceptorStrategy().getInterceptorByKey(FoxHttpInterceptorType.REQUEST_HEADER,"INTERCEPTOR-1").getWeight()).isEqualTo(10);
+        assertThat(request.getFoxHttpClient().getFoxHttpInterceptorStrategy().getInterceptorByKey(FoxHttpInterceptorType.REQUEST_HEADER, "INTERCEPTOR-2").getWeight()).isEqualTo(5);
+        assertThat(request.getFoxHttpClient().getFoxHttpInterceptorStrategy().getInterceptorByKey(FoxHttpInterceptorType.REQUEST_HEADER, "INTERCEPTOR-1").getWeight()).isEqualTo(10);
     }
 
+    @Test
+    public void interceptorStrategyTest() throws Exception {
+        DefaultInterceptorStrategy strategy = new DefaultInterceptorStrategy();
+        strategy.addInterceptor(FoxHttpInterceptorType.RESPONSE, new HttpErrorResponseInterceptor(), "response-interceptor-1");
+
+        assertThat(strategy.doesTypeExist(FoxHttpInterceptorType.RESPONSE)).isTrue();
+        assertThat(strategy.getAllInterceptorsFromType(FoxHttpInterceptorType.RESPONSE).containsKey("response-interceptor-1")).isTrue();
+
+        strategy.removeInterceptorByKey(FoxHttpInterceptorType.RESPONSE, "response-interceptor-1");
+        assertThat(strategy.doesTypeExist(FoxHttpInterceptorType.RESPONSE)).isTrue();
+        assertThat(strategy.getAllInterceptorsFromType(FoxHttpInterceptorType.RESPONSE).containsKey("response-interceptor-1")).isFalse();
+
+
+        strategy.addInterceptor(FoxHttpInterceptorType.RESPONSE, new HttpErrorResponseInterceptor(), "response-interceptor-1");
+        strategy.replaceInterceptor(FoxHttpInterceptorType.RESPONSE, new LambdaResponseInterceptor(context -> System.out.println(context.getResponseCode()), 1), "response-interceptor-1");
+
+        assertThat(strategy.getInterceptorByClass(FoxHttpInterceptorType.RESPONSE,LambdaResponseInterceptor.class).size()).isEqualTo(1);
+
+        strategy.addInterceptor(FoxHttpInterceptorType.RESPONSE, new HttpErrorResponseInterceptor(), "response-interceptor-2");
+
+        assertThat(strategy.getAllInterceptorsFromType(FoxHttpInterceptorType.RESPONSE).size()).isEqualTo(2);
+
+        strategy.removeInterceptorByKey(FoxHttpInterceptorType.RESPONSE,"response-interceptor-2");
+
+        assertThat(strategy.getAllInterceptorsFromType(FoxHttpInterceptorType.RESPONSE).size()).isEqualTo(1);
+
+        strategy.addInterceptor(FoxHttpInterceptorType.RESPONSE, new HttpErrorResponseInterceptor(), "response-interceptor-2");
+
+        assertThat(strategy.getAllInterceptorsFromType(FoxHttpInterceptorType.RESPONSE).size()).isEqualTo(2);
+        
+        strategy.removeInterceptorByClass(FoxHttpInterceptorType.RESPONSE,HttpErrorResponseInterceptor.class);
+
+        assertThat(strategy.getAllInterceptorsFromType(FoxHttpInterceptorType.RESPONSE).size()).isEqualTo(1);
+        assertThat(strategy.getInterceptorByClass(FoxHttpInterceptorType.RESPONSE,HttpErrorResponseInterceptor.class).size()).isEqualTo(0);
+    }
 }

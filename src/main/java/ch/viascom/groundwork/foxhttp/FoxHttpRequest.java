@@ -111,9 +111,6 @@ public class FoxHttpRequest {
     }
 
     public void setUrl(String url) throws MalformedURLException, FoxHttpRequestException {
-        if (foxHttpClient == null) {
-            throw new FoxHttpRequestException("FoxHttpClient can not be null");
-        }
         String parsedURL = foxHttpPlaceholderStrategy.processPlaceholders(url, foxHttpClient);
         this.url = new URL(parsedURL);
     }

@@ -124,7 +124,11 @@ public class FoxHttpClient {
     public void setFoxHttpInterceptors(Map<FoxHttpInterceptorType, ArrayList<FoxHttpInterceptor>> interceptors) {
         foxHttpInterceptorStrategy.setFoxHttpInterceptors(new EnumMap<>(FoxHttpInterceptorType.class));
         interceptors.forEach((key, value) -> value.forEach(interceptor -> {
-            foxHttpInterceptorStrategy.addInterceptor(key, interceptor, String.valueOf(UUID.randomUUID()));
+            try {
+                foxHttpInterceptorStrategy.addInterceptor(key, interceptor, String.valueOf(UUID.randomUUID()));
+            } catch (FoxHttpException e) {
+                e.printStackTrace();
+            }
         }));
     }
 

@@ -21,9 +21,13 @@ public class SystemOutFoxHttpLogger implements FoxHttpLogger {
     public SystemOutFoxHttpLogger() {
     }
 
+    public SystemOutFoxHttpLogger(boolean enabled) {
+        setLoggingEnabled(enabled);
+    }
+
     public SystemOutFoxHttpLogger(boolean enabled, String loggerName) {
-        this.enabled = enabled;
-        this.loggerName = loggerName;
+        setLoggingEnabled(enabled);
+        setName(loggerName);
     }
 
     @Override

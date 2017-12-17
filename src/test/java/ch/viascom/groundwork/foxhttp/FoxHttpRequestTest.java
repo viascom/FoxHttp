@@ -432,7 +432,21 @@ public class FoxHttpRequestTest {
                 new RemoveMeAuthorization()
         );
 
+        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
+                FoxHttpAuthorizationScope.ANY,
+                new RemoveMeAuthorization(),
+                "remove-me-2"
+        );
+
+        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAllAuthorizationsFromScope(FoxHttpAuthorizationScope.ANY).size()).isEqualTo(4);
+        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAllAuthorizationsFromScopeAsArray(FoxHttpAuthorizationScope.ANY).size()).isEqualTo(4);
+        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorizationByClass(FoxHttpAuthorizationScope.ANY, RemoveMeAuthorization.class).size()).isEqualTo(2);
+
+
         foxHttpClient.getFoxHttpAuthorizationStrategy().removeAuthorizationByClass(FoxHttpAuthorizationScope.ANY, RemoveMeAuthorization.class);
+        foxHttpClient.getFoxHttpAuthorizationStrategy().removeAuthorizationByKey(FoxHttpAuthorizationScope.ANY, "remove-me-2");
+
+        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorizationByKey(FoxHttpAuthorizationScope.ANY, "remove-me-2")).isNull();
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(endpoint + "get"));
@@ -532,6 +546,12 @@ public class FoxHttpRequestTest {
     @Test
     public void systemOutLoggerTest() {
 
+        SystemOutFoxHttpLogger loggerEnabled = new SystemOutFoxHttpLogger(true);
+
+        assertThat(loggerEnabled.isLoggingEnabled()).isTrue();
+        assertThat(loggerEnabled.getName()).isEqualTo("FoxHttp");
+        assertThat(loggerEnabled.getLogLevel()).isEqualTo(FoxHttpLoggerLevel.INFO);
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
 
@@ -550,6 +570,7 @@ public class FoxHttpRequestTest {
         assertThat(baos.toString()).contains("TEST-CASE: Test 1");
         assertThat(baos.toString()).contains("TEST-CASE-Override: Test 2");
         assertThat(baos.toString()).contains("TEST-CASE: Test3");
+
     }
 
 

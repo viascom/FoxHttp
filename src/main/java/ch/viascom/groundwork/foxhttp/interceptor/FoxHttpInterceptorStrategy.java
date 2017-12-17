@@ -1,5 +1,7 @@
 package ch.viascom.groundwork.foxhttp.interceptor;
 
+import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +15,9 @@ public interface FoxHttpInterceptorStrategy {
 
     void setFoxHttpInterceptors(Map<FoxHttpInterceptorType, HashMap<String, FoxHttpInterceptor>> interceptors);
 
-    void addInterceptor(FoxHttpInterceptorType type, FoxHttpInterceptor interceptor);
+    void addInterceptor(FoxHttpInterceptorType type, FoxHttpInterceptor interceptor) throws FoxHttpException;
 
-    void addInterceptor(FoxHttpInterceptorType type, FoxHttpInterceptor interceptor, String key);
+    void addInterceptor(FoxHttpInterceptorType type, FoxHttpInterceptor interceptor, String key) throws FoxHttpException;
 
     void removeInterceptorByKey(FoxHttpInterceptorType type, String key);
 
