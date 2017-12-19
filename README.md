@@ -7,13 +7,13 @@
 <p align="center">
   <a href="https://mvnrepository.com/artifact/ch.viascom.groundwork/foxhttp"><img src="https://img.shields.io/maven-central/v/ch.viascom.groundwork/foxhttp.svg"
          alt="Maven central"></a>
-  <img src="https://img.shields.io/badge/size-200.2_KB-brightgreen.svg"
-         alt="200.2 KB">
+  <img src="https://img.shields.io/badge/size-204_KB-brightgreen.svg"
+         alt="204 KB">
   <a href=""><img src="https://img.shields.io/badge/project-GroundWork-blue.svg"
               alt="project GroundWork"></a>
   <a href="http://www.apache.org/licenses/"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg"
          alt="license Apache 2.0"></a>
-  <img src="https://img.shields.io/badge/test--coverage-78%25-yellow.svg"
+  <img src="https://img.shields.io/badge/test--coverage-80%25-brightgreen.svg"
          alt="coverage">
 </p>
 <br>
