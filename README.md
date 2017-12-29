@@ -26,8 +26,8 @@
 
 ## Build-Status & Metrics
 
-[![master](https://img.shields.io/badge/master-v1.3--RC1-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/master) [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=master)](https://travis-ci.org/Viascom/FoxHttp)<br/>
-[![develop](https://img.shields.io/badge/develop-v1.3--RC2-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/develop) [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=develop)](https://travis-ci.org/Viascom/FoxHttp)
+[![master](https://img.shields.io/badge/master-v1.3-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/master) [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=master)](https://travis-ci.org/Viascom/FoxHttp)<br/>
+[![develop](https://img.shields.io/badge/develop-v1.3-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/develop) [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=develop)](https://travis-ci.org/Viascom/FoxHttp)
 <br/><br/>
 Request against [httpbin](https://httpbin.org/) which was installed on localhost:<br/>
 [![get](https://img.shields.io/badge/GET--Request-35.4_ms-brightgreen.svg)](https://github.com/Viascom/groundwork/wiki/GroundWork-FoxHttp-Examples#get-request)
