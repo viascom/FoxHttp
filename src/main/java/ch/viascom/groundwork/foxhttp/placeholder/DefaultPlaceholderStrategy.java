@@ -1,6 +1,8 @@
 package ch.viascom.groundwork.foxhttp.placeholder;
 
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
+import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,13 +52,17 @@ public class DefaultPlaceholderStrategy implements FoxHttpPlaceholderStrategy {
     }
 
 
-    public String processPlaceholders(final String processedURL, FoxHttpClient foxHttpClient) {
+    public String processPlaceholders(final String processedURL, FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
         String parsedString = processedURL;
         Pattern p = Pattern.compile(placeholderEscapeCharEnd);
         for (Map.Entry<String, String> entry : this.getPlaceholderMap().entrySet()) {
             if (p.matcher(parsedString).find()) {
-                parsedString = parsedString.replace(this.getPlaceholderEscapeCharStart() + entry.getKey() + this.getPlaceholderEscapeCharEnd(), entry.getValue());
-                foxHttpClient.getFoxHttpLogger().log(
+                String searchPlaceholder = this.getPlaceholderEscapeCharStart() + entry.getKey() + this.getPlaceholderEscapeCharEnd();
+                if(entry.getValue() == null){
+                    throw new FoxHttpRequestException("Placeholder "+searchPlaceholder+" cant be null.");
+                }
+                parsedString = parsedString.replace(searchPlaceholder, entry.getValue());
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO,
                         processedURL +
                                 " -> (" + this.getPlaceholderEscapeCharStart() + entry.getKey() + this.getPlaceholderEscapeCharEnd() + " -> " + entry.getValue() +
                                 ") -> " + parsedString);

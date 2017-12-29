@@ -12,6 +12,7 @@ import ch.viascom.groundwork.foxhttp.cookie.DefaultCookieStore;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.lambda.LambdaAuthorization;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.log.SystemOutFoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.models.*;
 import ch.viascom.groundwork.foxhttp.objects.RemoveMeAuthorization;
@@ -147,10 +148,10 @@ public class FoxHttpRequestTest {
         FoxHttpClient foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
         foxHttpClient.getFoxHttpPlaceholderStrategy().addPlaceholder("endpoint", endpoint);
-        foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "test"));
+        foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "test", FoxHttpLoggerLevel.INFO));
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
-        foxHttpRequest.setUrl("{endpoint}/get");
+        foxHttpRequest.setUrl("{endpoint}get");
         foxHttpRequest.setRequestType(RequestType.GET);
         foxHttpRequest.setFollowRedirect(true);
 
@@ -173,7 +174,7 @@ public class FoxHttpRequestTest {
 
 
         FoxHttpRequestQuery requestQuery = new FoxHttpRequestQuery();
-        requestQuery.parseObjectAsQueryMap(new ArrayList<>(Arrays.asList("name", "index", "key")), queryDataHolder, false);
+        requestQuery.parseObjectAsQueryMap(new ArrayList<>(Arrays.asList("name", "index", "key")), queryDataHolder, false, false);
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(endpoint + "get"));
@@ -192,6 +193,29 @@ public class FoxHttpRequestTest {
         assertThat(getResponse.getArgs().get("name")).isEqualTo("FoxHttp");
         assertThat(getResponse.getArgs().get("index")).isEqualTo("12");
         assertThat(getResponse.getArgs().get("key")).isEqualTo("java");
+    }
+
+    @Test
+    public void getObjectAsOptionalQueryMapRequest() throws Exception {
+
+        FoxHttpClient foxHttpClient = new FoxHttpClient();
+        foxHttpClient.setFoxHttpResponseParser(new GsonParser());
+
+        FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
+        foxHttpRequest.setUrl(new URL(endpoint + "get"));
+        foxHttpRequest.setRequestType(RequestType.GET);
+        foxHttpRequest.setRequestQuery(null);
+        foxHttpRequest.setFollowRedirect(true);
+
+        FoxHttpResponse foxHttpResponse = foxHttpRequest.execute();
+
+        assertThat(foxHttpResponse.getResponseCode()).isEqualTo(200);
+        assertThat(foxHttpResponse.getByteArrayOutputStreamBody().size()).isGreaterThan(0);
+
+        GetResponse getResponse = foxHttpResponse.getParsedBody(GetResponse.class);
+
+        assertThat(getResponse.getArgs().entrySet().isEmpty()).isTrue();
+
     }
 
 
@@ -408,7 +432,21 @@ public class FoxHttpRequestTest {
                 new RemoveMeAuthorization()
         );
 
+        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
+                FoxHttpAuthorizationScope.ANY,
+                new RemoveMeAuthorization(),
+                "remove-me-2"
+        );
+
+        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAllAuthorizationsFromScope(FoxHttpAuthorizationScope.ANY).size()).isEqualTo(4);
+        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAllAuthorizationsFromScopeAsArray(FoxHttpAuthorizationScope.ANY).size()).isEqualTo(4);
+        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorizationByClass(FoxHttpAuthorizationScope.ANY, RemoveMeAuthorization.class).size()).isEqualTo(2);
+
+
         foxHttpClient.getFoxHttpAuthorizationStrategy().removeAuthorizationByClass(FoxHttpAuthorizationScope.ANY, RemoveMeAuthorization.class);
+        foxHttpClient.getFoxHttpAuthorizationStrategy().removeAuthorizationByKey(FoxHttpAuthorizationScope.ANY, "remove-me-2");
+
+        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorizationByKey(FoxHttpAuthorizationScope.ANY, "remove-me-2")).isNull();
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(endpoint + "get"));
@@ -485,7 +523,7 @@ public class FoxHttpRequestTest {
         FoxHttpClient foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
         foxHttpClient.setFoxHttpSSLTrustStrategy(new AllowAllSSLCertificateTrustStrategy());
-        foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "allowAllCertificatesTest"));
+        foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "allowAllCertificatesTest", FoxHttpLoggerLevel.INFO));
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(sslEndpoint + "get"));
@@ -508,6 +546,12 @@ public class FoxHttpRequestTest {
     @Test
     public void systemOutLoggerTest() {
 
+        SystemOutFoxHttpLogger loggerEnabled = new SystemOutFoxHttpLogger(true);
+
+        assertThat(loggerEnabled.isLoggingEnabled()).isTrue();
+        assertThat(loggerEnabled.getName()).isEqualTo("FoxHttp");
+        assertThat(loggerEnabled.getLogLevel()).isEqualTo(FoxHttpLoggerLevel.INFO);
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
 
@@ -515,7 +559,7 @@ public class FoxHttpRequestTest {
 
         System.setOut(ps);
 
-        SystemOutFoxHttpLogger logger = new SystemOutFoxHttpLogger(true, "TEST-CASE");
+        SystemOutFoxHttpLogger logger = new SystemOutFoxHttpLogger(true, "TEST-CASE", FoxHttpLoggerLevel.INFO);
         logger.log("Test 1");
         logger.log("Test 2", "TEST-CASE-Override");
         logger.log("Test3");
@@ -526,6 +570,7 @@ public class FoxHttpRequestTest {
         assertThat(baos.toString()).contains("TEST-CASE: Test 1");
         assertThat(baos.toString()).contains("TEST-CASE-Override: Test 2");
         assertThat(baos.toString()).contains("TEST-CASE: Test3");
+
     }
 
 
@@ -579,5 +624,23 @@ public class FoxHttpRequestTest {
         assertThat(dps.getPlaceholderEscapeCharEnd()).isEqualTo(escapeCharEnd);
         assertThat(dps.getPlaceholderMap()).isEqualTo(placeholderMap);
         assertThat(dps.getPlaceholderMatchRegex()).isEqualTo(regex);
+    }
+
+    @Test
+    public void loggerOverrideTest() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+
+        PrintStream old = System.out;
+
+        System.setOut(ps);
+
+        SystemOutFoxHttpLogger logger = new SystemOutFoxHttpLogger(false, "TEST-CASE", FoxHttpLoggerLevel.INFO);
+        logger.log(FoxHttpLoggerLevel.INFO, "Test 1", true);
+
+        System.out.flush();
+        System.setOut(old);
+
+        assertThat(baos.toString()).contains("TEST-CASE: Test 1");
     }
 }

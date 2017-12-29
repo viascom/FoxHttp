@@ -7,6 +7,7 @@ import ch.viascom.groundwork.foxhttp.body.response.FoxHttpResponseBody;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpResponseException;
 import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.response.FoxHttpResponseParser;
 import ch.viascom.groundwork.foxhttp.response.serviceresult.adapters.DateTimeTypeAdapter;
 import ch.viascom.groundwork.foxhttp.response.serviceresult.adapters.MetaDataDeserializer;
@@ -97,7 +98,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
         this.objectHasher = objectHasher;
 
         if (!isDefaultServiceResultFaultInterceptorPresent()) {
-            foxHttpClient.getFoxHttpLogger().log("DefaultServiceResultFaultInterceptor is not registered on this client !");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "DefaultServiceResultFaultInterceptor is not registered on this client !");
         }
 
         if (customParserBuilder == null) {
@@ -120,7 +121,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
             throw new FoxHttpResponseException(e);
         }
 
-        foxHttpClient.getFoxHttpLogger().log("FoxHttpServiceResultParser(" + foxHttpResponse + "," + objectHasher + ")");
+        foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "FoxHttpServiceResultParser(" + foxHttpResponse + "," + objectHasher + ")");
     }
 
     /**
@@ -260,7 +261,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
             String body = getStringBody();
 
             ServiceResult<T> result = parser.fromJson(body, parameterizedType);
-            foxHttpClient.getFoxHttpLogger().log("processServiceResult(" + result + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "processServiceResult(" + result + ")");
             this.content = result.getContent();
 
             checkHash(checkHash, body, result);
@@ -274,11 +275,11 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
 
     private void checkHash(boolean checkHash, String body, ServiceResult<?> result) throws FoxHttpResponseException {
         if (checkHash && objectHasher != null) {
-            foxHttpClient.getFoxHttpLogger().log("checkHash(" + result.getHash() + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "checkHash(" + result.getHash() + ")");
             if (!objectHasher.hash(result, body).equals(result.getHash())) {
                 throw new FoxHttpResponseException("Hash not Equal!");
             }
-            foxHttpClient.getFoxHttpLogger().log("-> successful");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "-> successful");
         }
     }
 
@@ -309,7 +310,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
 
             ServiceResult<ServiceFault> result = parser.fromJson(body, new TypeToken<ServiceResult<ServiceFault>>() {
             }.getType());
-            foxHttpClient.getFoxHttpLogger().log("processFault(" + result + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "processFault(" + result + ")");
 
             checkHash(checkHash, body, result);
 

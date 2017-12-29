@@ -1,6 +1,9 @@
 package ch.viascom.groundwork.foxhttp.timeout;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * @author patrick.boesch@viascom.ch

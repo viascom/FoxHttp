@@ -3,6 +3,7 @@ package ch.viascom.groundwork.foxhttp;
 import ch.viascom.groundwork.foxhttp.annotation.processor.FoxHttpAnnotationParser;
 import ch.viascom.groundwork.foxhttp.body.request.RequestStringBody;
 import ch.viascom.groundwork.foxhttp.builder.FoxHttpClientBuilder;
+import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
 import ch.viascom.groundwork.foxhttp.interfaces.FoxHttpExceptionInterfaceTest;
@@ -38,7 +39,7 @@ public class FoxHttpAnnotationTest {
         FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()
                 .setFoxHttpResponseParser(new GsonParser())
                 .addFoxHttpPlaceholderEntry("host", endpoint)
-                .setFoxHttpLogger(new SystemOutFoxHttpLogger(true,"TEST"));
+                .setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "TEST"));
 
         //Request
         FoxHttpInterfaceTest foxHttpInterfaceTest = new FoxHttpAnnotationParser().parseInterface(FoxHttpInterfaceTest.class, foxHttpClientBuilder.build());
@@ -48,11 +49,27 @@ public class FoxHttpAnnotationTest {
     }
 
     @Test
+    public void getOptional() throws Exception {
+        //Set Gson parser, register placeholder
+        FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()
+                .setFoxHttpResponseParser(new GsonParser())
+                .addFoxHttpPlaceholderEntry("host", endpoint)
+                .setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "TEST"));
+
+        //Request
+        FoxHttpInterfaceTest foxHttpInterfaceTest = new FoxHttpAnnotationParser().parseInterface(FoxHttpInterfaceTest.class, foxHttpClientBuilder.build());
+        GetResponse getResponse = foxHttpInterfaceTest.get(null);
+
+        assertThat(getResponse.getArgs().isEmpty());
+    }
+
+    @Test
     public void bigGet() throws Exception {
         //Set Gson parser, register placeholder
         FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()
                 .setFoxHttpResponseParser(new GsonParser())
-                .addFoxHttpPlaceholderEntry("host", endpoint);
+                .addFoxHttpPlaceholderEntry("host", endpoint)
+                .setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "log"));
 
 
         HashMap<String, String> hashMap = new HashMap<>();
@@ -92,6 +109,37 @@ public class FoxHttpAnnotationTest {
         assertThat(getResponse.getArgs().get("user-id")).isEqualTo("Fox");
         assertThat(getResponse.getArgs().get("password")).isEqualTo("password");
 
+    }
+
+    @Test
+    public void objectOptionalGet() throws Exception {
+        //Set Gson parser, register placeholder
+        FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()
+                .setFoxHttpResponseParser(new GsonParser())
+                .addFoxHttpPlaceholderEntry("host", endpoint)
+                .setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "log"));
+
+        //Request
+        FoxHttpInterfaceTest foxHttpInterfaceTest = new FoxHttpAnnotationParser().parseInterface(FoxHttpInterfaceTest.class, foxHttpClientBuilder.build());
+        try {
+            GetResponse getResponse = foxHttpInterfaceTest.objectGet(null);
+            assertThat(false).isEqualTo(true);
+        } catch (FoxHttpException e) {
+            assertThat(e.getMessage()).isEqualTo("The query object parameter is not optional and can't be null because of this.");
+        }
+
+        GetResponse getResponse = foxHttpInterfaceTest.objectOptionalGet(null);
+        assertThat(getResponse.getArgs().entrySet().isEmpty()).isEqualTo(true);
+
+        GetResponse getResponse2 = foxHttpInterfaceTest.objectGet(new QueryObjectModel("Fox",null));
+        assertThat(getResponse2.getArgs().get("user-id")).isEqualTo("Fox");
+
+        try {
+            GetResponse getResponse3 = foxHttpInterfaceTest.objectGet(new QueryObjectModel(null,"test"));
+            assertThat(false).isEqualTo(true);
+        } catch (FoxHttpException e) {
+            assertThat(e.getMessage()).isEqualTo("The query parameter attribute userId in QueryObjectModel is not optional and can't be null because of this.");
+        }
     }
 
     @Test

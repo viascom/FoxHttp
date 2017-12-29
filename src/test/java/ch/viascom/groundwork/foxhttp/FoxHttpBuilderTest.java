@@ -157,21 +157,33 @@ public class FoxHttpBuilderTest {
         foxHttpClientBuilder.setFoxHttpTimeoutStrategy(foxHttpTimeoutStrategy);
         foxHttpClientBuilder.setFoxHttpInterceptors(new EnumMap<>(FoxHttpInterceptorType.class));
         foxHttpClientBuilder.activateGzipResponseInterceptor(true, 100);
+        foxHttpClientBuilder.activateXStreamParser();
 
         FoxHttpClient foxHttpClient2 = foxHttpClientBuilder.build();
 
         assertThat(foxHttpClient2.getFoxHttpTimeoutStrategy().getConnectionTimeout()).isEqualTo(0);
         assertThat(foxHttpClient2.getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE, false)).isNotEmpty();
         assertThat(foxHttpClient2.getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE, false).get(0).getWeight()).isEqualTo(100);
+        assertThat(foxHttpClient2.getFoxHttpRequestParser()).isNotNull();
+        assertThat(foxHttpClient2.getFoxHttpResponseParser()).isNotNull();
+
+        //Reset settings for next test
+        foxHttpClientBuilder.setFoxHttpResponseParser(null);
+        foxHttpClientBuilder.setFoxHttpRequestParser(null);
 
         foxHttpClientBuilder.setFoxHttpInterceptors(new EnumMap<>(FoxHttpInterceptorType.class));
         foxHttpClientBuilder.activateDeflateResponseInterceptor(true);
         foxHttpClientBuilder.activateGZipResponseInterceptor();
+        foxHttpClientBuilder.activateGsonParser();
+        foxHttpClientBuilder.setFoxHttpLogger(foxHttpLogger, true);
 
         FoxHttpClient foxHttpClient3 = foxHttpClientBuilder.build();
         assertThat(foxHttpClient3.getFoxHttpTimeoutStrategy().getConnectionTimeout()).isEqualTo(0);
         assertThat(foxHttpClient3.getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE, false)).isNotEmpty();
         assertThat(foxHttpClient3.getFoxHttpInterceptorStrategy().getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType.RESPONSE, false).size()).isEqualTo(2);
+        assertThat(foxHttpClient3.getFoxHttpRequestParser()).isNotNull();
+        assertThat(foxHttpClient3.getFoxHttpResponseParser()).isNotNull();
+        assertThat(foxHttpClient3.getFoxHttpLogger().isLoggingEnabled()).isTrue();
     }
 
     @Test

@@ -2,6 +2,7 @@ package ch.viascom.groundwork.foxhttp.builder;
 
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
 import ch.viascom.groundwork.foxhttp.FoxHttpRequest;
+import ch.viascom.groundwork.foxhttp.FoxHttpResponse;
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorization;
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationScope;
 import ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody;
@@ -54,7 +55,6 @@ public class FoxHttpRequestBuilder {
      * Create a new builder with a default request and set the url
      *
      * @param url url of the request
-     *
      * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(URL url) throws FoxHttpRequestException {
@@ -65,7 +65,6 @@ public class FoxHttpRequestBuilder {
      * Create a new builder with a default request and set the url
      *
      * @param url url of the request
-     *
      * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(String url) throws FoxHttpRequestException {
@@ -87,7 +86,6 @@ public class FoxHttpRequestBuilder {
      *
      * @param url         url of the request
      * @param requestType request type
-     *
      * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(String url, RequestType requestType) throws FoxHttpRequestException {
@@ -100,7 +98,6 @@ public class FoxHttpRequestBuilder {
      * @param url           url of the request
      * @param requestType   request type
      * @param foxHttpClient FoxHttpClient in which the request gets executed
-     *
      * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(URL url, RequestType requestType, FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
@@ -113,7 +110,6 @@ public class FoxHttpRequestBuilder {
      * @param url           url of the request
      * @param requestType   request type
      * @param foxHttpClient FoxHttpClient in which the request gets executed
-     *
      * @throws FoxHttpRequestException If the url is not well formed
      */
     public FoxHttpRequestBuilder(String url, RequestType requestType, FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
@@ -137,7 +133,6 @@ public class FoxHttpRequestBuilder {
      * Set a FoxHttpClient
      *
      * @param foxHttpClient a FoxHttpClient
-     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setFoxHttpClient(FoxHttpClient foxHttpClient) {
@@ -149,7 +144,6 @@ public class FoxHttpRequestBuilder {
      * Set a request type
      *
      * @param requestType a request type
-     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setRequestType(RequestType requestType) {
@@ -161,7 +155,6 @@ public class FoxHttpRequestBuilder {
      * Set a FoxHttpRequestQuery
      *
      * @param foxHttpRequestQuery a FoxHttpRequestQuery
-     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setRequestQuery(FoxHttpRequestQuery foxHttpRequestQuery) {
@@ -174,7 +167,6 @@ public class FoxHttpRequestBuilder {
      *
      * @param name  name of the query entry
      * @param value value of the query entry
-     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder addRequestQueryEntry(String name, String value) {
@@ -187,7 +179,6 @@ public class FoxHttpRequestBuilder {
      * <i>Do not set this if you have a request type other than POST or PUT</i>
      *
      * @param foxHttpRequestBody a body
-     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setRequestBody(FoxHttpRequestBody foxHttpRequestBody) {
@@ -199,7 +190,6 @@ public class FoxHttpRequestBuilder {
      * Set a header for this request
      *
      * @param foxHttpRequestHeader a header
-     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setRequestHeader(FoxHttpHeader foxHttpRequestHeader) {
@@ -211,7 +201,6 @@ public class FoxHttpRequestBuilder {
      * Add a new header entry
      *
      * @param headerField a header field
-     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder addRequestHeader(HeaderEntry headerField) {
@@ -224,7 +213,6 @@ public class FoxHttpRequestBuilder {
      *
      * @param name  name of the header entry
      * @param value value of the header entry
-     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder addRequestHeader(String name, String value) {
@@ -237,7 +225,6 @@ public class FoxHttpRequestBuilder {
      *
      * @param name  name of the header entry
      * @param value value of the header entry
-     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder addRequestHeader(HeaderTypes name, String value) {
@@ -249,7 +236,6 @@ public class FoxHttpRequestBuilder {
      * Sets if the response body should be skiped
      *
      * @param skipResponseBody should skip response body?
-     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setSkipResponseBody(boolean skipResponseBody) {
@@ -261,7 +247,6 @@ public class FoxHttpRequestBuilder {
      * Sets if the request should follow redirects
      *
      * @param followRedirect should follow redirects?
-     *
      * @return FoxHttpRequestBuilder (this)
      */
     public FoxHttpRequestBuilder setFollowRedirect(boolean followRedirect) {
@@ -274,9 +259,7 @@ public class FoxHttpRequestBuilder {
      *
      * @param interceptorType    Type of the interceptor
      * @param foxHttpInterceptor Interceptor instance
-     *
      * @return FoxHttpClientBuilder (this)
-     *
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
     public FoxHttpRequestBuilder addFoxHttpInterceptor(FoxHttpInterceptorType interceptorType, FoxHttpInterceptor foxHttpInterceptor) throws FoxHttpException {
@@ -289,7 +272,6 @@ public class FoxHttpRequestBuilder {
      *
      * @param placeholder name of the placeholder (without escape char)
      * @param value       value of the placeholder
-     *
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpRequestBuilder addFoxHttpPlaceholderEntry(String placeholder, String value) {
@@ -298,44 +280,48 @@ public class FoxHttpRequestBuilder {
     }
 
     /**
-     * @param authorizationScope
-     * @param foxHttpAuthorization
+     * Add an Authorization to the AuthorizationStrategy
      *
-     * @return
+     * @param foxHttpAuthorizationScope Scope of the authorization
+     * @param foxHttpAuthorization      Authorization itself
+     * @return FoxHttpRequestBuilder (this)
      */
-    public FoxHttpRequestBuilder addFoxHttpAuthorization(FoxHttpAuthorizationScope authorizationScope, FoxHttpAuthorization foxHttpAuthorization) {
-        this.foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(authorizationScope, foxHttpAuthorization);
+    public FoxHttpRequestBuilder addFoxHttpAuthorization(FoxHttpAuthorizationScope foxHttpAuthorizationScope, FoxHttpAuthorization foxHttpAuthorization) {
+        this.foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(foxHttpAuthorizationScope, foxHttpAuthorization);
         return this;
     }
 
     /**
-     * @param authorizationScopes
-     * @param foxHttpAuthorization
+     * Add an Authorization to the AuthorizationStrategy
      *
-     * @return
+     * @param foxHttpAuthorizationScopes Scopes of the authorization
+     * @param foxHttpAuthorization       Authorization itself
+     * @return FoxHttpRequestBuilder (this)
      */
-    public FoxHttpRequestBuilder addFoxHttpAuthorization(List<FoxHttpAuthorizationScope> authorizationScopes, FoxHttpAuthorization foxHttpAuthorization) {
-        this.foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(authorizationScopes, foxHttpAuthorization);
+    public FoxHttpRequestBuilder addFoxHttpAuthorization(List<FoxHttpAuthorizationScope> foxHttpAuthorizationScopes, FoxHttpAuthorization foxHttpAuthorization) {
+        this.foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(foxHttpAuthorizationScopes, foxHttpAuthorization);
         return this;
     }
 
     /**
-     * @param foxHttpLogger
+     * Set a Logger
      *
-     * @return
+     * @param foxHttpLogger a logger
+     * @return FoxHttpRequestBuilder (this)
      */
-    public FoxHttpRequestBuilder setLogger(FoxHttpLogger foxHttpLogger) {
+    public FoxHttpRequestBuilder setFoxHttpLogger(FoxHttpLogger foxHttpLogger) {
         this.foxHttpClient.setFoxHttpLogger(foxHttpLogger);
         return this;
     }
 
     /**
-     * @param foxHttpLogger
-     * @param activate
+     * Set a Logger
      *
-     * @return
+     * @param foxHttpLogger a logger
+     * @param activate      activate logger
+     * @return FoxHttpRequestBuilder (this)
      */
-    public FoxHttpRequestBuilder setLogger(FoxHttpLogger foxHttpLogger, boolean activate) {
+    public FoxHttpRequestBuilder setFoxHttpLogger(FoxHttpLogger foxHttpLogger, boolean activate) {
         this.foxHttpClient.setFoxHttpLogger(foxHttpLogger);
         activateFoxHttpLogger(activate);
         return this;
@@ -345,7 +331,6 @@ public class FoxHttpRequestBuilder {
      * Activate defined Logger
      *
      * @param activate activate logger
-     *
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpRequestBuilder activateFoxHttpLogger(boolean activate) {
@@ -382,6 +367,15 @@ public class FoxHttpRequestBuilder {
         request.setSkipResponseBody(this.skipResponseBody);
 
         return request;
+    }
+
+    /**
+     * Build and execute the FoxHttpRequest of this builder
+     *
+     * @return FoxHttpResponse response of the request
+     */
+    public FoxHttpResponse buildAndExecute() throws FoxHttpException {
+        return build().execute();
     }
 
 }

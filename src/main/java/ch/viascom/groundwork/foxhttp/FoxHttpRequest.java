@@ -15,6 +15,7 @@ import ch.viascom.groundwork.foxhttp.interceptor.request.context.FoxHttpRequestH
 import ch.viascom.groundwork.foxhttp.interceptor.request.context.FoxHttpRequestInterceptorContext;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseCodeInterceptorContext;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseInterceptorContext;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
@@ -39,6 +40,8 @@ public class FoxHttpRequest {
     @Getter
     private URL url;
 
+    @Getter
+    @Setter
     private FoxHttpAuthorizationScope authScope;
 
     @Getter
@@ -78,21 +81,17 @@ public class FoxHttpRequest {
     @Setter
     private FoxHttpPlaceholderStrategy foxHttpPlaceholderStrategy;
 
+    @Getter
+    @Setter
+    private boolean overrideLoggerEnabled;
+
 
     public FoxHttpRequest() throws FoxHttpRequestException {
         this(new FoxHttpClient());
     }
 
     public FoxHttpRequest(FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
-        this.foxHttpClient = foxHttpClient;
-        // Copy configuration from client to request
-        try {
-            this.foxHttpPlaceholderStrategy = this.foxHttpClient.getFoxHttpPlaceholderStrategy().getClass().newInstance();
-            this.foxHttpPlaceholderStrategy.getPlaceholderMap().putAll(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap());
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new FoxHttpRequestException("Could not copy foxHttpPlaceholderStrategy from client to request: " + e.getMessage());
-        }
-
+        setFoxHttpClient(foxHttpClient);
     }
 
     public void setFoxHttpClient(FoxHttpClient foxHttpClient) throws FoxHttpRequestException {
@@ -101,15 +100,28 @@ public class FoxHttpRequest {
         }
         this.foxHttpClient = foxHttpClient;
         // Copy configuration from client to request
-        this.foxHttpPlaceholderStrategy.getPlaceholderMap().putAll(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap());
+        try {
+            this.setFoxHttpPlaceholderStrategy(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getClass().newInstance());
+            this.getFoxHttpPlaceholderStrategy().getPlaceholderMap().putAll(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new FoxHttpRequestException("Could not copy foxHttpPlaceholderStrategy from client to request: " + e.getMessage());
+        }
+
+        this.overrideLoggerEnabled = this.foxHttpClient.getFoxHttpLogger().isLoggingEnabled();
     }
 
     public void setUrl(String url) throws MalformedURLException, FoxHttpRequestException {
-        if (foxHttpClient == null) {
-            throw new FoxHttpRequestException("FoxHttpClient can not be null");
-        }
         String parsedURL = foxHttpPlaceholderStrategy.processPlaceholders(url, foxHttpClient);
         this.url = new URL(parsedURL);
+    }
+
+    /**
+     * Activate defined Logger
+     *
+     * @param activate activate logger
+     */
+    public void activateFoxHttpLogger(boolean activate) {
+        this.overrideLoggerEnabled = activate;
     }
 
     public void setUrl(URL url) {
@@ -120,7 +132,6 @@ public class FoxHttpRequest {
      * Execute a this request
      *
      * @return Response if this request
-     *
      * @throws FoxHttpException
      */
     public FoxHttpResponse execute() throws FoxHttpException {
@@ -131,15 +142,13 @@ public class FoxHttpRequest {
      * Execute a this request
      *
      * @param foxHttpClient a specific client which will be used for this request
-     *
      * @return Response if this request
-     *
      * @throws FoxHttpException
      */
     public FoxHttpResponse execute(FoxHttpClient foxHttpClient) throws FoxHttpException {
         verifyRequest();
-        foxHttpClient.getFoxHttpLogger().log("========= Request =========");
-        foxHttpClient.getFoxHttpLogger().log("setFoxHttpClient(" + foxHttpClient + ")");
+        foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "========= Request =========");
+        foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setFoxHttpClient(" + foxHttpClient + ")");
         this.foxHttpClient = foxHttpClient;
 
         return executeHttp("https".equals(getUrl().getProtocol()));
@@ -149,66 +158,66 @@ public class FoxHttpRequest {
     private FoxHttpResponse executeHttp(boolean isHttps) throws FoxHttpException {
         try {
             //Execute interceptor
-            foxHttpClient.getFoxHttpLogger().log("executeRequestInterceptor()");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeRequestInterceptor()");
             FoxHttpInterceptorExecutor.executeRequestInterceptor(new FoxHttpRequestInterceptorContext(getUrl(), this, foxHttpClient));
 
-            foxHttpClient.getFoxHttpLogger().log("setCookieStore(" + foxHttpClient.getFoxHttpCookieStore() + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setCookieStore(" + foxHttpClient.getFoxHttpCookieStore() + ")");
             CookieHandler.setDefault((CookieManager) foxHttpClient.getFoxHttpCookieStore());
 
             // Create Scope
-            authScope = FoxHttpAuthorizationScope.create(getUrl().toString(), requestType);
+            setAuthScope(FoxHttpAuthorizationScope.create(getUrl().toString(), requestType));
 
-            foxHttpClient.getFoxHttpLogger().log("prepareQuery(" + getRequestQuery() + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "prepareQuery(" + getRequestQuery() + ")");
             prepareQuery();
 
-            foxHttpClient.getFoxHttpLogger().log("processPlaceholders()");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "processPlaceholders()");
             String parsedURL = foxHttpPlaceholderStrategy.processPlaceholders(getUrl().toString(), foxHttpClient);
             url = new URL(parsedURL);
 
             checkPlaceholders();
 
             //Execute interceptor
-            foxHttpClient.getFoxHttpLogger().log("executeRequestConnectionInterceptor()");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeRequestConnectionInterceptor()");
             FoxHttpInterceptorExecutor.executeRequestConnectionInterceptor(new FoxHttpRequestConnectionInterceptorContext(getUrl(), this, foxHttpClient));
 
             //Create connection
-            foxHttpClient.getFoxHttpLogger().log("createConnection(" + getUrl() + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "createConnection(" + getUrl() + ")");
             if (foxHttpClient.getFoxHttpProxyStrategy() == null) {
-                connection = (HttpURLConnection) getUrl().openConnection();
+                connection = getUrl().openConnection();
             } else {
-                foxHttpClient.getFoxHttpLogger().log("useProxy(" + foxHttpClient.getFoxHttpProxyStrategy() + ")");
-                connection = (HttpURLConnection) getUrl().openConnection(foxHttpClient.getFoxHttpProxyStrategy().getProxy(getUrl()));
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "useProxy(" + foxHttpClient.getFoxHttpProxyStrategy() + ")");
+                connection = getUrl().openConnection(foxHttpClient.getFoxHttpProxyStrategy().getProxy(getUrl()));
                 if (foxHttpClient.getFoxHttpProxyStrategy().hasProxyAuthorization(getUrl())) {
                     setHeaderIfNotExist(HeaderTypes.PROXY_AUTHORIZATION, foxHttpClient.getFoxHttpProxyStrategy().getProxyAuthorization(getUrl()), connection);
                 }
             }
 
-            foxHttpClient.getFoxHttpLogger().log("setRequestMethod(" + requestType.toString() + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setRequestMethod(" + requestType.toString() + ")");
             ((HttpURLConnection) connection).setRequestMethod(requestType.toString());
 
             //Set headers
-            foxHttpClient.getFoxHttpLogger().log("prepareHeader(" + getRequestHeader() + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "prepareHeader(" + getRequestHeader() + ")");
             prepareHeader();
 
             //Set User-Agent if not exist
-            foxHttpClient.getFoxHttpLogger().log("setUserAgentIfNotExist(" + foxHttpClient.getFoxHttpUserAgent() + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setUserAgentIfNotExist(" + foxHttpClient.getFoxHttpUserAgent() + ")");
             setHeaderIfNotExist(HeaderTypes.USER_AGENT, foxHttpClient.getFoxHttpUserAgent(), connection);
 
 
             connection.setUseCaches(false);
             connection.setDoInput(true);
-            foxHttpClient.getFoxHttpLogger().log("setDoOutput(" + doOutput() + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setDoOutput(" + doOutput() + ")");
             connection.setDoOutput(doOutput());
-            foxHttpClient.getFoxHttpLogger().log("setFollowRedirects(" + followRedirect + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setFollowRedirects(" + followRedirect + ")");
             ((HttpURLConnection) connection).setInstanceFollowRedirects(followRedirect);
             HttpURLConnection.setFollowRedirects(followRedirect);
-            foxHttpClient.getFoxHttpLogger().log("setFoxHttpTimeoutStrategy(" + foxHttpClient.getFoxHttpTimeoutStrategy() + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setFoxHttpTimeoutStrategy(" + foxHttpClient.getFoxHttpTimeoutStrategy() + ")");
             connection.setConnectTimeout(foxHttpClient.getFoxHttpTimeoutStrategy().getConnectionTimeout());
             connection.setReadTimeout(foxHttpClient.getFoxHttpTimeoutStrategy().getReadTimeout());
 
             if (isHttps) {
                 if (foxHttpClient.getFoxHttpSSLTrustStrategy() != null) {
-                    foxHttpClient.getFoxHttpLogger().log("setSSLSocketFactory(" + foxHttpClient.getFoxHttpSSLTrustStrategy() + ")");
+                    foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setSSLSocketFactory(" + foxHttpClient.getFoxHttpSSLTrustStrategy() + ")");
                     ((HttpsURLConnection) connection).setSSLSocketFactory(foxHttpClient.getFoxHttpSSLTrustStrategy().getSSLSocketFactory((HttpsURLConnection) connection, foxHttpClient.getFoxHttpLogger()));
                 }
                 //TODO: re-enable getFoxHttpHostTrustStrategy()
@@ -219,33 +228,33 @@ public class FoxHttpRequest {
             }
 
             //Process authorization strategy
-            foxHttpClient.getFoxHttpLogger().log("processAuthorizationStrategy(" + foxHttpClient.getFoxHttpAuthorizationStrategy() + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "processAuthorizationStrategy(" + foxHttpClient.getFoxHttpAuthorizationStrategy() + ")");
             processAuthorizationStrategy();
 
             //Execute interceptor
-            foxHttpClient.getFoxHttpLogger().log("executeRequestHeaderInterceptor()");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeRequestHeaderInterceptor()");
             FoxHttpInterceptorExecutor.executeRequestHeaderInterceptor(new FoxHttpRequestHeaderInterceptorContext(connection, this, foxHttpClient));
 
             //Send request
             if (doOutput()) {
                 //Add Content-Type header if not exist
-                foxHttpClient.getFoxHttpLogger().log("setContentTypeIfNotExist(" + requestBody.getOutputContentType().toString() + ")");
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setContentTypeIfNotExist(" + requestBody.getOutputContentType().toString() + ")");
                 setHeaderIfNotExist(HeaderTypes.CONTENT_TYPE, requestBody.getOutputContentType().toString(), connection);
                 //Set request body
-                foxHttpClient.getFoxHttpLogger().log("setRequestBodyStream(" + getRequestBody() + ")");
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setRequestBodyStream(" + getRequestBody() + ")");
                 setRequestBodyStream();
             }
 
-            foxHttpClient.getFoxHttpLogger().log("sendRequest()");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "sendRequest()");
             connection.connect();
 
-            foxHttpClient.getFoxHttpLogger().log("========= Response =========");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "========= Response =========");
 
             int responseCode = ((HttpURLConnection) connection).getResponseCode();
-            foxHttpClient.getFoxHttpLogger().log("responseCode(" + responseCode + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "responseCode(" + responseCode + ")");
 
             //Execute interceptor
-            foxHttpClient.getFoxHttpLogger().log("executeResponseCodeInterceptor()");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeResponseCodeInterceptor()");
             FoxHttpInterceptorExecutor.executeResponseCodeInterceptor(
                     new FoxHttpResponseCodeInterceptorContext(responseCode, this, foxHttpClient)
             );
@@ -254,28 +263,28 @@ public class FoxHttpRequest {
                 InputStream is;
                 if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < HttpURLConnection.HTTP_MULT_CHOICE) {
                     //On success response code
-                    foxHttpClient.getFoxHttpLogger().log("getResponseBody(success)");
+                    foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "getResponseBody(success)");
                     is = connection.getInputStream();
                 } else {
                     //On error response code
-                    foxHttpClient.getFoxHttpLogger().log("getResponseBody(error)");
+                    foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "getResponseBody(error)");
                     is = ((HttpURLConnection) connection).getErrorStream();
                 }
 
-                foxHttpClient.getFoxHttpLogger().log("createFoxHttpResponse()");
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "createFoxHttpResponse()");
                 foxHttpResponse = new FoxHttpResponse(is, this, responseCode, foxHttpClient);
             } else {
-                foxHttpClient.getFoxHttpLogger().log("createFoxHttpResponse()");
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "createFoxHttpResponse()");
                 foxHttpResponse = new FoxHttpResponse(null, this, responseCode, foxHttpClient);
-                foxHttpClient.getFoxHttpLogger().log("No body return because skipResponseBody is active!");
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "No body return because skipResponseBody is active!");
             }
 
             //Process response headers
-            foxHttpClient.getFoxHttpLogger().log("processResponseHeader()");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "processResponseHeader()");
             processResponseHeader();
 
             //Execute interceptor
-            foxHttpClient.getFoxHttpLogger().log("executeResponseInterceptor()");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeResponseInterceptor()");
             FoxHttpInterceptorExecutor.executeResponseInterceptor(
                     new FoxHttpResponseInterceptorContext(responseCode, foxHttpResponse, this, foxHttpClient)
             );
@@ -299,7 +308,6 @@ public class FoxHttpRequest {
         if (matcher.find()) {
             throw new FoxHttpRequestException("The url dose still contain placeholders after finishing processing all defined placeholders.\n-> " + getUrl().toString());
         }
-
     }
 
     private void prepareHeader() {
@@ -313,7 +321,7 @@ public class FoxHttpRequest {
     }
 
     private void prepareQuery() throws FoxHttpRequestException, MalformedURLException {
-        if (getRequestQuery().hasQueryEntries()) {
+        if (getRequestQuery() != null && getRequestQuery().hasQueryEntries()) {
             String query = getRequestQuery().getQueryString();
             url = new URL(getUrl().toString() + query);
         }
@@ -329,7 +337,7 @@ public class FoxHttpRequest {
         List<FoxHttpAuthorization> foxHttpAuthorizations = foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorization(connection, authScope, foxHttpClient, foxHttpPlaceholderStrategy);
         FoxHttpAuthorizationContext authorizationContext = new FoxHttpAuthorizationContext(connection, this, foxHttpClient);
         for (FoxHttpAuthorization foxHttpAuthorization : foxHttpAuthorizations) {
-            foxHttpClient.getFoxHttpLogger().log("-> doAuthorization(" + foxHttpAuthorization + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "-> doAuthorization(" + foxHttpAuthorization + ")");
             foxHttpAuthorization.doAuthorization(authorizationContext, authScope);
         }
     }
@@ -340,7 +348,7 @@ public class FoxHttpRequest {
 
         map.entrySet().stream().filter(entry -> entry.getKey() != null).forEach(entry -> {
             responseHeaders.addHeader(entry.getKey(), entry.getValue().get(0));
-            foxHttpClient.getFoxHttpLogger().log("-> ResponseHeader(" + entry.getKey() + ":" + entry.getValue().get(0) + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "-> ResponseHeader(" + entry.getKey() + ":" + entry.getValue().get(0) + ")");
         });
         foxHttpResponse.setResponseHeaders(responseHeaders);
     }
@@ -364,6 +372,6 @@ public class FoxHttpRequest {
         if (foxHttpClient == null) {
             throw new FoxHttpRequestException("FoxHttpClient of the request ist not defined");
         }
-        foxHttpClient.getFoxHttpLogger().log("verifyRequest()");
+        foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "verifyRequest()");
     }
 }

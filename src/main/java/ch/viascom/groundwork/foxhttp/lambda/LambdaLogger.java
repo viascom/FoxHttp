@@ -1,6 +1,7 @@
 package ch.viascom.groundwork.foxhttp.lambda;
 
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLogger;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 
 import java.util.function.BiConsumer;
 
@@ -11,6 +12,8 @@ public class LambdaLogger implements FoxHttpLogger {
 
     private boolean enabled;
     private LoggerMethod logMessage;
+    private FoxHttpLoggerLevel foxHttpLoggerLevel = FoxHttpLoggerLevel.INFO;
+
     public LambdaLogger(LoggerMethod logMessage) {
         this.logMessage = logMessage;
     }
@@ -21,15 +24,46 @@ public class LambdaLogger implements FoxHttpLogger {
     }
 
     @Override
-    public void setName(String name) {
+    public boolean isLoggingEnabled() {
+        return enabled;
+    }
 
+    @Override
+    public void setName(String name) {
+    }
+
+    @Override
+    public String getName() {
+        return "";
+    }
+
+    @Override
+    public void setLogLevel(FoxHttpLoggerLevel logLevel) {
+        this.foxHttpLoggerLevel = logLevel;
+    }
+
+    @Override
+    public FoxHttpLoggerLevel getLogLevel() {
+        return foxHttpLoggerLevel;
     }
 
     @Override
     public void log(String message) {
-        logMessage.accept(message, enabled);
+        log(foxHttpLoggerLevel, message);
     }
 
-    public interface LoggerMethod extends BiConsumer<String, Boolean> {
+    @Override
+    public void log(FoxHttpLoggerLevel logLevel, String message) {
+        log(logLevel, message, enabled);
+    }
+
+    @Override
+    public void log(FoxHttpLoggerLevel logLevel, String message, boolean overrideEnabled) {
+        if (enabled) {
+            logMessage.accept(message, foxHttpLoggerLevel);
+        }
+    }
+
+    public interface LoggerMethod extends BiConsumer<String, FoxHttpLoggerLevel> {
     }
 }

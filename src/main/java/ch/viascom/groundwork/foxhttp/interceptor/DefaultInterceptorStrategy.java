@@ -1,5 +1,6 @@
 package ch.viascom.groundwork.foxhttp.interceptor;
 
+import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,11 +17,12 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
 
 
     @Override
-    public void addInterceptor(FoxHttpInterceptorType type, FoxHttpInterceptor interceptor) {
+    public void addInterceptor(FoxHttpInterceptorType type, FoxHttpInterceptor interceptor) throws FoxHttpException {
         addInterceptor(type, interceptor, String.valueOf(UUID.randomUUID()));
     }
 
-    public void addInterceptor(FoxHttpInterceptorType type, FoxHttpInterceptor interceptor, String key) {
+    public void addInterceptor(FoxHttpInterceptorType type, FoxHttpInterceptor interceptor, String key) throws FoxHttpException {
+        FoxHttpInterceptorType.verifyInterceptor(type, interceptor);
         if (foxHttpInterceptors.containsKey(type)) {
             foxHttpInterceptors.get(type).put(key, interceptor);
         } else {

@@ -1,6 +1,7 @@
 package ch.viascom.groundwork.foxhttp.authorization;
 
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
+import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.util.RegexUtil;
 import lombok.Getter;
@@ -70,7 +71,6 @@ public class DefaultAuthorizationStrategy implements FoxHttpAuthorizationStrateg
      *
      * @param connection  connection of the request
      * @param searchScope looking for scope
-     *
      * @return
      */
     @Override
@@ -78,7 +78,13 @@ public class DefaultAuthorizationStrategy implements FoxHttpAuthorizationStrateg
         ArrayList<FoxHttpAuthorization> foxHttpAuthorizationList = new ArrayList<>();
 
         foxHttpAuthorizations.entrySet().stream()
-                .filter(entry -> RegexUtil.doesURLMatch(searchScope.toString(), foxHttpPlaceholderStrategy.processPlaceholders(entry.getKey(), foxHttpClient)))
+                .filter(entry -> {
+                    try {
+                        return RegexUtil.doesURLMatch(searchScope.toString(), foxHttpPlaceholderStrategy.processPlaceholders(entry.getKey(), foxHttpClient));
+                    } catch (FoxHttpRequestException e) {
+                        throw new RuntimeException(e.getMessage());
+                    }
+                })
                 .forEach(entry -> foxHttpAuthorizationList.addAll(entry.getValue().values()));
 
         if (foxHttpAuthorizations.containsKey(FoxHttpAuthorizationScope.ANY.toString()) && (foxHttpAuthorizationList.isEmpty())) {

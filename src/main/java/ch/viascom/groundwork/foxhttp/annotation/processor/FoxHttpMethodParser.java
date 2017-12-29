@@ -27,6 +27,7 @@ class FoxHttpMethodParser {
 
     private Method method;
     private String path;
+    private boolean completePath;
     private URL url;
     private RequestType requestType;
     private boolean hasBody;
@@ -93,7 +94,7 @@ class FoxHttpMethodParser {
         Path basePath = method.getDeclaringClass().getAnnotation(Path.class);
 
         String url = path;
-        if (basePath != null) {
+        if (!completePath && basePath != null) {
             url = basePath.value() + url;
         }
 
@@ -123,17 +124,17 @@ class FoxHttpMethodParser {
 
     private void parsetMethodAnnotation(Annotation annotation) throws FoxHttpRequestException {
         if (annotation instanceof DELETE) {
-            setRequestTypeAndUrl("DELETE", ((DELETE) annotation).value(), false);
+            setRequestTypeAndUrl("DELETE", ((DELETE) annotation).value(),((DELETE) annotation).completePath(), false);
         } else if (annotation instanceof GET) {
-            setRequestTypeAndUrl("GET", ((GET) annotation).value(), false);
+            setRequestTypeAndUrl("GET", ((GET) annotation).value(),((GET) annotation).completePath(), false);
         } else if (annotation instanceof HEAD) {
-            setRequestTypeAndUrl("HEAD", ((HEAD) annotation).value(), false);
+            setRequestTypeAndUrl("HEAD", ((HEAD) annotation).value(),((HEAD) annotation).completePath(), false);
         } else if (annotation instanceof POST) {
-            setRequestTypeAndUrl("POST", ((POST) annotation).value(), true);
+            setRequestTypeAndUrl("POST", ((POST) annotation).value(),((POST) annotation).completePath(), true);
         } else if (annotation instanceof PUT) {
-            setRequestTypeAndUrl("PUT", ((PUT) annotation).value(), true);
+            setRequestTypeAndUrl("PUT", ((PUT) annotation).value(),((PUT) annotation).completePath(), true);
         } else if (annotation instanceof OPTIONS) {
-            setRequestTypeAndUrl("OPTIONS", ((OPTIONS) annotation).value(), false);
+            setRequestTypeAndUrl("OPTIONS", ((OPTIONS) annotation).value(),((OPTIONS) annotation).completePath(), false);
         } else if (annotation instanceof Header) {
             setHeader((Header) annotation);
         }
@@ -141,14 +142,13 @@ class FoxHttpMethodParser {
     }
 
     private void setHeader(Header annotation) throws FoxHttpRequestException {
-        Header header = annotation;
-        if (header.name().isEmpty() || header.value().isEmpty()) {
+        if (annotation.name().isEmpty() || annotation.value().isEmpty()) {
             throwFoxHttpRequestException("@Header annotation is empty.");
         }
-        headerFields.addHeader(header.name(), header.value());
+        headerFields.addHeader(annotation.name(), annotation.value());
     }
 
-    private void setRequestTypeAndUrl(String requestType, String value, boolean hasBody) throws FoxHttpRequestException {
+    private void setRequestTypeAndUrl(String requestType, String value, boolean completePath, boolean hasBody) throws FoxHttpRequestException {
         if (this.requestType != null) {
             throwFoxHttpRequestException("Only one HTTP method is allowed. Found: " + this.requestType + " and " + requestType + ".");
         }
@@ -158,11 +158,11 @@ class FoxHttpMethodParser {
         }
 
         //Parameters
-        doParameterMatch(HeaderField.class, String.class, this.method);
-        doParameterMatch(Query.class, String.class, this.method);
-        doParameterMatch(QueryMap.class, Map.class, this.method);
-        doParameterMatch(QueryObject.class, Object.class, this.method);
-        doParameterMatch(Path.class, String.class, this.method);
+        doParameterMatch(HeaderField.class, new Class[]{String.class, Enum.class, int.class, Integer.class, long.class, Long.class}, this.method);
+        doParameterMatch(Query.class, new Class[]{String.class, Enum.class, int.class, Integer.class, long.class, Long.class}, this.method);
+        doParameterMatch(QueryMap.class, new Class[]{Map.class}, this.method);
+        doParameterMatch(QueryObject.class, new Class[]{Object.class}, this.method);
+        doParameterMatch(Path.class, new Class[]{String.class, Enum.class, int.class, Integer.class, long.class, Long.class}, this.method);
 
         //Body
         if (hasBody) {
@@ -194,8 +194,8 @@ class FoxHttpMethodParser {
             if (hasParameterAnnotation(Body.class, this.method)) {
                 throwFoxHttpRequestException("Form-encoded method can not contain @Body.");
             }
-            doParameterMatch(Field.class, String.class, this.method);
-            doParameterMatch(FieldMap.class, Map.class, this.method);
+            doParameterMatch(Field.class, new Class[]{String.class, Enum.class, int.class, Integer.class, long.class, Long.class}, this.method);
+            doParameterMatch(FieldMap.class, new Class[]{Map.class}, this.method);
         }
 
         //Multipart
@@ -209,13 +209,14 @@ class FoxHttpMethodParser {
             if (hasParameterAnnotation(Body.class, this.method)) {
                 throwFoxHttpRequestException("Multipart method can not contain @Body.");
             }
-            doParameterMatch(PartMap.class, Map.class, this.method);
+            doParameterMatch(PartMap.class, new Class[]{Map.class}, this.method);
         }
 
 
         this.requestType = RequestType.valueOf(requestType);
         this.hasBody = hasBody;
         this.path = value;
+        this.completePath = completePath;
     }
 
 
@@ -228,14 +229,24 @@ class FoxHttpMethodParser {
     }
 
 
-    private void doParameterMatch(Class<? extends Annotation> annotationClass, Class<?> aClass, Method method) throws FoxHttpRequestException {
+    private void doParameterMatch(Class<? extends Annotation> annotationClass, Class<?>[] allowedClasses, Method method) throws FoxHttpRequestException {
         int parameterPos = 0;
         for (Annotation[] annotations : method.getParameterAnnotations()) {
             for (Annotation annotation : annotations) {
                 if (annotation.annotationType() == annotationClass) {
-                    if (!aClass.isAssignableFrom(method.getParameterTypes()[parameterPos])) {
-                        throwFoxHttpRequestException(aClass.getSimpleName() + " is not assignable from Parameter " + method.getParameterTypes()[parameterPos] +
+                    boolean foundMatchingType = false;
+                    Class<?> checkedClass = Object.class;
+                    for (Class<?> aClass : allowedClasses) {
+                        checkedClass = aClass;
+                        if (aClass.isAssignableFrom(method.getParameterTypes()[parameterPos])) {
+                            foundMatchingType = true;
+                            break;
+                        }
+                    }
+                    if (!foundMatchingType) {
+                        throwFoxHttpRequestException(checkedClass.getSimpleName() + " is not assignable from Parameter " + method.getParameterTypes()[parameterPos] +
                                 " (" + method.getParameterTypes()[parameterPos].getSimpleName() + ") with annotation @" + annotationClass.getSimpleName());
+
                     }
                 }
             }
@@ -245,15 +256,13 @@ class FoxHttpMethodParser {
 
     private void throwFoxHttpRequestException(String message) throws FoxHttpRequestException {
 
-        StringBuilder outputMessage = new StringBuilder();
+        String outputMessage = method.getDeclaringClass().getSimpleName() +
+                "." +
+                method.getName() +
+                "\n-> " +
+                message;
 
-        outputMessage.append(method.getDeclaringClass().getSimpleName());
-        outputMessage.append(".");
-        outputMessage.append(method.getName());
-        outputMessage.append("\n-> ");
-        outputMessage.append(message);
-
-        throw new FoxHttpRequestException(outputMessage.toString());
+        throw new FoxHttpRequestException(outputMessage);
     }
 
 }

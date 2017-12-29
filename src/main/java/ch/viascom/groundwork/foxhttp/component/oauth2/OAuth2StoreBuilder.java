@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class OAuth2StoreBuilder {
 
-    OAuth2Store oAuth2Store;
+    private OAuth2Store oAuth2Store;
 
     /**
      * Create a new builder

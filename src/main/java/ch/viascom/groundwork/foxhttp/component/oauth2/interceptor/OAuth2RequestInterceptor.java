@@ -8,6 +8,7 @@ import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.interceptor.request.FoxHttpRequestConnectionInterceptor;
 import ch.viascom.groundwork.foxhttp.interceptor.request.context.FoxHttpRequestConnectionInterceptorContext;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.util.RegexUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,9 +33,9 @@ public class OAuth2RequestInterceptor implements FoxHttpRequestConnectionInterce
     public void onIntercept(FoxHttpRequestConnectionInterceptorContext context) throws FoxHttpException {
         try {
             if (isScopePresent(context)) {
-                context.getClient().getFoxHttpLogger().log("   -> OAuth2 is needed for this request");
+                context.getClient().getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO,"   -> OAuth2 is needed for this request");
                 if (!isAccessTokenValid()) {
-                    context.getClient().getFoxHttpLogger().log("   -> New OAuth2 token is needed");
+                    context.getClient().getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO,"   -> New OAuth2 token is needed");
                     if (oAuth2Component.getOAuth2Store().getRefreshToken() != null && !oAuth2Component.getOAuth2Store().getRefreshToken().isEmpty()) {
                         FoxHttpRequest request = oAuth2Component.generateRequestForGrantType(GrantType.REFRESH_TOKEN);
                         oAuth2Component.getOAuth2RequestExecutor().executeOAuth2Request(request, oAuth2Component);
@@ -49,7 +50,7 @@ public class OAuth2RequestInterceptor implements FoxHttpRequestConnectionInterce
         }
     }
 
-    private boolean isScopePresent(FoxHttpRequestConnectionInterceptorContext context) {
+    private boolean isScopePresent(FoxHttpRequestConnectionInterceptorContext context) throws FoxHttpRequestException {
         boolean isPresent = false;
         for (FoxHttpAuthorizationScope scope : oAuth2Component.getOAuth2Store().getAuthScopes()) {
             isPresent = RegexUtil.doesURLMatch(context.getRequest().getRequestType() + " " + context.getClient().getFoxHttpPlaceholderStrategy().processPlaceholders(context.getUrl().toString(), context.getClient()),

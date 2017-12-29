@@ -1,6 +1,7 @@
 package ch.viascom.groundwork.foxhttp.placeholder;
 
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
+import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 
 import java.util.Map;
 
@@ -22,5 +23,5 @@ public interface FoxHttpPlaceholderStrategy {
 
     Map<String, String> getPlaceholderMap();
 
-    String processPlaceholders(String processedURL, FoxHttpClient foxHttpClient);
+    String processPlaceholders(String processedURL, FoxHttpClient foxHttpClient) throws FoxHttpRequestException;
 }

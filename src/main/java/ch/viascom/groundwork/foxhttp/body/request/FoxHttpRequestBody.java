@@ -5,6 +5,7 @@ import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorExecutor;
 import ch.viascom.groundwork.foxhttp.interceptor.request.context.FoxHttpRequestBodyInterceptorContext;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import lombok.Getter;
@@ -37,7 +38,7 @@ public abstract class FoxHttpRequestBody implements FoxHttpBody {
     public abstract ContentType getOutputContentType();
 
     protected void executeInterceptor(FoxHttpRequestBodyContext context) throws FoxHttpException {
-        context.getRequest().getFoxHttpClient().getFoxHttpLogger().log("executeRequestBodyInterceptor()");
+        context.getRequest().getFoxHttpClient().getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeRequestBodyInterceptor()");
         FoxHttpInterceptorExecutor.executeRequestBodyInterceptor(
                 new FoxHttpRequestBodyInterceptorContext(context.getUrlConnection(), this, context.getRequest(), context.getClient())
         );

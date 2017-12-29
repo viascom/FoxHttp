@@ -71,7 +71,7 @@ public class RequestMultipartBody extends FoxHttpRequestBody {
             processStream();
 
             writer.flush();
-            writer.append("--" + boundary + "--").append(lineFeed);
+            writer.append("--").append(boundary).append("--").append(lineFeed);
             writer.close();
 
             //Execute interceptor
@@ -122,9 +122,9 @@ public class RequestMultipartBody extends FoxHttpRequestBody {
 
     private void processFormFields() {
         for (Map.Entry<String, String> entry : forms.entrySet()) {
-            writer.append("--" + boundary).append(lineFeed);
-            writer.append("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"").append(lineFeed);
-            writer.append("Content-Type: text/plain; charset=" + charset.displayName()).append(lineFeed);
+            writer.append("--").append(boundary).append(lineFeed);
+            writer.append("Content-Disposition: form-data; name=\"").append(entry.getKey()).append("\"").append(lineFeed);
+            writer.append("Content-Type: text/plain; charset=").append(charset.displayName()).append(lineFeed);
             writer.append(lineFeed);
             writer.append(entry.getValue()).append(lineFeed);
             writer.flush();
@@ -157,10 +157,10 @@ public class RequestMultipartBody extends FoxHttpRequestBody {
 
     private void processStream() throws IOException {
         for (Map.Entry<String, NamedInputStream> entry : stream.entrySet()) {
-            writer.append("--" + boundary).append(lineFeed);
-            writer.append("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"; filename=\"" + entry.getValue().getName() + "\"").append(lineFeed);
-            writer.append("Content-Type: " + entry.getValue().getType()).append(lineFeed);
-            writer.append("Content-Transfer-Encoding: " + entry.getValue().getContentTransferEncoding()).append(lineFeed);
+            writer.append("--").append(boundary).append(lineFeed);
+            writer.append("Content-Disposition: form-data; name=\"").append(entry.getKey()).append("\"; filename=\"").append(entry.getValue().getName()).append("\"").append(lineFeed);
+            writer.append("Content-Type: ").append(entry.getValue().getType()).append(lineFeed);
+            writer.append("Content-Transfer-Encoding: ").append(entry.getValue().getContentTransferEncoding()).append(lineFeed);
             writer.append(lineFeed);
             writer.flush();
 

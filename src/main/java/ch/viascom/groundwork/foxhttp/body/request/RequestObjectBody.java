@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 /**
  * RequestObjectBody for FoxHttp
- *
+ * <p>
  * Stores an object for a request body.
  * To use this you have to set a RequestParser.
  *
@@ -24,14 +24,13 @@ public class RequestObjectBody extends FoxHttpRequestBody {
      * @param content serializable object
      */
     public RequestObjectBody(Serializable content) {
-        this.content = content;
-        this.outputContentType = ContentType.APPLICATION_JSON;
+        this(content, ContentType.APPLICATION_JSON);
     }
 
     /**
      * Create a new RequestObjectBody
      *
-     * @param content serializable object
+     * @param content     serializable object
      * @param contentType type of the content
      */
     public RequestObjectBody(Serializable content, ContentType contentType) {

@@ -7,6 +7,20 @@ package ch.viascom.groundwork.foxhttp.log;
  */
 public interface FoxHttpLogger {
     void setLoggingEnabled(boolean enabled);
+
+    boolean isLoggingEnabled();
+
     void setName(String name);
+
+    String getName();
+
+    void setLogLevel(FoxHttpLoggerLevel logLevel);
+
+    FoxHttpLoggerLevel getLogLevel();
+
     void log(String message);
+
+    void log(FoxHttpLoggerLevel logLevel, String message);
+
+    void log(FoxHttpLoggerLevel logLevel, String message, boolean overrideEnabled);
 }
