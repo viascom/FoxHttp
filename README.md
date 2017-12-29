@@ -68,13 +68,13 @@ Request against [httpbin](https://httpbin.org/) which was installed on localhost
 <dependency>
     <groupId>ch.viascom.groundwork</groupId>
     <artifactId>foxhttp</artifactId>
-    <version>1.3-RC2</version>
+    <version>1.3</version>
 </dependency>
 ```
 
 #### gradle
 ```
-compile 'ch.viascom.groundwork:foxhttp:1.3-RC2'
+compile 'ch.viascom.groundwork:foxhttp:1.3'
 ```
 
 ### Send a request with JSON response deserialization
@@ -87,7 +87,7 @@ FoxHttpClient foxHttpClient = new FoxHttpClientBuilder(new GsonParser()).build()
 foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "FoxHttp-Logger", FoxHttpLoggerLevel.DEBUG));
 
 // Create and Execute GET Request
-FoxHttpResponse response = new FoxHttpRequestBuilder("http://httpbin.org/get?search=Viascom", RequestType.GET, foxHttpClient).executeNow();
+FoxHttpResponse response = new FoxHttpRequestBuilder("http://httpbin.org/get?search=Viascom", RequestType.GET, foxHttpClient).buildAndExecute();
 
 // Deserialization response
 GetResponse object = repsponse.getParsedBody(GetResponse.class);
