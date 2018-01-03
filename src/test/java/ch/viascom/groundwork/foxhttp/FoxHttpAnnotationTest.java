@@ -8,6 +8,7 @@ import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
 import ch.viascom.groundwork.foxhttp.interfaces.FoxHttpExceptionInterfaceTest;
 import ch.viascom.groundwork.foxhttp.interfaces.FoxHttpInterfaceTest;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.log.SystemOutFoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.models.GetResponse;
 import ch.viascom.groundwork.foxhttp.models.PostResponse;
@@ -131,11 +132,11 @@ public class FoxHttpAnnotationTest {
         GetResponse getResponse = foxHttpInterfaceTest.objectOptionalGet(null);
         assertThat(getResponse.getArgs().entrySet().isEmpty()).isEqualTo(true);
 
-        GetResponse getResponse2 = foxHttpInterfaceTest.objectGet(new QueryObjectModel("Fox",null));
+        GetResponse getResponse2 = foxHttpInterfaceTest.objectGet(new QueryObjectModel("Fox", null));
         assertThat(getResponse2.getArgs().get("user-id")).isEqualTo("Fox");
 
         try {
-            GetResponse getResponse3 = foxHttpInterfaceTest.objectGet(new QueryObjectModel(null,"test"));
+            GetResponse getResponse3 = foxHttpInterfaceTest.objectGet(new QueryObjectModel(null, "test"));
             assertThat(false).isEqualTo(true);
         } catch (FoxHttpException e) {
             assertThat(e.getMessage()).isEqualTo("The query parameter attribute userId in QueryObjectModel is not optional and can't be null because of this.");
@@ -201,6 +202,7 @@ public class FoxHttpAnnotationTest {
     public void postObject() throws Exception {
         //Set Gson parser, register placeholder
         FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder(new GsonParser())
+                .setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "Body-Request", FoxHttpLoggerLevel.DEBUG))
                 .addFoxHttpPlaceholderEntry("host", endpoint);
 
         //Request

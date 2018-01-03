@@ -272,7 +272,7 @@ public class FoxHttpRequestTest {
         FoxHttpClient foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
 
-        FoxHttpRequestBody requestBody = new RequestStringBody("test string body 1234 - ?");
+        FoxHttpRequestBody requestBody = new RequestStringBody("test string body 1234 - ? éàèäöü$!ë");
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(endpoint + "post"));
@@ -287,7 +287,7 @@ public class FoxHttpRequestTest {
 
         PostResponse postResponse = foxHttpResponse.getParsedBody(PostResponse.class);
 
-        assertThat(postResponse.getData()).isEqualTo("test string body 1234 - ?");
+        assertThat(postResponse.getData()).isEqualTo("test string body 1234 - ? éàèäöü$!ë");
     }
 
     @Test

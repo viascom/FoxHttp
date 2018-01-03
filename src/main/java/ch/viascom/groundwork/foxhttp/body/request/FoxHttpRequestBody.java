@@ -9,9 +9,12 @@ import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 /**
  * Abstract FoxHttpRequestBody
@@ -29,6 +32,7 @@ import java.io.DataOutputStream;
 public abstract class FoxHttpRequestBody implements FoxHttpBody {
     @Getter
     protected ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    @Setter
     ContentType outputContentType = ContentType.WILDCARD;
 
     public abstract void setBody(FoxHttpRequestBodyContext context) throws FoxHttpRequestException;
@@ -47,9 +51,18 @@ public abstract class FoxHttpRequestBody implements FoxHttpBody {
     public void writeBody(FoxHttpRequestBodyContext context, String json) throws FoxHttpRequestException {
         try {
             DataOutputStream wr = new DataOutputStream(outputStream);
-            wr.writeBytes(json);
-            wr.flush();
-            wr.close();
+
+            //Check for Charset and use OutputStreamWriter with the correct Charset if needed
+            if(outputContentType.getCharset() == null) {
+                wr.writeBytes(json);
+                wr.flush();
+                wr.close();
+            }else{
+                Writer osw = new OutputStreamWriter(wr, outputContentType.getCharset());
+                osw.write(json);
+                osw.flush();
+                osw.close();
+            }
 
             //Execute interceptor
             executeInterceptor(context);

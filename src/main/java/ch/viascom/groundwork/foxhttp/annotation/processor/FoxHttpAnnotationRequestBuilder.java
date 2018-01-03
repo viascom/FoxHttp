@@ -6,6 +6,7 @@ import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
 import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
+import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.util.NamedInputStream;
 
 import java.io.File;
@@ -115,6 +116,8 @@ class FoxHttpAnnotationRequestBuilder {
                 foxHttpRequestBody = new RequestStringBody((String) bodyObject);
             } else if (Serializable.class.isAssignableFrom(bodyClass)) {
                 foxHttpRequestBody = new RequestObjectBody((Serializable) bodyObject);
+                ContentType contentType = getRequestBodyContentType(method,bodyObject);
+                foxHttpRequestBody.setOutputContentType(contentType);
             }
         }
 
@@ -133,6 +136,35 @@ class FoxHttpAnnotationRequestBuilder {
         }
 
         return null;
+    }
+
+    private static ContentType getRequestBodyContentType(Method method, Object bodyObject) {
+        Charset charset = null;
+        String mimetype = "*/*";
+        SerializeContentType serializeContentType = null;
+
+        //Check Interface
+        if (FoxHttpAnnotationUtil.hasTypeAnnotation(SerializeContentType.class, method)) {
+            serializeContentType = method.getDeclaringClass().getAnnotation(SerializeContentType.class);
+        }
+
+        //Check Method
+        if (FoxHttpAnnotationUtil.hasMethodAnnotation(SerializeContentType.class, method)) {
+            serializeContentType = method.getAnnotation(SerializeContentType.class);
+        }
+
+        //Check Model
+        if(bodyObject.getClass().isAnnotationPresent(SerializeContentType.class)){
+            serializeContentType = bodyObject.getClass().getAnnotation(SerializeContentType.class);
+        }
+
+        if(serializeContentType != null){
+            charset = Charset.forName(serializeContentType.charset());
+            mimetype = serializeContentType.mimetype();
+        }
+
+
+        return ContentType.create(mimetype, charset);
     }
 
     @SuppressWarnings("unchecked")
