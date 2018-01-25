@@ -201,7 +201,7 @@ public class FoxHttpAnnotationTest {
     @Test
     public void postObject() throws Exception {
         //Set Gson parser, register placeholder
-        FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder(new GsonParser())
+        FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()
                 .setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "Body-Request", FoxHttpLoggerLevel.DEBUG))
                 .addFoxHttpPlaceholderEntry("host", endpoint);
 

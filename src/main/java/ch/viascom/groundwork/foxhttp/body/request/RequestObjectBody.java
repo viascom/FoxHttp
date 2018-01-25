@@ -1,10 +1,13 @@
 package ch.viascom.groundwork.foxhttp.body.request;
 
+import ch.viascom.groundwork.foxhttp.annotation.types.SerializeContentType;
+import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.nio.charset.Charset;
 
 /**
  * RequestObjectBody for FoxHttp
@@ -45,12 +48,19 @@ public class RequestObjectBody extends FoxHttpRequestBody {
      * @throws FoxHttpRequestException can throw different exception based on input streams and interceptors
      */
     @Override
-    public void setBody(FoxHttpRequestBodyContext context) throws FoxHttpRequestException {
+    public void setBody(FoxHttpRequestBodyContext context) throws FoxHttpException {
         if (context.getClient().getFoxHttpRequestParser() == null) {
             throw new FoxHttpRequestException("RequestObjectBody needs a FoxHttpRequestParser to serialize the body");
         }
 
-        String json = context.getClient().getFoxHttpRequestParser().objectToSerialized(content);
+        //Check Model for SerializeContentType
+        if (content.getClass().isAnnotationPresent(SerializeContentType.class)) {
+            Charset charset = Charset.forName(content.getClass().getAnnotation(SerializeContentType.class).charset());
+            String mimeType = content.getClass().getAnnotation(SerializeContentType.class).mimeType();
+            this.outputContentType = ContentType.create(mimeType, charset);
+        }
+
+        String json = context.getClient().getFoxHttpRequestParser().objectToSerialized(content, this.outputContentType);
 
         writeBody(context, json);
     }

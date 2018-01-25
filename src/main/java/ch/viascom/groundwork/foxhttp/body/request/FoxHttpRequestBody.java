@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 
 /**
  * Abstract FoxHttpRequestBody
@@ -35,7 +36,7 @@ public abstract class FoxHttpRequestBody implements FoxHttpBody {
     @Setter
     ContentType outputContentType = ContentType.WILDCARD;
 
-    public abstract void setBody(FoxHttpRequestBodyContext context) throws FoxHttpRequestException;
+    public abstract void setBody(FoxHttpRequestBodyContext context) throws FoxHttpException;
 
     public abstract boolean hasBody();
 
@@ -53,11 +54,13 @@ public abstract class FoxHttpRequestBody implements FoxHttpBody {
             DataOutputStream wr = new DataOutputStream(outputStream);
 
             //Check for Charset and use OutputStreamWriter with the correct Charset if needed
-            if(outputContentType.getCharset() == null) {
+            if (outputContentType.getCharset() == null) {
+                context.getRequest().getFoxHttpClient().getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "writeBody()");
                 wr.writeBytes(json);
                 wr.flush();
                 wr.close();
-            }else{
+            } else {
+                context.getRequest().getFoxHttpClient().getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "writeBody(" + outputContentType.getCharset().displayName() + ")");
                 Writer osw = new OutputStreamWriter(wr, outputContentType.getCharset());
                 osw.write(json);
                 osw.flush();

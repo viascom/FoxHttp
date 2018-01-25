@@ -7,5 +7,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SerializeContentType {
     String charset();
-    String mimetype();
+    String mimeType();
 }

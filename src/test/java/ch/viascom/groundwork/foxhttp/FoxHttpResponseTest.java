@@ -3,6 +3,7 @@ package ch.viascom.groundwork.foxhttp;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpResponseException;
 import ch.viascom.groundwork.foxhttp.models.GetResponse;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URL;
@@ -17,6 +18,7 @@ public class FoxHttpResponseTest {
     private String endpoint = "http://httpbin.org/";
 
     @Test
+    @Ignore
     public void responseParserException() throws Exception {
 
         FoxHttpClient foxHttpClient = new FoxHttpClient();

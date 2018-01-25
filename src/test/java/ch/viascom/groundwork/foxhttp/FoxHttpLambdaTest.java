@@ -15,6 +15,7 @@ import ch.viascom.groundwork.foxhttp.lambda.interceptor.*;
 import ch.viascom.groundwork.foxhttp.models.PostResponse;
 import ch.viascom.groundwork.foxhttp.models.User;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
+import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
 import com.google.gson.Gson;
 import org.junit.Test;
@@ -33,7 +34,9 @@ public class FoxHttpLambdaTest {
         FoxHttpClient httpClient = new FoxHttpClientBuilder(
                 new LambdaParser(
                         (s, serializableClass) -> new Gson().fromJson(s, serializableClass),
-                        serializable -> new Gson().toJson(serializable)
+                        serializable -> new Gson().toJson(serializable),
+                        ContentType.APPLICATION_JSON,
+                        ContentType.APPLICATION_JSON
                 )
         ).build();
 
@@ -42,7 +45,7 @@ public class FoxHttpLambdaTest {
                 .build().execute().getParsedBody(PostResponse.class);
 
         assertThat(response.getUrl()).isEqualTo(endpoint + "post");
-        assertThat(response.getData()).isEqualTo(new GsonParser().objectToSerialized(new User()));
+        assertThat(response.getData()).isEqualTo(new GsonParser().objectToSerialized(new User(), ContentType.APPLICATION_JSON));
     }
 
     @Test
