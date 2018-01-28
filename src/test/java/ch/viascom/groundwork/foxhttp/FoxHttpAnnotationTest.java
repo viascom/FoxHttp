@@ -10,10 +10,7 @@ import ch.viascom.groundwork.foxhttp.interfaces.FoxHttpExceptionInterfaceTest;
 import ch.viascom.groundwork.foxhttp.interfaces.FoxHttpInterfaceTest;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.log.SystemOutFoxHttpLogger;
-import ch.viascom.groundwork.foxhttp.models.GetResponse;
-import ch.viascom.groundwork.foxhttp.models.PostResponse;
-import ch.viascom.groundwork.foxhttp.models.QueryObjectModel;
-import ch.viascom.groundwork.foxhttp.models.User;
+import ch.viascom.groundwork.foxhttp.models.*;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
 import ch.viascom.groundwork.foxhttp.util.NamedInputStream;
 import com.google.gson.Gson;
@@ -131,6 +128,9 @@ public class FoxHttpAnnotationTest {
 
         GetResponse getResponse = foxHttpInterfaceTest.objectOptionalGet(null);
         assertThat(getResponse.getArgs().entrySet().isEmpty()).isEqualTo(true);
+
+        GetResponse getEmptyObjectResponse = foxHttpInterfaceTest.objectEmptyOptionalGet(new QueryEmptyObjectModel());
+        assertThat(getEmptyObjectResponse.getArgs().entrySet().isEmpty()).isEqualTo(true);
 
         GetResponse getResponse2 = foxHttpInterfaceTest.objectGet(new QueryObjectModel("Fox", null));
         assertThat(getResponse2.getArgs().get("user-id")).isEqualTo("Fox");

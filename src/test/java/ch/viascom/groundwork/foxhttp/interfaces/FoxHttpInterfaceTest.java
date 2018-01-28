@@ -6,10 +6,7 @@ import ch.viascom.groundwork.foxhttp.annotation.types.*;
 import ch.viascom.groundwork.foxhttp.body.request.RequestStringBody;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
-import ch.viascom.groundwork.foxhttp.models.GetResponse;
-import ch.viascom.groundwork.foxhttp.models.PostResponse;
-import ch.viascom.groundwork.foxhttp.models.QueryObjectModel;
-import ch.viascom.groundwork.foxhttp.models.User;
+import ch.viascom.groundwork.foxhttp.models.*;
 import ch.viascom.groundwork.foxhttp.util.NamedInputStream;
 
 import java.util.ArrayList;
@@ -35,6 +32,10 @@ public interface FoxHttpInterfaceTest {
     @GET("get")
     @Header(name = "foo", value = "bar")
     GetResponse objectOptionalGet(@QueryObject(allowOptional = true) QueryObjectModel queryObjectModel);
+
+    @GET("get")
+    @Header(name = "foo", value = "bar")
+    GetResponse objectEmptyOptionalGet(@QueryObject(recursiveOptional = true) QueryEmptyObjectModel queryEmptyObjectModel);
 
     @GET("{path}")
     @Header(name = "foo", value = "bar")

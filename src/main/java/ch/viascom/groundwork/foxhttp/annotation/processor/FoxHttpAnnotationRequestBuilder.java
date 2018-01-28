@@ -57,7 +57,7 @@ class FoxHttpAnnotationRequestBuilder {
                 } else if (annotation instanceof QueryMap) {
                     foxHttpRequestQuery.addQueryMap((HashMap<String, String>) args[parameterPos]);
                 } else if (annotation instanceof QueryObject) {
-                    foxHttpRequestQuery.parseObjectAsQueryMap(Arrays.asList(((QueryObject) annotation).value()), args[parameterPos], ((QueryObject) annotation).parseSerializedName(), ((QueryObject) annotation).allowOptional());
+                    foxHttpRequestQuery.parseObjectAsQueryMap(Arrays.asList(((QueryObject) annotation).value()), args[parameterPos], ((QueryObject) annotation).parseSerializedName(), ((QueryObject) annotation).allowOptional(), ((QueryObject) annotation).recursiveOptional());
                 }
             }
             parameterPos++;

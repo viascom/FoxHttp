@@ -174,7 +174,7 @@ public class FoxHttpRequestTest {
 
 
         FoxHttpRequestQuery requestQuery = new FoxHttpRequestQuery();
-        requestQuery.parseObjectAsQueryMap(new ArrayList<>(Arrays.asList("name", "index", "key")), queryDataHolder, false, false);
+        requestQuery.parseObjectAsQueryMap(new ArrayList<>(Arrays.asList("name", "index", "key")), queryDataHolder, false, false, false);
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(endpoint + "get"));

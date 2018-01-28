@@ -11,10 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QueryObjectModel {
+public class QueryEmptyObjectModel {
 
-    @QueryName("user-id")
-    private String userId;
-    @QueryName(allowOptional = true)
-    private String password;
+    private String name;
 }

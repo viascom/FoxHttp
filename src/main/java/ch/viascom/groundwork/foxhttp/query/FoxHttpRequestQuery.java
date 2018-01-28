@@ -33,7 +33,7 @@ public class FoxHttpRequestQuery {
      * @param value value of the query entry
      */
     public void addQueryEntry(String name, String value) {
-        if(value != null) {
+        if (value != null) {
             queryMap.put(name, value);
         }
     }
@@ -82,7 +82,7 @@ public class FoxHttpRequestQuery {
      * @param o      object with the attributes
      * @throws FoxHttpRequestException can throw an exception if a field does not exist
      */
-    public void parseObjectAsQueryMap(List<String> params, Object o, boolean parseSerializedName, boolean allowOptional) throws FoxHttpRequestException {
+    public void parseObjectAsQueryMap(List<String> params, Object o, boolean parseSerializedName, boolean allowOptional, boolean recursiveOptional) throws FoxHttpRequestException {
 
         if (!allowOptional && o == null) {
             throw new FoxHttpRequestException("The query object parameter is not optional and can't be null because of this.");
@@ -106,15 +106,19 @@ public class FoxHttpRequestQuery {
                     field.setAccessible(true);
 
                     //Check optional
-                    if (field.getAnnotationsByType(QueryName.class).length > 0
-                            && !field.getAnnotationsByType(QueryName.class)[0].allowOptional()
-                            && field.get(o) == null) {
+                    boolean isOptional = recursiveOptional;
+                    if(field.getAnnotationsByType(QueryName.class).length > 0){
+                        isOptional = field.getAnnotationsByType(QueryName.class)[0].allowOptional();
+                    }
+
+                    if (field.get(o) == null && !isOptional) {
                         throw new FoxHttpRequestException("The query parameter attribute " + field.getName() + " in " + clazz.getSimpleName() + " is not optional and can't be null because of this.");
                     }
+                    if (field.get(o) != null) {
 
                     //Load query parameter name
                     String paramName = field.getName();
-                    if (parseSerializedName && field.getAnnotationsByType(SerializedName.class).length != 0) {
+                        if (parseSerializedName && field.getAnnotationsByType(SerializedName.class).length != 0) {
                         paramName = field.getAnnotationsByType(SerializedName.class)[0].value();
                     }
 
@@ -125,7 +129,7 @@ public class FoxHttpRequestQuery {
                     //Load query value
                     String value = String.valueOf(field.get(o));
 
-                    if (!(field.get(o) == null && field.getAnnotationsByType(QueryName.class)[0].allowOptional())) {
+
                         paramMap.put(paramName, value);
                     }
                 } catch (FoxHttpException e) {
