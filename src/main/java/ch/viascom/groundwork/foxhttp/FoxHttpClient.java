@@ -10,6 +10,7 @@ import ch.viascom.groundwork.foxhttp.interceptor.*;
 import ch.viascom.groundwork.foxhttp.log.DefaultFoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.parser.FoxHttpParser;
+import ch.viascom.groundwork.foxhttp.parser.GenericParser;
 import ch.viascom.groundwork.foxhttp.placeholder.DefaultPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.proxy.FoxHttpProxyStrategy;
@@ -31,12 +32,12 @@ public class FoxHttpClient {
     @Getter
     @Setter
     //Response parser
-    private FoxHttpParser foxHttpResponseParser;
+    private FoxHttpParser foxHttpResponseParser = new GenericParser();
 
     @Getter
     @Setter
     //Request parser
-    private FoxHttpParser foxHttpRequestParser;
+    private FoxHttpParser foxHttpRequestParser = new GenericParser();
 
     @Getter
     @Setter
@@ -137,7 +138,6 @@ public class FoxHttpClient {
      *
      * @param interceptorType    Type of the interceptor
      * @param foxHttpInterceptor Interceptor instance
-     *
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
     @Deprecated

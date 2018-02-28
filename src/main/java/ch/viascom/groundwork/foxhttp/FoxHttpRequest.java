@@ -316,7 +316,7 @@ public class FoxHttpRequest {
         }
     }
 
-    private void setRequestBodyStream() throws FoxHttpRequestException {
+    private void setRequestBodyStream() throws FoxHttpException {
         requestBody.setBody(new FoxHttpRequestBodyContext(connection, this, foxHttpClient));
     }
 

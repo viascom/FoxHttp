@@ -45,7 +45,7 @@ public class FoxHttpAnnotationInvocationHandler implements InvocationHandler {
             //Set headers
             FoxHttpAnnotationRequestBuilder.setFoxHttpRequestHeader(request.getRequestHeader(), method, args);
             //Set Body
-            FoxHttpRequestBody foxHttpRequestBody = FoxHttpAnnotationRequestBuilder.getFoxHttpRequestBody(method, args);
+            FoxHttpRequestBody foxHttpRequestBody = FoxHttpAnnotationRequestBuilder.getFoxHttpRequestBody(method, args, request.getFoxHttpClient().getFoxHttpRequestParser());
             if (foxHttpRequestBody != null) {
                 request.setRequestBody(foxHttpRequestBody);
             }

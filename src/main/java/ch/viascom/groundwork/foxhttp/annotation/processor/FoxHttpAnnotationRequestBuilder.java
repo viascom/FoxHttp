@@ -5,6 +5,7 @@ import ch.viascom.groundwork.foxhttp.body.request.*;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
+import ch.viascom.groundwork.foxhttp.parser.FoxHttpParser;
 import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.util.NamedInputStream;
@@ -96,7 +97,7 @@ class FoxHttpAnnotationRequestBuilder {
         return foxHttpRequestHeader;
     }
 
-    static FoxHttpRequestBody getFoxHttpRequestBody(Method method, Object[] args) throws FileNotFoundException, FoxHttpRequestException {
+    static FoxHttpRequestBody getFoxHttpRequestBody(Method method, Object[] args, FoxHttpParser parser) throws FileNotFoundException, FoxHttpRequestException {
         FoxHttpRequestBody foxHttpRequestBody = null;
 
         if (FoxHttpAnnotationUtil.hasMethodAnnotation(MultipartBody.class, method)) {
@@ -115,9 +116,7 @@ class FoxHttpAnnotationRequestBuilder {
             } else if (String.class.isAssignableFrom(bodyClass)) {
                 foxHttpRequestBody = new RequestStringBody((String) bodyObject);
             } else if (Serializable.class.isAssignableFrom(bodyClass)) {
-                foxHttpRequestBody = new RequestObjectBody((Serializable) bodyObject);
-                ContentType contentType = getRequestBodyContentType(method,bodyObject);
-                foxHttpRequestBody.setOutputContentType(contentType);
+                foxHttpRequestBody = new RequestObjectBody((Serializable) bodyObject, getRequestBodyContentType(method, bodyObject, parser));
             }
         }
 
@@ -138,9 +137,9 @@ class FoxHttpAnnotationRequestBuilder {
         return null;
     }
 
-    private static ContentType getRequestBodyContentType(Method method, Object bodyObject) {
-        Charset charset = null;
-        String mimetype = "*/*";
+    private static ContentType getRequestBodyContentType(Method method, Object bodyObject, FoxHttpParser parser) {
+        Charset charset = parser.getParserOutputContentType().getCharset();
+        String mimeType = parser.getParserOutputContentType().getMimeType();
         SerializeContentType serializeContentType = null;
 
         //Check Interface
@@ -154,17 +153,17 @@ class FoxHttpAnnotationRequestBuilder {
         }
 
         //Check Model
-        if(bodyObject.getClass().isAnnotationPresent(SerializeContentType.class)){
+        if (bodyObject.getClass().isAnnotationPresent(SerializeContentType.class)) {
             serializeContentType = bodyObject.getClass().getAnnotation(SerializeContentType.class);
         }
 
-        if(serializeContentType != null){
+        if (serializeContentType != null) {
             charset = Charset.forName(serializeContentType.charset());
-            mimetype = serializeContentType.mimetype();
+            mimeType = serializeContentType.mimeType();
         }
 
 
-        return ContentType.create(mimetype, charset);
+        return ContentType.create(mimeType, charset);
     }
 
     @SuppressWarnings("unchecked")
