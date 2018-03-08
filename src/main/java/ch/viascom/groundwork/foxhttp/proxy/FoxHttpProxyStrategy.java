@@ -7,6 +7,7 @@ import java.net.URL;
  * @author patrick.boesch@viascom.ch
  */
 public interface FoxHttpProxyStrategy {
+
     Proxy getProxy(URL url);
 
     String getProxyAuthorization(URL url);

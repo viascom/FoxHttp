@@ -20,17 +20,21 @@ import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.net.ssl.HttpsURLConnection;
 import java.io.InputStream;
-import java.net.*;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.net.ssl.HttpsURLConnection;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -132,7 +136,6 @@ public class FoxHttpRequest {
      * Execute a this request
      *
      * @return Response if this request
-     * @throws FoxHttpException
      */
     public FoxHttpResponse execute() throws FoxHttpException {
         return execute(foxHttpClient);
@@ -143,7 +146,6 @@ public class FoxHttpRequest {
      *
      * @param foxHttpClient a specific client which will be used for this request
      * @return Response if this request
-     * @throws FoxHttpException
      */
     public FoxHttpResponse execute(FoxHttpClient foxHttpClient) throws FoxHttpException {
         verifyRequest();
@@ -203,7 +205,6 @@ public class FoxHttpRequest {
             foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setUserAgentIfNotExist(" + foxHttpClient.getFoxHttpUserAgent() + ")");
             setHeaderIfNotExist(HeaderTypes.USER_AGENT, foxHttpClient.getFoxHttpUserAgent(), connection);
 
-
             connection.setUseCaches(false);
             connection.setDoInput(true);
             foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setDoOutput(" + doOutput() + ")");
@@ -218,7 +219,8 @@ public class FoxHttpRequest {
             if (isHttps) {
                 if (foxHttpClient.getFoxHttpSSLTrustStrategy() != null) {
                     foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setSSLSocketFactory(" + foxHttpClient.getFoxHttpSSLTrustStrategy() + ")");
-                    ((HttpsURLConnection) connection).setSSLSocketFactory(foxHttpClient.getFoxHttpSSLTrustStrategy().getSSLSocketFactory((HttpsURLConnection) connection, foxHttpClient.getFoxHttpLogger()));
+                    ((HttpsURLConnection) connection).setSSLSocketFactory(
+                        foxHttpClient.getFoxHttpSSLTrustStrategy().getSSLSocketFactory((HttpsURLConnection) connection, foxHttpClient.getFoxHttpLogger()));
                 }
                 //TODO: re-enable getFoxHttpHostTrustStrategy()
                 /*if (foxHttpClient.getFoxHttpHostTrustStrategy() != null) {
@@ -255,9 +257,7 @@ public class FoxHttpRequest {
 
             //Execute interceptor
             foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeResponseCodeInterceptor()");
-            FoxHttpInterceptorExecutor.executeResponseCodeInterceptor(
-                    new FoxHttpResponseCodeInterceptorContext(responseCode, this, foxHttpClient)
-            );
+            FoxHttpInterceptorExecutor.executeResponseCodeInterceptor(new FoxHttpResponseCodeInterceptorContext(responseCode, this, foxHttpClient));
 
             if (!skipResponseBody) {
                 InputStream is;
@@ -285,9 +285,7 @@ public class FoxHttpRequest {
 
             //Execute interceptor
             foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeResponseInterceptor()");
-            FoxHttpInterceptorExecutor.executeResponseInterceptor(
-                    new FoxHttpResponseInterceptorContext(responseCode, foxHttpResponse, this, foxHttpClient)
-            );
+            FoxHttpInterceptorExecutor.executeResponseInterceptor(new FoxHttpResponseInterceptorContext(responseCode, foxHttpResponse, this, foxHttpClient));
 
             return foxHttpResponse;
         } catch (FoxHttpException e) {
@@ -334,7 +332,8 @@ public class FoxHttpRequest {
     }
 
     private void processAuthorizationStrategy() throws FoxHttpRequestException {
-        List<FoxHttpAuthorization> foxHttpAuthorizations = foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorization(connection, authScope, foxHttpClient, foxHttpPlaceholderStrategy);
+        List<FoxHttpAuthorization> foxHttpAuthorizations = foxHttpClient.getFoxHttpAuthorizationStrategy()
+                                                                        .getAuthorization(connection, authScope, foxHttpClient, foxHttpPlaceholderStrategy);
         FoxHttpAuthorizationContext authorizationContext = new FoxHttpAuthorizationContext(connection, this, foxHttpClient);
         for (FoxHttpAuthorization foxHttpAuthorization : foxHttpAuthorizations) {
             foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "-> doAuthorization(" + foxHttpAuthorization + ")");

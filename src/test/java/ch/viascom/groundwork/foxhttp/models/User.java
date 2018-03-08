@@ -12,6 +12,6 @@ import java.io.Serializable;
 @SerializeContentType(mimeType = "application/json", charset = "UTF-8")
 public class User implements Serializable {
     private String username = "foxhttp@viascom.ch";
-    private String firstname = "Fox ö";
+    private String firstname = "Fox";
     private String lastname = "Http";
 }

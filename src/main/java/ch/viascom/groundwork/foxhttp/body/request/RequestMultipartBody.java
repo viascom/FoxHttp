@@ -4,19 +4,22 @@ import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.util.NamedInputStream;
-import lombok.Getter;
-import lombok.ToString;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
- * RequestMultipartBody for FoxHttp
- * <p>
- * Stores multiple data for a request body
+ * RequestMultipartBody for FoxHttp <p> Stores multiple data for a request body
  *
  * @author patrick.boesch@viascom.ch
  */
@@ -35,8 +38,7 @@ public class RequestMultipartBody extends FoxHttpRequestBody {
     private PrintWriter writer;
 
     /**
-     * Create a new RequestMultipartBody
-     * <i>lineFeed is set to \n</i>
+     * Create a new RequestMultipartBody <i>lineFeed is set to \n</i>
      *
      * @param charset used charset for the body
      */
@@ -47,7 +49,7 @@ public class RequestMultipartBody extends FoxHttpRequestBody {
     /**
      * Create a new RequestMultipartBody
      *
-     * @param charset  used charset for the body
+     * @param charset used charset for the body
      * @param lineFeed linefeed used for the body
      */
     public RequestMultipartBody(Charset charset, String lineFeed) {
@@ -113,7 +115,7 @@ public class RequestMultipartBody extends FoxHttpRequestBody {
     /**
      * Adds a form field to the request
      *
-     * @param name  field name
+     * @param name field name
      * @param value field value
      */
     public void addFormField(String name, String value) {
@@ -134,9 +136,8 @@ public class RequestMultipartBody extends FoxHttpRequestBody {
     /**
      * Adds a file to the request
      *
-     * @param fieldName  name attribute
+     * @param fieldName name attribute
      * @param uploadFile a File to be uploaded
-     * @throws FileNotFoundException
      */
     public void addFilePart(String fieldName, File uploadFile) throws FileNotFoundException {
         stream.put(fieldName, new NamedInputStream(uploadFile.getName(), new FileInputStream(uploadFile), "binary", URLConnection.guessContentTypeFromName(uploadFile.getName())));
@@ -145,11 +146,7 @@ public class RequestMultipartBody extends FoxHttpRequestBody {
     /**
      * Adds an inputstream to te request
      *
-     * @param name
-     * @param inputStreamName
-     * @param inputStream
      * @param contentTransferEncoding usually binary
-     * @param contentType
      */
     public void addInputStreamPart(String name, String inputStreamName, InputStream inputStream, String contentTransferEncoding, String contentType) {
         stream.put(name, new NamedInputStream(inputStreamName, inputStream, contentTransferEncoding, contentType));
@@ -158,7 +155,12 @@ public class RequestMultipartBody extends FoxHttpRequestBody {
     private void processStream() throws IOException {
         for (Map.Entry<String, NamedInputStream> entry : stream.entrySet()) {
             writer.append("--").append(boundary).append(lineFeed);
-            writer.append("Content-Disposition: form-data; name=\"").append(entry.getKey()).append("\"; filename=\"").append(entry.getValue().getName()).append("\"").append(lineFeed);
+            writer.append("Content-Disposition: form-data; name=\"")
+                  .append(entry.getKey())
+                  .append("\"; filename=\"")
+                  .append(entry.getValue().getName())
+                  .append("\"")
+                  .append(lineFeed);
             writer.append("Content-Type: ").append(entry.getValue().getType()).append(lineFeed);
             writer.append("Content-Transfer-Encoding: ").append(entry.getValue().getContentTransferEncoding()).append(lineFeed);
             writer.append(lineFeed);
@@ -176,6 +178,5 @@ public class RequestMultipartBody extends FoxHttpRequestBody {
             writer.flush();
         }
     }
-
 
 }

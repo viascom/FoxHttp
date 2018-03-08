@@ -3,10 +3,9 @@ package ch.viascom.groundwork.foxhttp.parser;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
-import lombok.Getter;
-
 import java.io.Serializable;
 import java.util.HashMap;
+import lombok.Getter;
 
 public class GenericParser implements FoxHttpParser {
 

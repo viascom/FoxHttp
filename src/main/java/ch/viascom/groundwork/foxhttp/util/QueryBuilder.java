@@ -1,7 +1,6 @@
 package ch.viascom.groundwork.foxhttp.util;
 
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -22,10 +21,6 @@ public class QueryBuilder {
 
     /**
      * Return a string of key/value pair's based on a map
-     *
-     * @param entries
-     * @return
-     * @throws FoxHttpRequestException
      */
     public static String buildQuery(Map<String, String> entries) throws FoxHttpRequestException {
         return buildQuery(entries, "UTF-8");
@@ -33,11 +28,6 @@ public class QueryBuilder {
 
     /**
      * Return a string of key/value pair's based on a map
-     *
-     * @param entries
-     * @param encoding
-     * @return
-     * @throws FoxHttpRequestException
      */
     public static String buildQuery(Map<String, String> entries, String encoding) throws FoxHttpRequestException {
         if (entries.size() > 0) {

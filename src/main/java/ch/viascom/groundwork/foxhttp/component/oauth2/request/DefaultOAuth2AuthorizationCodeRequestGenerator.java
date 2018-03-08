@@ -5,7 +5,6 @@ import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.component.oauth2.OAuth2Component;
 import ch.viascom.groundwork.foxhttp.component.oauth2.OAuth2Store;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
-
 import java.net.MalformedURLException;
 import java.util.HashMap;
 
@@ -13,6 +12,7 @@ import java.util.HashMap;
  * @author patrick.boesch@viascom.ch
  */
 public class DefaultOAuth2AuthorizationCodeRequestGenerator extends OAuth2RequestGenerator {
+
     @Override
     public FoxHttpRequest getRequest(OAuth2Component oAuth2Component) throws MalformedURLException, FoxHttpRequestException, InstantiationException, IllegalAccessException {
         OAuth2Store oAuth2Store = oAuth2Component.getOAuth2Store();

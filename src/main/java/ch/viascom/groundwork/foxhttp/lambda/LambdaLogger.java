@@ -2,7 +2,6 @@ package ch.viascom.groundwork.foxhttp.lambda;
 
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
-
 import java.util.function.BiConsumer;
 
 /**
@@ -19,17 +18,13 @@ public class LambdaLogger implements FoxHttpLogger {
     }
 
     @Override
-    public void setLoggingEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    @Override
     public boolean isLoggingEnabled() {
         return enabled;
     }
 
     @Override
-    public void setName(String name) {
+    public void setLoggingEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -38,13 +33,17 @@ public class LambdaLogger implements FoxHttpLogger {
     }
 
     @Override
-    public void setLogLevel(FoxHttpLoggerLevel logLevel) {
-        this.foxHttpLoggerLevel = logLevel;
+    public void setName(String name) {
     }
 
     @Override
     public FoxHttpLoggerLevel getLogLevel() {
         return foxHttpLoggerLevel;
+    }
+
+    @Override
+    public void setLogLevel(FoxHttpLoggerLevel logLevel) {
+        this.foxHttpLoggerLevel = logLevel;
     }
 
     @Override
@@ -65,5 +64,6 @@ public class LambdaLogger implements FoxHttpLogger {
     }
 
     public interface LoggerMethod extends BiConsumer<String, FoxHttpLoggerLevel> {
+
     }
 }

@@ -20,7 +20,6 @@ import ch.viascom.groundwork.foxhttp.ssl.FoxHttpHostTrustStrategy;
 import ch.viascom.groundwork.foxhttp.ssl.FoxHttpSSLTrustStrategy;
 import ch.viascom.groundwork.foxhttp.timeout.FoxHttpTimeoutStrategy;
 import ch.viascom.groundwork.foxhttp.timeout.UserDefinedTimeoutStrategy;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,7 @@ public class FoxHttpClientBuilder {
     /**
      * Create a new builder with a default FoxHttpClient except for the request and response parser
      *
-     * @param foxHttpRequestParser  a request parser
+     * @param foxHttpRequestParser a request parser
      * @param foxHttpResponseParser a response parser
      */
     public FoxHttpClientBuilder(FoxHttpParser foxHttpRequestParser, FoxHttpParser foxHttpResponseParser) {
@@ -80,14 +79,13 @@ public class FoxHttpClientBuilder {
      * Create a new builder with a default FoxHttpClient except for the host and ssl trust strategy
      *
      * @param foxHttpHostTrustStrategy a host trust strategy
-     * @param foxHttpSSLTrustStrategy  a ssl trust strategy
+     * @param foxHttpSSLTrustStrategy a ssl trust strategy
      */
     public FoxHttpClientBuilder(FoxHttpHostTrustStrategy foxHttpHostTrustStrategy, FoxHttpSSLTrustStrategy foxHttpSSLTrustStrategy) {
         foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpHostTrustStrategy(foxHttpHostTrustStrategy);
         foxHttpClient.setFoxHttpSSLTrustStrategy(foxHttpSSLTrustStrategy);
     }
-
 
     // -- Setters
 
@@ -146,8 +144,7 @@ public class FoxHttpClientBuilder {
     }
 
     /**
-     * Define a map of FoxHttpInterceptors
-     * <i>This will override the existing map of interceptors</i>
+     * Define a map of FoxHttpInterceptors <i>This will override the existing map of interceptors</i>
      *
      * @param interceptors Map of interceptors
      * @return FoxHttpClientBuilder (this)
@@ -160,7 +157,7 @@ public class FoxHttpClientBuilder {
     /**
      * Add an interceptor
      *
-     * @param interceptorType    Type of the interceptor
+     * @param interceptorType Type of the interceptor
      * @param foxHttpInterceptor Interceptor instance
      * @return FoxHttpClientBuilder (this)
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
@@ -173,9 +170,9 @@ public class FoxHttpClientBuilder {
     /**
      * Add an interceptor
      *
-     * @param interceptorType    Type of the interceptor
+     * @param interceptorType Type of the interceptor
      * @param foxHttpInterceptor Interceptor instance
-     * @param key                key of the interceptor
+     * @param key key of the interceptor
      * @return FoxHttpClientBuilder (this)
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
@@ -256,7 +253,7 @@ public class FoxHttpClientBuilder {
      * Add an Authorization to the AuthorizationStrategy
      *
      * @param foxHttpAuthorizationScope Scope of the authorization
-     * @param foxHttpAuthorization      Authorization itself
+     * @param foxHttpAuthorization Authorization itself
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpClientBuilder addFoxHttpAuthorization(FoxHttpAuthorizationScope foxHttpAuthorizationScope, FoxHttpAuthorization foxHttpAuthorization) {
@@ -268,7 +265,7 @@ public class FoxHttpClientBuilder {
      * Add an Authorization to the AuthorizationStrategy
      *
      * @param foxHttpAuthorizationScopes Scopes of the authorization
-     * @param foxHttpAuthorization       Authorization itself
+     * @param foxHttpAuthorization Authorization itself
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpClientBuilder addFoxHttpAuthorization(List<FoxHttpAuthorizationScope> foxHttpAuthorizationScopes, FoxHttpAuthorization foxHttpAuthorization) {
@@ -291,7 +288,7 @@ public class FoxHttpClientBuilder {
      * Set undefined timeouts
      *
      * @param connectionTimeout timeout of connection establishment
-     * @param readTimeout       timeout of reading response
+     * @param readTimeout timeout of reading response
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpClientBuilder setFoxHttpTimeouts(int connectionTimeout, int readTimeout) {
@@ -347,7 +344,7 @@ public class FoxHttpClientBuilder {
      * Add a FoxHttpPlaceholderEntry to the FoxHttpPlaceholderStrategy
      *
      * @param placeholder name of the placeholder (without escape char)
-     * @param value       value of the placeholder
+     * @param value value of the placeholder
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpClientBuilder addFoxHttpPlaceholderEntry(String placeholder, String value) {
@@ -370,7 +367,7 @@ public class FoxHttpClientBuilder {
      * Set a Logger
      *
      * @param foxHttpLogger a logger
-     * @param activate      activate the logger
+     * @param activate activate the logger
      * @return FoxHttpClientBuilder (this)
      */
     public FoxHttpClientBuilder setFoxHttpLogger(FoxHttpLogger foxHttpLogger, boolean activate) {

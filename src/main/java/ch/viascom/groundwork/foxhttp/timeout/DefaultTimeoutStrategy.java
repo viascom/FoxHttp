@@ -11,6 +11,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class DefaultTimeoutStrategy implements FoxHttpTimeoutStrategy {
+
     private int connectionTimeout = 0;
     private int readTimeout = 0;
 }

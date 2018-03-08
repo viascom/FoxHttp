@@ -8,12 +8,11 @@ import ch.viascom.groundwork.foxhttp.response.FoxHttpResponseParser;
 import ch.viascom.groundwork.foxhttp.response.serviceresult.DefaultServiceResultHasher;
 import ch.viascom.groundwork.foxhttp.response.serviceresult.FoxHttpServiceResultResponse;
 import ch.viascom.groundwork.foxhttp.response.serviceresult.ServiceResult;
-import lombok.Getter;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
+import lombok.Getter;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -32,7 +31,7 @@ public class FoxHttpAnnotationParser {
     /**
      * Add a new response parser to the annotation parser
      *
-     * @param annotation     a annotation
+     * @param annotation a annotation
      * @param responseParser a response parser
      */
     public void addResponseParser(Class<? extends Annotation> annotation, FoxHttpResponseParser responseParser) {
@@ -43,10 +42,9 @@ public class FoxHttpAnnotationParser {
      * Parse the given interface for the use of FoxHttp
      *
      * @param serviceInterface interface to parse
-     * @param foxHttpClient    FoxHttpClient to use
-     * @param <T>              interface class to parse
+     * @param foxHttpClient FoxHttpClient to use
+     * @param <T> interface class to parse
      * @return Proxy of the interface
-     * @throws FoxHttpRequestException
      */
     @SuppressWarnings("unchecked")
     public <T> T parseInterface(final Class<T> serviceInterface, FoxHttpClient foxHttpClient) throws FoxHttpException {
@@ -58,17 +56,16 @@ public class FoxHttpAnnotationParser {
                 FoxHttpMethodParser foxHttpMethodParser = new FoxHttpMethodParser();
                 foxHttpMethodParser.parseMethod(method, foxHttpClient);
 
-                FoxHttpRequestBuilder foxHttpRequestBuilder = new FoxHttpRequestBuilder(foxHttpMethodParser.getUrl(), foxHttpMethodParser.getRequestType(), foxHttpClient)
-                        .setRequestHeader(foxHttpMethodParser.getHeaderFields())
-                        .setSkipResponseBody(foxHttpMethodParser.isSkipResponseBody())
-                        .setFollowRedirect(foxHttpMethodParser.isFollowRedirect());
+                FoxHttpRequestBuilder foxHttpRequestBuilder = new FoxHttpRequestBuilder(foxHttpMethodParser.getUrl(), foxHttpMethodParser.getRequestType(),
+                    foxHttpClient).setRequestHeader(foxHttpMethodParser.getHeaderFields())
+                                  .setSkipResponseBody(foxHttpMethodParser.isSkipResponseBody())
+                                  .setFollowRedirect(foxHttpMethodParser.isFollowRedirect());
 
                 requestCache.put(method, foxHttpRequestBuilder);
             }
 
-
-            return (T) Proxy.newProxyInstance(serviceInterface.getClassLoader(),
-                    new Class[]{serviceInterface}, new FoxHttpAnnotationInvocationHandler(requestCache, responseParsers));
+            return (T) Proxy.newProxyInstance(serviceInterface.getClassLoader(), new Class[]{serviceInterface},
+                new FoxHttpAnnotationInvocationHandler(requestCache, responseParsers));
         } catch (FoxHttpException e) {
             throw e;
         } catch (Exception e) {

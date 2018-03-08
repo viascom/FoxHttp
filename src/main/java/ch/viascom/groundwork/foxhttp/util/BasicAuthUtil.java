@@ -1,7 +1,6 @@
 package ch.viascom.groundwork.foxhttp.util;
 
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;

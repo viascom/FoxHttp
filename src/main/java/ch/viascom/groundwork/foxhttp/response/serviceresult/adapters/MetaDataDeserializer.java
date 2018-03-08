@@ -5,7 +5,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-
 import java.io.Serializable;
 import java.lang.reflect.Type;
 
@@ -13,6 +12,7 @@ import java.lang.reflect.Type;
  * @author patrick.boesch@viascom.ch
  */
 public class MetaDataDeserializer implements JsonDeserializer<Metadata> {
+
     @Override
     public Metadata deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 

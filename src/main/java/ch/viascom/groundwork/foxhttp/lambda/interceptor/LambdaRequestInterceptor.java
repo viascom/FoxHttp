@@ -3,10 +3,9 @@ package ch.viascom.groundwork.foxhttp.lambda.interceptor;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.interceptor.request.FoxHttpRequestInterceptor;
 import ch.viascom.groundwork.foxhttp.interceptor.request.context.FoxHttpRequestInterceptorContext;
+import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.function.Consumer;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -24,5 +23,6 @@ public class LambdaRequestInterceptor implements FoxHttpRequestInterceptor {
     }
 
     public interface LambdaRequestOnIntercept extends Consumer<FoxHttpRequestInterceptorContext> {
+
     }
 }

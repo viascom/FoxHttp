@@ -1,9 +1,7 @@
 package ch.viascom.groundwork.foxhttp.parser;
 
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
-import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
-
 import java.io.Serializable;
 
 /**

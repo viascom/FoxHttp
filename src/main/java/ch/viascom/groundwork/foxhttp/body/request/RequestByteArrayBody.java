@@ -2,26 +2,24 @@ package ch.viascom.groundwork.foxhttp.body.request;
 
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * RequestByteArrayBody for FoxHttp
- * <p>
- * Stores an ByteArray for a request body.
+ * RequestByteArrayBody for FoxHttp <p> Stores an ByteArray for a request body.
  *
  * @author patrick.boesch@viascom.ch
  */
 public class RequestByteArrayBody extends FoxHttpRequestBody {
+
     private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private ContentType outputContentType;
 
     /**
      * Create a new RequestByteArrayBody
      *
-     * @param outputStream      content of the body as ByteArrayOutputStream
+     * @param outputStream content of the body as ByteArrayOutputStream
      * @param outputContentType defines the content of the ByteArrayOutputStream
      */
     public RequestByteArrayBody(ByteArrayOutputStream outputStream, ContentType outputContentType) {
@@ -32,7 +30,7 @@ public class RequestByteArrayBody extends FoxHttpRequestBody {
     /**
      * Create a new RequestByteArrayBody
      *
-     * @param inputStream       content of the body as InputStream
+     * @param inputStream content of the body as InputStream
      * @param outputContentType defines the content of the InputStream
      */
     public RequestByteArrayBody(InputStream inputStream, ContentType outputContentType) throws IOException {

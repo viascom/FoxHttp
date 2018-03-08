@@ -14,6 +14,7 @@ import org.joda.time.DateTime;
  * @author patrick.boesch@viascom.ch
  */
 public class DefaultOAuth2RequestExecutor implements OAuth2RequestExecutor {
+
     public void executeOAuth2Request(FoxHttpRequest foxHttpRequest, OAuth2Component oAuth2Component) throws FoxHttpException {
         FoxHttpResponse response = foxHttpRequest.execute();
         if (response.getResponseCode() == 200) {
@@ -22,9 +23,9 @@ public class DefaultOAuth2RequestExecutor implements OAuth2RequestExecutor {
             oAuth2Component.getOAuth2Store().setRefreshToken(tokenResponse.getRefreshToken());
             oAuth2Component.getOAuth2Store().setAccessTokenTime(new DateTime());
             oAuth2Component.getOAuth2Store().setExpirationTimeSeconds(tokenResponse.getExpiresInSeconds());
-            oAuth2Component.getOAuth2Store().setAccessTokenExpirationTime(
-                    oAuth2Component.getOAuth2Store().getAccessTokenTime().plusSeconds(oAuth2Component.getOAuth2Store().getExpirationTimeSeconds().intValue())
-            );
+            oAuth2Component.getOAuth2Store()
+                           .setAccessTokenExpirationTime(
+                               oAuth2Component.getOAuth2Store().getAccessTokenTime().plusSeconds(oAuth2Component.getOAuth2Store().getExpirationTimeSeconds().intValue()));
             oAuth2Component.getOAuth2Store().setScopes(tokenResponse.getScope());
 
             for (FoxHttpAuthorizationScope scope : oAuth2Component.getOAuth2Store().getAuthScopes()) {

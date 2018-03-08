@@ -7,5 +7,6 @@ import ch.viascom.groundwork.foxhttp.response.FoxHttpResultHasher;
  */
 @FunctionalInterface
 public interface FoxHttpServiceResultHasher extends FoxHttpResultHasher {
+
     String hash(Object result, String rawBody);
 }

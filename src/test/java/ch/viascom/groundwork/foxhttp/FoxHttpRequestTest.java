@@ -440,7 +440,7 @@ public class FoxHttpRequestTest {
 
         assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAllAuthorizationsFromScope(FoxHttpAuthorizationScope.ANY).size()).isEqualTo(4);
         assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAllAuthorizationsFromScopeAsArray(FoxHttpAuthorizationScope.ANY).size()).isEqualTo(4);
-        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorizationByClass(FoxHttpAuthorizationScope.ANY, RemoveMeAuthorization.class).size()).isEqualTo(2);
+        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorizationsByClass(FoxHttpAuthorizationScope.ANY, RemoveMeAuthorization.class).size()).isEqualTo(2);
 
 
         foxHttpClient.getFoxHttpAuthorizationStrategy().removeAuthorizationByClass(FoxHttpAuthorizationScope.ANY, RemoveMeAuthorization.class);

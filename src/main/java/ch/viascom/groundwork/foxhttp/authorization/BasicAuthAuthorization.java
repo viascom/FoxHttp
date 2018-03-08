@@ -3,12 +3,14 @@ package ch.viascom.groundwork.foxhttp.authorization;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.util.BasicAuthUtil;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * Basic Auth for FoxHttp
- * <p>
- * This FoxHttpAuthorization will create a header with data for a basic authentication.
+ * Basic Auth for FoxHttp <p> This FoxHttpAuthorization will create a header with data for a basic authentication.
  *
  * @author patrick.boesch@viascom.ch
  */
@@ -24,8 +26,8 @@ public class BasicAuthAuthorization implements FoxHttpAuthorization {
 
     @Override
     public void doAuthorization(FoxHttpAuthorizationContext authorizationContext, FoxHttpAuthorizationScope foxHttpAuthorizationScope) throws FoxHttpRequestException {
-        authorizationContext.getUrlConnection().setRequestProperty(HeaderTypes.AUTHORIZATION.toString(), "Basic " + BasicAuthUtil.getBasicAuthenticationEncoding(username, password));
+        authorizationContext.getUrlConnection()
+                            .setRequestProperty(HeaderTypes.AUTHORIZATION.toString(), "Basic " + BasicAuthUtil.getBasicAuthenticationEncoding(username, password));
     }
-
 
 }

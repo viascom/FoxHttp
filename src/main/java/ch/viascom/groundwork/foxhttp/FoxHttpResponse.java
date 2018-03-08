@@ -9,12 +9,17 @@ import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpRespons
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -44,9 +49,7 @@ public class FoxHttpResponse {
 
             //Execute interceptor
             foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeResponseBodyInterceptor()");
-            FoxHttpInterceptorExecutor.executeResponseBodyInterceptor(
-                    new FoxHttpResponseBodyInterceptorContext(responseCode, this, foxHttpRequest, foxHttpClient)
-            );
+            FoxHttpInterceptorExecutor.executeResponseBodyInterceptor(new FoxHttpResponseBodyInterceptorContext(responseCode, this, foxHttpRequest, foxHttpClient));
         }
     }
 
@@ -104,8 +107,7 @@ public class FoxHttpResponse {
     }
 
     /**
-     * Get the parsed result
-     * <i>uses the response parser of the FoxHttpClient</i>
+     * Get the parsed result <i>uses the response parser of the FoxHttpClient</i>
      *
      * @param parseClass class of the return object
      * @return deserialized result
@@ -124,10 +126,9 @@ public class FoxHttpResponse {
     }
 
     /**
-     * Get the parsed result
-     * <i>uses the response parser of the FoxHttpClient</i>
+     * Get the parsed result <i>uses the response parser of the FoxHttpClient</i>
      *
-     * @param parseClass  class of the return object
+     * @param parseClass class of the return object
      * @param contentType content type used to parse body
      * @return deserialized result
      * @throws FoxHttpResponseException Exception during the deserialization

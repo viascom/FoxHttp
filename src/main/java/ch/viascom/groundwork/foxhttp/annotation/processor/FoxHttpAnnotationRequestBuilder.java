@@ -1,7 +1,26 @@
 package ch.viascom.groundwork.foxhttp.annotation.processor;
 
-import ch.viascom.groundwork.foxhttp.annotation.types.*;
-import ch.viascom.groundwork.foxhttp.body.request.*;
+import static ch.viascom.groundwork.foxhttp.annotation.processor.FoxHttpAnnotationUtil.getParameterAnnotationTpe;
+
+import ch.viascom.groundwork.foxhttp.annotation.types.Body;
+import ch.viascom.groundwork.foxhttp.annotation.types.Field;
+import ch.viascom.groundwork.foxhttp.annotation.types.FieldMap;
+import ch.viascom.groundwork.foxhttp.annotation.types.FormUrlEncodedBody;
+import ch.viascom.groundwork.foxhttp.annotation.types.HeaderField;
+import ch.viascom.groundwork.foxhttp.annotation.types.HeaderFieldMap;
+import ch.viascom.groundwork.foxhttp.annotation.types.MultipartBody;
+import ch.viascom.groundwork.foxhttp.annotation.types.Part;
+import ch.viascom.groundwork.foxhttp.annotation.types.PartMap;
+import ch.viascom.groundwork.foxhttp.annotation.types.Path;
+import ch.viascom.groundwork.foxhttp.annotation.types.Query;
+import ch.viascom.groundwork.foxhttp.annotation.types.QueryMap;
+import ch.viascom.groundwork.foxhttp.annotation.types.QueryObject;
+import ch.viascom.groundwork.foxhttp.annotation.types.SerializeContentType;
+import ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody;
+import ch.viascom.groundwork.foxhttp.body.request.RequestMultipartBody;
+import ch.viascom.groundwork.foxhttp.body.request.RequestObjectBody;
+import ch.viascom.groundwork.foxhttp.body.request.RequestStringBody;
+import ch.viascom.groundwork.foxhttp.body.request.RequestUrlEncodedFormBody;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
@@ -9,16 +28,17 @@ import ch.viascom.groundwork.foxhttp.parser.FoxHttpParser;
 import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.util.NamedInputStream;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
-import java.util.*;
-
-import static ch.viascom.groundwork.foxhttp.annotation.processor.FoxHttpAnnotationUtil.getParameterAnnotationTpe;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -58,7 +78,8 @@ class FoxHttpAnnotationRequestBuilder {
                 } else if (annotation instanceof QueryMap) {
                     foxHttpRequestQuery.addQueryMap((HashMap<String, String>) args[parameterPos]);
                 } else if (annotation instanceof QueryObject) {
-                    foxHttpRequestQuery.parseObjectAsQueryMap(Arrays.asList(((QueryObject) annotation).value()), args[parameterPos], ((QueryObject) annotation).parseSerializedName(), ((QueryObject) annotation).allowOptional(), ((QueryObject) annotation).recursiveOptional());
+                    foxHttpRequestQuery.parseObjectAsQueryMap(Arrays.asList(((QueryObject) annotation).value()), args[parameterPos],
+                        ((QueryObject) annotation).parseSerializedName(), ((QueryObject) annotation).allowOptional(), ((QueryObject) annotation).recursiveOptional());
                 }
             }
             parameterPos++;
@@ -162,7 +183,6 @@ class FoxHttpAnnotationRequestBuilder {
             mimeType = serializeContentType.mimeType();
         }
 
-
         return ContentType.create(mimeType, charset);
     }
 
@@ -184,12 +204,8 @@ class FoxHttpAnnotationRequestBuilder {
                         requestMultipartBody.addFormField(part.value(), (args[parameterPos] != null ? args[parameterPos].toString() : null));
                     } else if (args[parameterPos] instanceof NamedInputStream) {
                         NamedInputStream namedInputStream = (NamedInputStream) args[parameterPos];
-                        requestMultipartBody.addInputStreamPart(part.value(),
-                                namedInputStream.getName(),
-                                namedInputStream.getInputStream(),
-                                namedInputStream.getContentTransferEncoding(),
-                                namedInputStream.getType()
-                        );
+                        requestMultipartBody.addInputStreamPart(part.value(), namedInputStream.getName(), namedInputStream.getInputStream(),
+                            namedInputStream.getContentTransferEncoding(), namedInputStream.getType());
                     } else {
                         throw new FoxHttpRequestException("@Part annotation does not support " + args[parameterPos].getClass());
                     }

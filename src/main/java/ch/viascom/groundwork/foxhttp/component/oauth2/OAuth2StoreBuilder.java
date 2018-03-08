@@ -2,7 +2,6 @@ package ch.viascom.groundwork.foxhttp.component.oauth2;
 
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationScope;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
-
 import java.util.List;
 import java.util.Map;
 
@@ -100,7 +99,7 @@ public class OAuth2StoreBuilder {
      * @param username Username for password grant type
      * @return OAuth2StoreBuilder (this)
      */
-    public OAuth2StoreBuilder setUsername(String username){
+    public OAuth2StoreBuilder setUsername(String username) {
         oAuth2Store.setUsername(username);
         return this;
     }
@@ -111,7 +110,7 @@ public class OAuth2StoreBuilder {
      * @param password Password for password grant type
      * @return OAuth2StoreBuilder (this)
      */
-    public OAuth2StoreBuilder setPassword(String password){
+    public OAuth2StoreBuilder setPassword(String password) {
         oAuth2Store.setPassword(password);
         return this;
     }
@@ -122,7 +121,7 @@ public class OAuth2StoreBuilder {
      * @param clientId Client id for Client Credentials
      * @return OAuth2StoreBuilder (this)
      */
-    public OAuth2StoreBuilder setClientId(String clientId){
+    public OAuth2StoreBuilder setClientId(String clientId) {
         oAuth2Store.setClientId(clientId);
         return this;
     }
@@ -133,7 +132,7 @@ public class OAuth2StoreBuilder {
      * @param clientSecret Client secret for Client Credentials
      * @return OAuth2StoreBuilder (this)
      */
-    public OAuth2StoreBuilder setClientSecret(String clientSecret){
+    public OAuth2StoreBuilder setClientSecret(String clientSecret) {
         oAuth2Store.setClientSecret(clientSecret);
         return this;
     }
@@ -141,31 +140,33 @@ public class OAuth2StoreBuilder {
     /**
      * Set true if Client Credentials should be used for all token requests
      *
-     * IMPORTANT: If you set activateClientCredentialsUse to true you have to use the {@link #setClientId(String) setClientId}
-     * and {@link #setClientSecret(String) setClientSecret} methods as well.
+     * IMPORTANT: If you set activateClientCredentialsUse to true you have to use the {@link #setClientId(String) setClientId} and {@link #setClientSecret(String) setClientSecret}
+     * methods as well.
      *
      * @return OAuth2StoreBuilder (this)
      */
-    public OAuth2StoreBuilder activateClientCredentialsUse(){
+    public OAuth2StoreBuilder activateClientCredentialsUse() {
         oAuth2Store.setUseClientCredentials(true);
         return this;
     }
 
     /**
      * Set authorization Code for AuthorizationCode grant type
+     *
      * @param authorizationCode Authorization Code for AuthorizationCode grant type
      * @return OAuth2StoreBuilder (this)
      */
-    public OAuth2StoreBuilder setAuthorizationCode(String authorizationCode){
+    public OAuth2StoreBuilder setAuthorizationCode(String authorizationCode) {
         oAuth2Store.setAuthorizationCode(authorizationCode);
         return this;
     }
 
     /**
      * Get the OAuth2Store of this builder
+     *
      * @return OAuth2Store
      */
-    public OAuth2Store build(){
+    public OAuth2Store build() {
         return oAuth2Store;
     }
 }

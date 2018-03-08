@@ -4,9 +4,8 @@ import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorization;
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationContext;
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationScope;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
-import lombok.AllArgsConstructor;
-
 import java.util.function.BiConsumer;
+import lombok.AllArgsConstructor;
 
 /**
  * @author patrick.boesch@viascom.ch

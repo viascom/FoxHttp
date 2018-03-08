@@ -13,8 +13,9 @@ import ch.viascom.groundwork.foxhttp.interceptor.response.FoxHttpResponseInterce
  * @author patrick.boesch@viascom.ch
  */
 public enum FoxHttpInterceptorType {
-    REQUEST(FoxHttpRequestInterceptor.class), REQUEST_CONNECTION(FoxHttpRequestConnectionInterceptor.class), REQUEST_HEADER(FoxHttpRequestHeaderInterceptor.class), REQUEST_BODY(FoxHttpRequestBodyInterceptor.class),
-    RESPONSE(FoxHttpResponseInterceptor.class), RESPONSE_BODY(FoxHttpResponseBodyInterceptor.class), RESPONSE_CODE(FoxHttpResponseCodeInterceptor.class);
+    REQUEST(FoxHttpRequestInterceptor.class), REQUEST_CONNECTION(FoxHttpRequestConnectionInterceptor.class), REQUEST_HEADER(FoxHttpRequestHeaderInterceptor.class), REQUEST_BODY(
+        FoxHttpRequestBodyInterceptor.class), RESPONSE(FoxHttpResponseInterceptor.class), RESPONSE_BODY(FoxHttpResponseBodyInterceptor.class), RESPONSE_CODE(
+        FoxHttpResponseCodeInterceptor.class);
 
     private Class<? extends FoxHttpInterceptor> interceptorClass;
 

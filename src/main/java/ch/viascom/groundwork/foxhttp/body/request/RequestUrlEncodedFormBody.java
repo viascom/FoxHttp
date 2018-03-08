@@ -3,22 +3,20 @@ package ch.viascom.groundwork.foxhttp.body.request;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.util.QueryBuilder;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * RequestUrlEncodedFormBody for FoxHttp
- * <p>
- * Stores a fromData map for a request body.
+ * RequestUrlEncodedFormBody for FoxHttp <p> Stores a fromData map for a request body.
  *
  * @author patrick.boesch@viascom.ch
  */
 @ToString
 public class RequestUrlEncodedFormBody extends FoxHttpRequestBody {
+
     @Getter
     @Setter
     private Map<String, String> formData = new HashMap<>();
@@ -43,7 +41,7 @@ public class RequestUrlEncodedFormBody extends FoxHttpRequestBody {
     /**
      * Add a new form data entry
      *
-     * @param key   key of the entry
+     * @param key key of the entry
      * @param value value of the entry
      */
     public void addFormEntry(String key, String value) {

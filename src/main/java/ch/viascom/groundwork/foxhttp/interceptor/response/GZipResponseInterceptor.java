@@ -2,10 +2,9 @@ package ch.viascom.groundwork.foxhttp.interceptor.response;
 
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseInterceptorContext;
-import lombok.Getter;
-
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
+import lombok.Getter;
 
 /**
  * GZipResponseInterceptor automatically
@@ -29,8 +28,8 @@ public class GZipResponseInterceptor implements FoxHttpResponseInterceptor {
     @Override
     public void onIntercept(FoxHttpResponseInterceptorContext context) throws FoxHttpException {
         try {
-            if (context.getFoxHttpResponse().getResponseHeaders().getHeader("Content-Encoding") != null &&
-                    "gzip".equals(context.getFoxHttpResponse().getResponseHeaders().getHeader("Content-Encoding").getValue())) {
+            if (context.getFoxHttpResponse().getResponseHeaders().getHeader("Content-Encoding") != null && "gzip".equals(
+                context.getFoxHttpResponse().getResponseHeaders().getHeader("Content-Encoding").getValue())) {
                 InputStream is = new GZIPInputStream(context.getFoxHttpResponse().getInputStreamBody());
                 context.getFoxHttpResponse().getResponseBody().setBody(is, true);
             }

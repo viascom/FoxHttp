@@ -7,8 +7,6 @@ import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.response.FoxHttpResponseParser;
-import lombok.AllArgsConstructor;
-
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -17,6 +15,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.AllArgsConstructor;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -70,8 +69,7 @@ public class FoxHttpAnnotationInvocationHandler implements InvocationHandler {
                         } else {
                             Method valueMethod = method.getAnnotation(entry.getKey()).getClass().getMethod("value");
                             boolean checkHash = (boolean) valueMethod.invoke(method.getAnnotation(entry.getKey()));
-                            return entry.getValue().parseResult(request.execute())
-                                    .getContent((Class<Serializable>) method.getReturnType(), checkHash);
+                            return entry.getValue().parseResult(request.execute()).getContent((Class<Serializable>) method.getReturnType(), checkHash);
                         }
                     }
                 }

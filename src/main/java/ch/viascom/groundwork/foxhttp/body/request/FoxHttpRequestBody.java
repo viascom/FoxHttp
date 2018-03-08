@@ -8,29 +8,21 @@ import ch.viascom.groundwork.foxhttp.interceptor.request.context.FoxHttpRequestB
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Abstract FoxHttpRequestBody
- * <p>
- * !! Do not use this class directly as body for a request. !!
- * <p>
- * Extend this class or use a default implementation:
- * - RequestMultipartBody
- * - RequestObjectBody
- * - RequestStringBody
- * - RequestUrlEncodedFormBody
+ * Abstract FoxHttpRequestBody <p> !! Do not use this class directly as body for a request. !! <p> Extend this class or use a default implementation: - RequestMultipartBody -
+ * RequestObjectBody - RequestStringBody - RequestUrlEncodedFormBody
  *
  * @author patrick.boesch@viascom.ch
  */
 public abstract class FoxHttpRequestBody implements FoxHttpBody {
+
     @Getter
     protected ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     @Setter
@@ -45,8 +37,7 @@ public abstract class FoxHttpRequestBody implements FoxHttpBody {
     protected void executeInterceptor(FoxHttpRequestBodyContext context) throws FoxHttpException {
         context.getRequest().getFoxHttpClient().getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeRequestBodyInterceptor()");
         FoxHttpInterceptorExecutor.executeRequestBodyInterceptor(
-                new FoxHttpRequestBodyInterceptorContext(context.getUrlConnection(), this, context.getRequest(), context.getClient())
-        );
+            new FoxHttpRequestBodyInterceptorContext(context.getUrlConnection(), this, context.getRequest(), context.getClient()));
     }
 
     public void writeBody(FoxHttpRequestBodyContext context, String json) throws FoxHttpRequestException {

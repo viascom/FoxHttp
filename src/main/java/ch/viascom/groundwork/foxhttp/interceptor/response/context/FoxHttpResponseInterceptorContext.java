@@ -12,6 +12,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class FoxHttpResponseInterceptorContext {
+
     private int responseCode;
     private FoxHttpResponse foxHttpResponse;
     private FoxHttpRequest request;

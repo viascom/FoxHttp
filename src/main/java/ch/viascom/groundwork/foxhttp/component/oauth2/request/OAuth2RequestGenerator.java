@@ -10,7 +10,6 @@ import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
 import ch.viascom.groundwork.foxhttp.util.BasicAuthUtil;
-
 import java.net.MalformedURLException;
 import java.util.HashMap;
 
@@ -18,6 +17,7 @@ import java.util.HashMap;
  * @author patrick.boesch@viascom.ch
  */
 public abstract class OAuth2RequestGenerator {
+
     public static void setData(OAuth2Store oAuth2Store, FoxHttpRequestBuilder foxHttpRequestBuilder, HashMap<String, String> data) throws FoxHttpRequestException {
         if (oAuth2Store.getAuthRequestType() == RequestType.POST) {
             RequestUrlEncodedFormBody requestUrlEncodedFormBody = new RequestUrlEncodedFormBody(data);
@@ -28,13 +28,12 @@ public abstract class OAuth2RequestGenerator {
         }
 
         //Set ClientCredentials if needed
-        if(oAuth2Store.isUseClientCredentials()){
-            foxHttpRequestBuilder.addRequestHeader(
-                    HeaderTypes.AUTHORIZATION,
-                    "Basic " + BasicAuthUtil.getBasicAuthenticationEncoding(oAuth2Store.getClientId(), oAuth2Store.getClientSecret())
-            );
+        if (oAuth2Store.isUseClientCredentials()) {
+            foxHttpRequestBuilder.addRequestHeader(HeaderTypes.AUTHORIZATION,
+                "Basic " + BasicAuthUtil.getBasicAuthenticationEncoding(oAuth2Store.getClientId(), oAuth2Store.getClientSecret()));
         }
     }
 
-    public abstract FoxHttpRequest getRequest(OAuth2Component oAuth2Component) throws MalformedURLException, FoxHttpRequestException, InstantiationException, IllegalAccessException;
+    public abstract FoxHttpRequest getRequest(OAuth2Component oAuth2Component)
+        throws MalformedURLException, FoxHttpRequestException, InstantiationException, IllegalAccessException;
 }

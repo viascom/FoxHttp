@@ -1,12 +1,11 @@
 package ch.viascom.groundwork.foxhttp.header;
 
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
-import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import lombok.Data;
 
 /**
  * FoxHttpHeader stores headers
@@ -26,7 +25,7 @@ public class FoxHttpHeader implements Iterable<HeaderEntry> {
     /**
      * Add a new header entry
      *
-     * @param name  name of the header entry
+     * @param name name of the header entry
      * @param value value of the header entry
      */
     public void addHeader(String name, String value) {
@@ -38,7 +37,7 @@ public class FoxHttpHeader implements Iterable<HeaderEntry> {
     /**
      * Add a new header entry
      *
-     * @param name  name of the header entry
+     * @param name name of the header entry
      * @param value value of the header entry
      */
     public void addHeader(HeaderTypes name, String value) {
@@ -70,7 +69,7 @@ public class FoxHttpHeader implements Iterable<HeaderEntry> {
     }
 
     /**
-     * Get a specific header based on its name
+     * Get the first header based on its name
      *
      * @param name name of the header
      * @return a specific header
@@ -82,5 +81,49 @@ public class FoxHttpHeader implements Iterable<HeaderEntry> {
             }
         }
         return null;
+    }
+
+    /**
+     * Get all specific headers based on there name
+     *
+     * @param name name of the headers
+     * @return all specific headers
+     */
+    public ArrayList<HeaderEntry> getHeaders(String name) {
+        ArrayList<HeaderEntry> matchingList = new ArrayList<>();
+        for (HeaderEntry headerEntry : getHeaderEntries()) {
+            if (headerEntry.getName().equals(name)) {
+                matchingList.add(headerEntry);
+            }
+        }
+        return matchingList;
+    }
+
+    /**
+     * Remove all headers by there names
+     *
+     * @param name name of the headers
+     */
+    public void removeHeader(String name) {
+        headerEntries.removeIf(headerEntry -> headerEntry.getName().equals(name));
+    }
+
+    /**
+     * Replace all headers by there name
+     *
+     * @param name name of the headers
+     * @param value value of the replaced headers
+     */
+    public void replaceHeader(String name, String value) {
+        ArrayList<HeaderEntry> replacedList = new ArrayList<>();
+        headerEntries.forEach(headerEntry -> {
+            if (headerEntry.getName().equals(name)) {
+                HeaderEntry replacedEntry = new HeaderEntry(headerEntry.getName(), value);
+                replacedList.add(replacedEntry);
+            } else {
+                replacedList.add(headerEntry);
+            }
+        });
+        headerEntries = replacedList;
     }
 }

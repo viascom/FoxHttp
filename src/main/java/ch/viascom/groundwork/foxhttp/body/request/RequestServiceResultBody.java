@@ -6,10 +6,9 @@ import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.serviceresult.ServiceResult;
 import ch.viascom.groundwork.serviceresult.ServiceResultStatus;
 import ch.viascom.groundwork.serviceresult.util.Metadata;
-import lombok.ToString;
-
 import java.io.Serializable;
 import java.util.HashMap;
+import lombok.ToString;
 
 /**
  * @author patrick.boesch@viascom.ch

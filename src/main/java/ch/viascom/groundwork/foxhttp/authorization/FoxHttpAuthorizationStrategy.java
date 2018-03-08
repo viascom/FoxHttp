@@ -3,7 +3,6 @@ package ch.viascom.groundwork.foxhttp.authorization;
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
-
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +19,8 @@ public interface FoxHttpAuthorizationStrategy {
 
     void setFoxHttpAuthorizations(HashMap<String, HashMap<String, FoxHttpAuthorization>> authorizations);
 
-    List<FoxHttpAuthorization> getAuthorization(URLConnection connection, FoxHttpAuthorizationScope searchScope, FoxHttpClient foxHttpClient, FoxHttpPlaceholderStrategy foxHttpPlaceholderStrategy) throws FoxHttpRequestException;
+    List<FoxHttpAuthorization> getAuthorization(URLConnection connection, FoxHttpAuthorizationScope searchScope, FoxHttpClient foxHttpClient,
+        FoxHttpPlaceholderStrategy foxHttpPlaceholderStrategy) throws FoxHttpRequestException;
 
     void addAuthorization(FoxHttpAuthorizationScope scope, FoxHttpAuthorization authorization);
 
@@ -38,11 +38,11 @@ public interface FoxHttpAuthorizationStrategy {
 
     FoxHttpAuthorization getAuthorizationByKey(FoxHttpAuthorizationScope scope, String key);
 
-    ArrayList<FoxHttpAuthorization> getAuthorizationByClass(FoxHttpAuthorizationScope scope, Class<? extends FoxHttpAuthorization> clazz);
+    ArrayList<FoxHttpAuthorization> getAuthorizationsByClass(FoxHttpAuthorizationScope scope, Class<? extends FoxHttpAuthorization> clazz);
 
     HashMap<String, FoxHttpAuthorization> getAllAuthorizationsFromScope(FoxHttpAuthorizationScope scope);
 
     ArrayList<FoxHttpAuthorization> getAllAuthorizationsFromScopeAsArray(FoxHttpAuthorizationScope scope);
 
-    boolean doesTypeExist(FoxHttpAuthorizationScope scope);
+    boolean doesScopeExist(FoxHttpAuthorizationScope scope);
 }

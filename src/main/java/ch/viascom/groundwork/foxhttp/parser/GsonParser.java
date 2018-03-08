@@ -3,11 +3,10 @@ package ch.viascom.groundwork.foxhttp.parser;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import com.google.gson.Gson;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 /**
  * @author patrick.boesch@viascom.ch

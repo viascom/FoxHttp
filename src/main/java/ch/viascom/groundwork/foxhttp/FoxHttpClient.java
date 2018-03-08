@@ -6,7 +6,11 @@ import ch.viascom.groundwork.foxhttp.component.FoxHttpComponent;
 import ch.viascom.groundwork.foxhttp.cookie.DefaultCookieStore;
 import ch.viascom.groundwork.foxhttp.cookie.FoxHttpCookieStore;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
-import ch.viascom.groundwork.foxhttp.interceptor.*;
+import ch.viascom.groundwork.foxhttp.interceptor.DefaultInterceptorStrategy;
+import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptor;
+import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorComparator;
+import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorStrategy;
+import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
 import ch.viascom.groundwork.foxhttp.log.DefaultFoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.parser.FoxHttpParser;
@@ -19,10 +23,13 @@ import ch.viascom.groundwork.foxhttp.ssl.FoxHttpHostTrustStrategy;
 import ch.viascom.groundwork.foxhttp.ssl.FoxHttpSSLTrustStrategy;
 import ch.viascom.groundwork.foxhttp.timeout.DefaultTimeoutStrategy;
 import ch.viascom.groundwork.foxhttp.timeout.FoxHttpTimeoutStrategy;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.*;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -136,7 +143,7 @@ public class FoxHttpClient {
     /**
      * Register an interceptor
      *
-     * @param interceptorType    Type of the interceptor
+     * @param interceptorType Type of the interceptor
      * @param foxHttpInterceptor Interceptor instance
      * @throws FoxHttpException Throws an exception if the interceptor does not match the type
      */
