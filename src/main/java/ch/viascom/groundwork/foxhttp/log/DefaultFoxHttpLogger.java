@@ -1,7 +1,6 @@
 package ch.viascom.groundwork.foxhttp.log;
 
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,18 +28,13 @@ public class DefaultFoxHttpLogger implements FoxHttpLogger {
     }
 
     @Override
-    public void setLoggingEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    @Override
     public boolean isLoggingEnabled() {
         return this.enabled;
     }
 
     @Override
-    public void setName(String name) {
-        logger = Logger.getLogger(name);
+    public void setLoggingEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -49,13 +43,18 @@ public class DefaultFoxHttpLogger implements FoxHttpLogger {
     }
 
     @Override
-    public void setLogLevel(FoxHttpLoggerLevel logLevel) {
-        this.foxHttpLoggerLevel = logLevel;
+    public void setName(String name) {
+        logger = Logger.getLogger(name);
     }
 
     @Override
     public FoxHttpLoggerLevel getLogLevel() {
         return this.foxHttpLoggerLevel;
+    }
+
+    @Override
+    public void setLogLevel(FoxHttpLoggerLevel logLevel) {
+        this.foxHttpLoggerLevel = logLevel;
     }
 
     @Override

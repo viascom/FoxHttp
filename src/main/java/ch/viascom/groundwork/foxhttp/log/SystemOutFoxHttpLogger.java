@@ -1,10 +1,9 @@
 package ch.viascom.groundwork.foxhttp.log;
 
-import lombok.AllArgsConstructor;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import lombok.AllArgsConstructor;
 
 /**
  * System.Out logger for FoxHttp
@@ -31,18 +30,13 @@ public class SystemOutFoxHttpLogger implements FoxHttpLogger {
     }
 
     @Override
-    public void setLoggingEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    @Override
     public boolean isLoggingEnabled() {
         return this.enabled;
     }
 
     @Override
-    public void setName(String name) {
-        loggerName = name;
+    public void setLoggingEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -51,13 +45,18 @@ public class SystemOutFoxHttpLogger implements FoxHttpLogger {
     }
 
     @Override
-    public void setLogLevel(FoxHttpLoggerLevel logLevel) {
-        this.foxHttpLoggerLevel = logLevel;
+    public void setName(String name) {
+        loggerName = name;
     }
 
     @Override
     public FoxHttpLoggerLevel getLogLevel() {
         return this.foxHttpLoggerLevel;
+    }
+
+    @Override
+    public void setLogLevel(FoxHttpLoggerLevel logLevel) {
+        this.foxHttpLoggerLevel = logLevel;
     }
 
     @Override

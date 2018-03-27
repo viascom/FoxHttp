@@ -7,13 +7,19 @@ import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorExecutor;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseBodyInterceptorContext;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
+import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -39,13 +45,11 @@ public class FoxHttpResponse {
 
         if (!foxHttpRequest.isSkipResponseBody()) {
             this.responseBody.setBody(body);
-            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG,"setResponseBody(" + getStringBody() + ")");
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "setResponseBody(" + getStringBody() + ")");
 
             //Execute interceptor
-            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG,"executeResponseBodyInterceptor()");
-            FoxHttpInterceptorExecutor.executeResponseBodyInterceptor(
-                    new FoxHttpResponseBodyInterceptorContext(responseCode, this, foxHttpRequest, foxHttpClient)
-            );
+            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeResponseBodyInterceptor()");
+            FoxHttpInterceptorExecutor.executeResponseBodyInterceptor(new FoxHttpResponseBodyInterceptorContext(responseCode, this, foxHttpRequest, foxHttpClient));
         }
     }
 
@@ -103,22 +107,60 @@ public class FoxHttpResponse {
     }
 
     /**
-     * Get the parsed result
-     * <i>uses the response parser of the FoxHttpClient</i>
+     * Get the parsed result <i>uses the response parser of the FoxHttpClient</i>
      *
      * @param parseClass class of the return object
      * @return deserialized result
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     @SuppressWarnings("unchecked")
-    public <T extends Serializable> T getParsedBody(Class<T> parseClass) throws FoxHttpResponseException {
+    public <T extends Serializable> T getParsedBody(Class<T> parseClass) throws FoxHttpException {
         if (foxHttpClient.getFoxHttpResponseParser() == null) {
             throw new FoxHttpResponseException("getParsedBody needs a FoxHttpResponseParser to deserialize the body");
         }
         try {
-            return (T) foxHttpClient.getFoxHttpResponseParser().serializedToObject(getStringBody(), (Class<Serializable>) parseClass);
+            return (T) foxHttpClient.getFoxHttpResponseParser().serializedToObject(getStringBody(), (Class<Serializable>) parseClass, getContentTypeFromResponse());
         } catch (IOException e) {
             throw new FoxHttpResponseException(e);
+        }
+    }
+
+    /**
+     * Get the parsed result <i>uses the response parser of the FoxHttpClient</i>
+     *
+     * @param parseClass class of the return object
+     * @param contentType content type used to parse body
+     * @return deserialized result
+     * @throws FoxHttpResponseException Exception during the deserialization
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Serializable> T getParsedBody(Class<T> parseClass, ContentType contentType) throws FoxHttpException {
+        if (foxHttpClient.getFoxHttpResponseParser() == null) {
+            throw new FoxHttpResponseException("getParsedBody needs a FoxHttpResponseParser to deserialize the body");
+        }
+        try {
+            return (T) foxHttpClient.getFoxHttpResponseParser().serializedToObject(getStringBody(), (Class<Serializable>) parseClass, contentType);
+        } catch (IOException e) {
+            throw new FoxHttpResponseException(e);
+        }
+    }
+
+    private ContentType getContentTypeFromResponse() {
+        String contentTypeHeaderValue = responseHeaders.getHeader("Content-Type").getValue();
+        if (contentTypeHeaderValue != null) {
+
+            String contentTypeMimeType = "*/*";
+            Charset contentTypeCharset = (Charset) null;
+
+            if (contentTypeHeaderValue.contains("; ")) {
+                contentTypeMimeType = contentTypeHeaderValue.substring(0, contentTypeHeaderValue.indexOf("; "));
+                contentTypeCharset = Charset.forName(contentTypeHeaderValue.substring(contentTypeHeaderValue.indexOf("; ") + 2));
+            } else {
+                contentTypeMimeType = contentTypeHeaderValue;
+            }
+            return ContentType.create(contentTypeMimeType, contentTypeCharset);
+        } else {
+            return ContentType.WILDCARD;
         }
     }
 

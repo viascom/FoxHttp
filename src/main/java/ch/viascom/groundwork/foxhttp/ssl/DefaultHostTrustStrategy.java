@@ -5,7 +5,7 @@ import javax.net.ssl.SSLSession;
 /**
  * @author patrick.boesch@viascom.ch
  */
-public class DefaultHostTrustStrategy implements FoxHttpHostTrustStrategy  {
+public class DefaultHostTrustStrategy implements FoxHttpHostTrustStrategy {
 
     @Override
     public boolean verify(String s, SSLSession sslSession) {

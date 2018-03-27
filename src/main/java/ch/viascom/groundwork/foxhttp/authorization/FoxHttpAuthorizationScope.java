@@ -4,9 +4,7 @@ import ch.viascom.groundwork.foxhttp.type.RequestType;
 import lombok.Getter;
 
 /**
- * FoxHttpAuthorizationScope
- * <p>
- * Stores information about the scope for an Authorization
+ * FoxHttpAuthorizationScope <p> Stores information about the scope for an Authorization
  *
  * @author patrick.boesch@viascom.ch
  */
@@ -23,7 +21,7 @@ public class FoxHttpAuthorizationScope {
     /**
      * Given an pattern and requestType, constructs a FoxHttpAuthorizationScope.
      *
-     * @param pattern     The pattern to use for the FoxHttpAuthorizationScope.
+     * @param pattern The pattern to use for the FoxHttpAuthorizationScope.
      * @param requestType The requestType to use for the FoxHttpAuthorizationScope.
      */
     FoxHttpAuthorizationScope(final String pattern, final String requestType) {
@@ -34,9 +32,8 @@ public class FoxHttpAuthorizationScope {
     /**
      * Creates a new instance of {@link FoxHttpAuthorizationScope}.
      *
-     * @param pattern     The pattern to use for the FoxHttpAuthorizationScope.
+     * @param pattern The pattern to use for the FoxHttpAuthorizationScope.
      * @param requestType The requestType to use for the FoxHttpAuthorizationScope.
-     *
      * @return FoxHttpAuthorizationScope
      */
     public static FoxHttpAuthorizationScope create(final String pattern, final RequestType requestType) {
@@ -56,7 +53,6 @@ public class FoxHttpAuthorizationScope {
      * Creates a new instance of {@link FoxHttpAuthorizationScope} with requestType ANY.
      *
      * @param pattern The pattern to use for the FoxHttpAuthorizationScope.
-     *
      * @return FoxHttpAuthorizationScope
      */
     public static FoxHttpAuthorizationScope create(final String pattern) {

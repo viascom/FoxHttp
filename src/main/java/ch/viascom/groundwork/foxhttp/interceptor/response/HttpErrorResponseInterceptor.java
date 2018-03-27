@@ -5,10 +5,9 @@ import ch.viascom.groundwork.foxhttp.exception.FoxHttpResponseException;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseBodyInterceptorContext;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseCodeInterceptorContext;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseInterceptorContext;
+import java.util.ArrayList;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -23,12 +22,8 @@ public class HttpErrorResponseInterceptor implements FoxHttpResponseInterceptor,
     private ArrayList<Integer> skippedCodes = new ArrayList<>();
 
     /**
-     * Sets the weight to 1'000 of the HttpErrorResponseInterceptor
-     * <p>
-     * Interceptors with a smaller weight number will be executed before this one
-     * and interceptors with a higher weight number will be executed after this interceptor.
-     * <p>
-     * Override the weight if you wanna change the execution order of this interceptor.
+     * Sets the weight to 1'000 of the HttpErrorResponseInterceptor <p> Interceptors with a smaller weight number will be executed before this one and interceptors with a higher
+     * weight number will be executed after this interceptor. <p> Override the weight if you wanna change the execution order of this interceptor.
      *
      * @return 1000
      */
@@ -66,7 +61,6 @@ public class HttpErrorResponseInterceptor implements FoxHttpResponseInterceptor,
      * Check if the status code is valid
      *
      * @param statuscode status code of the response
-     *
      * @return true if the status code is valid.
      */
     public boolean isValidResponseCode(int statuscode) {

@@ -9,5 +9,6 @@ import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
  */
 @FunctionalInterface
 public interface FoxHttpAuthorization {
+
     void doAuthorization(FoxHttpAuthorizationContext authorizationContext, FoxHttpAuthorizationScope foxHttpAuthorizationScope) throws FoxHttpRequestException;
 }

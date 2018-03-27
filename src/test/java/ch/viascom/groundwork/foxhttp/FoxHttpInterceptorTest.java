@@ -251,7 +251,7 @@ public class FoxHttpInterceptorTest {
         strategy.addInterceptor(FoxHttpInterceptorType.RESPONSE, new HttpErrorResponseInterceptor(), "response-interceptor-1");
         strategy.replaceInterceptor(FoxHttpInterceptorType.RESPONSE, new LambdaResponseInterceptor(context -> System.out.println(context.getResponseCode()), 1), "response-interceptor-1");
 
-        assertThat(strategy.getInterceptorByClass(FoxHttpInterceptorType.RESPONSE,LambdaResponseInterceptor.class).size()).isEqualTo(1);
+        assertThat(strategy.getInterceptorsByClass(FoxHttpInterceptorType.RESPONSE,LambdaResponseInterceptor.class).size()).isEqualTo(1);
 
         strategy.addInterceptor(FoxHttpInterceptorType.RESPONSE, new HttpErrorResponseInterceptor(), "response-interceptor-2");
 
@@ -268,6 +268,6 @@ public class FoxHttpInterceptorTest {
         strategy.removeInterceptorByClass(FoxHttpInterceptorType.RESPONSE,HttpErrorResponseInterceptor.class);
 
         assertThat(strategy.getAllInterceptorsFromType(FoxHttpInterceptorType.RESPONSE).size()).isEqualTo(1);
-        assertThat(strategy.getInterceptorByClass(FoxHttpInterceptorType.RESPONSE,HttpErrorResponseInterceptor.class).size()).isEqualTo(0);
+        assertThat(strategy.getInterceptorsByClass(FoxHttpInterceptorType.RESPONSE,HttpErrorResponseInterceptor.class).size()).isEqualTo(0);
     }
 }

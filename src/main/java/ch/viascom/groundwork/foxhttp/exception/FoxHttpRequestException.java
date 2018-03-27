@@ -4,6 +4,7 @@ package ch.viascom.groundwork.foxhttp.exception;
  * @author patrick.boesch@viascom.ch
  */
 public class FoxHttpRequestException extends FoxHttpException {
+
     public FoxHttpRequestException(Throwable cause) {
         super(cause);
     }
