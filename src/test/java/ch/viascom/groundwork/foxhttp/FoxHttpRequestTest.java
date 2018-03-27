@@ -1,5 +1,7 @@
 package ch.viascom.groundwork.foxhttp;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+
 import ch.viascom.groundwork.foxhttp.authorization.BasicAuthAuthorization;
 import ch.viascom.groundwork.foxhttp.authorization.BearerTokenAuthorization;
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationScope;
@@ -14,7 +16,12 @@ import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.lambda.LambdaAuthorization;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
 import ch.viascom.groundwork.foxhttp.log.SystemOutFoxHttpLogger;
-import ch.viascom.groundwork.foxhttp.models.*;
+import ch.viascom.groundwork.foxhttp.models.BasicAuthResponse;
+import ch.viascom.groundwork.foxhttp.models.CookieResponse;
+import ch.viascom.groundwork.foxhttp.models.GetResponse;
+import ch.viascom.groundwork.foxhttp.models.PostResponse;
+import ch.viascom.groundwork.foxhttp.models.QueryDataHolder;
+import ch.viascom.groundwork.foxhttp.models.QueryObjectModel;
 import ch.viascom.groundwork.foxhttp.objects.RemoveMeAuthorization;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
 import ch.viascom.groundwork.foxhttp.placeholder.DefaultPlaceholderStrategy;
@@ -23,8 +30,6 @@ import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
 import ch.viascom.groundwork.foxhttp.ssl.AllowAllSSLCertificateTrustStrategy;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
-import org.junit.Test;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.net.HttpCookie;
@@ -35,8 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
-import static org.fest.assertions.api.Assertions.assertThat;
+import org.junit.Test;
 
 
 /**
@@ -172,7 +176,6 @@ public class FoxHttpRequestTest {
 
         QueryDataHolder queryDataHolder = new QueryDataHolder("FoxHttp", 12, "java");
 
-
         FoxHttpRequestQuery requestQuery = new FoxHttpRequestQuery();
         requestQuery.parseObjectAsQueryMap(new ArrayList<>(Arrays.asList("name", "index", "key")), queryDataHolder, false, false, false);
 
@@ -218,7 +221,6 @@ public class FoxHttpRequestTest {
 
     }
 
-
     @Test
     public void getHeaderRequest() throws Exception {
 
@@ -262,7 +264,6 @@ public class FoxHttpRequestTest {
         } catch (FoxHttpRequestException e) {
             assertThat(e.getMessage()).isEqualTo("Request type 'GET' does not allow a request body!");
         }
-
 
     }
 
@@ -310,11 +311,9 @@ public class FoxHttpRequestTest {
             }
         };
 
-
         FoxHttpClient foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
         foxHttpClient.setFoxHttpProxyStrategy(foxHttpProxyStrategy);
-
 
         FoxHttpRequestBody requestBody = new RequestStringBody("test string body 1234 - ?");
 
@@ -339,10 +338,8 @@ public class FoxHttpRequestTest {
         FoxHttpClient foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
 
-        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
-                FoxHttpAuthorizationScope.create(endpoint + "*basic-auth/*", RequestType.GET),
-                new BasicAuthAuthorization("FoxHttp", "GroundWork123")
-        );
+        foxHttpClient.getFoxHttpAuthorizationStrategy()
+                     .addAuthorization(FoxHttpAuthorizationScope.create(endpoint + "*basic-auth/*", RequestType.GET), new BasicAuthAuthorization("FoxHttp", "GroundWork123"));
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(endpoint + "basic-auth/FoxHttp/GroundWork123"));
@@ -367,10 +364,8 @@ public class FoxHttpRequestTest {
         //Change to RegExAuthorizationStrategy
         foxHttpClient.setFoxHttpAuthorizationStrategy(new RegExAuthorizationStrategy());
 
-        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
-                FoxHttpAuthorizationScope.create(".*(basic-auth)/.*"),
-                new BasicAuthAuthorization("FoxHttp", "GroundWork123")
-        );
+        foxHttpClient.getFoxHttpAuthorizationStrategy()
+                     .addAuthorization(FoxHttpAuthorizationScope.create(".*(basic-auth)/.*"), new BasicAuthAuthorization("FoxHttp", "GroundWork123"));
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(endpoint + "basic-auth/FoxHttp/GroundWork123"));
@@ -392,10 +387,7 @@ public class FoxHttpRequestTest {
         FoxHttpClient foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
 
-        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
-                FoxHttpAuthorizationScope.ANY,
-                new BearerTokenAuthorization("FoxHttp-GroundWork-Token-1234567890")
-        );
+        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(FoxHttpAuthorizationScope.ANY, new BearerTokenAuthorization("FoxHttp-GroundWork-Token-1234567890"));
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
         foxHttpRequest.setUrl(new URL(endpoint + "get"));
@@ -417,31 +409,19 @@ public class FoxHttpRequestTest {
         FoxHttpClient foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
 
-        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
-                FoxHttpAuthorizationScope.ANY,
-                new BearerTokenAuthorization("FoxHttp-GroundWork-Token-1234567890")
-        );
+        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(FoxHttpAuthorizationScope.ANY, new BearerTokenAuthorization("FoxHttp-GroundWork-Token-1234567890"));
 
-        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
-                FoxHttpAuthorizationScope.ANY,
-                (authorizationContext, foxHttpAuthorizationScope) -> authorizationContext.getUrlConnection().setRequestProperty("Product-Key", "GroundWork FoxHttp")
-        );
+        foxHttpClient.getFoxHttpAuthorizationStrategy()
+                     .addAuthorization(FoxHttpAuthorizationScope.ANY,
+                         (authorizationContext, foxHttpAuthorizationScope) -> authorizationContext.getUrlConnection().setRequestProperty("Product-Key", "GroundWork FoxHttp"));
 
-        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
-                FoxHttpAuthorizationScope.ANY,
-                new RemoveMeAuthorization()
-        );
+        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(FoxHttpAuthorizationScope.ANY, new RemoveMeAuthorization());
 
-        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(
-                FoxHttpAuthorizationScope.ANY,
-                new RemoveMeAuthorization(),
-                "remove-me-2"
-        );
+        foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(FoxHttpAuthorizationScope.ANY, new RemoveMeAuthorization(), "remove-me-2");
 
         assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAllAuthorizationsFromScope(FoxHttpAuthorizationScope.ANY).size()).isEqualTo(4);
         assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAllAuthorizationsFromScopeAsArray(FoxHttpAuthorizationScope.ANY).size()).isEqualTo(4);
-        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorizationByClass(FoxHttpAuthorizationScope.ANY, RemoveMeAuthorization.class).size()).isEqualTo(2);
-
+        assertThat(foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorizationsByClass(FoxHttpAuthorizationScope.ANY, RemoveMeAuthorization.class).size()).isEqualTo(2);
 
         foxHttpClient.getFoxHttpAuthorizationStrategy().removeAuthorizationByClass(FoxHttpAuthorizationScope.ANY, RemoveMeAuthorization.class);
         foxHttpClient.getFoxHttpAuthorizationStrategy().removeAuthorizationByKey(FoxHttpAuthorizationScope.ANY, "remove-me-2");
@@ -475,8 +455,7 @@ public class FoxHttpRequestTest {
 
         FoxHttpClient foxHttpClient = new FoxHttpClientBuilder(new GsonParser(), new GsonParser()).build();
 
-        FoxHttpRequest foxHttpRequest = new FoxHttpRequestBuilder("http://httpbin.org/cookies/set", RequestType.GET, foxHttpClient)
-                .setRequestQuery(foxHttpQuery).build();
+        FoxHttpRequest foxHttpRequest = new FoxHttpRequestBuilder("http://httpbin.org/cookies/set", RequestType.GET, foxHttpClient).setRequestQuery(foxHttpQuery).build();
 
         FoxHttpResponse foxHttpResponse = foxHttpRequest.execute();
 
@@ -518,7 +497,6 @@ public class FoxHttpRequestTest {
 
     @Test
     public void allowAllCertificatesTest() throws Exception {
-
 
         FoxHttpClient foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
@@ -588,9 +566,9 @@ public class FoxHttpRequestTest {
     @Test
     public void placeholderQueryAuthScopeTest() throws Exception {
 
-        FoxHttpClient client = new FoxHttpClientBuilder(new GsonParser())
-                .addFoxHttpAuthorization(FoxHttpAuthorizationScope.create("{endpoint}get"), new LambdaAuthorization((authorizationContext, foxHttpAuthorizationScope) -> authorizationContext.getUrlConnection().setRequestProperty(HeaderTypes.USER_AGENT.toString(), "FOX-TEST-AGENT")))
-                .build();
+        FoxHttpClient client = new FoxHttpClientBuilder(new GsonParser()).addFoxHttpAuthorization(FoxHttpAuthorizationScope.create("{endpoint}get"), new LambdaAuthorization(
+            (authorizationContext, foxHttpAuthorizationScope) -> authorizationContext.getUrlConnection().setRequestProperty(HeaderTypes.USER_AGENT.toString(), "FOX-TEST-AGENT")))
+                                                                         .build();
 
         FoxHttpRequestBuilder builder = new FoxHttpRequestBuilder("{endpoint}get", RequestType.GET, client);
         builder.addFoxHttpPlaceholderEntry("endpoint", endpoint);

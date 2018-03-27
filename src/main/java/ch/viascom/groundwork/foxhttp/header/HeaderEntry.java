@@ -11,6 +11,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class HeaderEntry {
+
     private String name;
     private String value;
 }

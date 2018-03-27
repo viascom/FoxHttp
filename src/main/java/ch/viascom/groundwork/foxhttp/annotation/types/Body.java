@@ -1,15 +1,17 @@
 package ch.viascom.groundwork.foxhttp.annotation.types;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The annotation @Body defines the the parameter which represents the body of the request.
- * If no parameter is annotated with @Body the request will be send without a body.
- * The annotated parameter has to be assignable from {@link ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody
- * FoxHttpRequestBody}
+ * The annotation @Body defines the the parameter which represents the body of the request. If no parameter is annotated with @Body the request will be send without a body. The
+ * annotated parameter has to be assignable from {@link ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody FoxHttpRequestBody}
  *
- * This annotation can only be used in POST and PUT requests otherwise a
- * {@link ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException FoxHttpRequestException} will be thrown.
+ * This annotation can only be used in POST and PUT requests otherwise a {@link ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException FoxHttpRequestException} will be
+ * thrown.
  *
  * @author patrick.boesch@viascom.ch
  */
@@ -17,4 +19,5 @@ import java.lang.annotation.*;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Body {
+
 }

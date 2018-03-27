@@ -1,12 +1,14 @@
 package ch.viascom.groundwork.foxhttp.authorization;
 
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * Bearer Token for FoxHttp
- * <p>
- * This FoxHttpAuthorization will create a header with data for a Bearer Token authentication.
+ * Bearer Token for FoxHttp <p> This FoxHttpAuthorization will create a header with data for a Bearer Token authentication.
  *
  * @author patrick.boesch@viascom.ch
  */
@@ -20,7 +22,7 @@ public class BearerTokenAuthorization implements FoxHttpAuthorization {
     private String token;
     private String headerPrefix = "Bearer";
 
-    public BearerTokenAuthorization(String token){
+    public BearerTokenAuthorization(String token) {
         this.token = token;
     }
 

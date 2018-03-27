@@ -1,11 +1,10 @@
 package ch.viascom.groundwork.foxhttp.body.response;
 
 import ch.viascom.groundwork.foxhttp.body.FoxHttpBody;
-import lombok.Data;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import lombok.Data;
 
 /**
  * @author patrick.boesch@viascom.ch

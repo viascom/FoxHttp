@@ -2,13 +2,12 @@ package ch.viascom.groundwork.foxhttp.component.oauth2;
 
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationScope;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
-import lombok.Data;
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Data;
+import org.joda.time.DateTime;
 
 /**
  * @author patrick.boesch@viascom.ch

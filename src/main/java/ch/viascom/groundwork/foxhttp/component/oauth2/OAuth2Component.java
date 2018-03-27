@@ -7,17 +7,22 @@ import ch.viascom.groundwork.foxhttp.component.FoxHttpComponent;
 import ch.viascom.groundwork.foxhttp.component.oauth2.authorization.OAuth2Authorization;
 import ch.viascom.groundwork.foxhttp.component.oauth2.authorization.OAuth2BearerTokenAuthorization;
 import ch.viascom.groundwork.foxhttp.component.oauth2.interceptor.OAuth2RequestInterceptor;
-import ch.viascom.groundwork.foxhttp.component.oauth2.request.*;
+import ch.viascom.groundwork.foxhttp.component.oauth2.request.DefaultOAuth2AuthorizationCodeRequestGenerator;
+import ch.viascom.groundwork.foxhttp.component.oauth2.request.DefaultOAuth2ClientCredentialRequestGenerator;
+import ch.viascom.groundwork.foxhttp.component.oauth2.request.DefaultOAuth2PasswordRequestGenerator;
+import ch.viascom.groundwork.foxhttp.component.oauth2.request.DefaultOAuth2RefreshTokenRequestGenerator;
+import ch.viascom.groundwork.foxhttp.component.oauth2.request.DefaultOAuth2RequestExecutor;
+import ch.viascom.groundwork.foxhttp.component.oauth2.request.OAuth2RequestExecutor;
+import ch.viascom.groundwork.foxhttp.component.oauth2.request.OAuth2RequestGenerator;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -76,11 +81,7 @@ public class OAuth2Component implements FoxHttpComponent {
      * Request a new token based on the configuration
      *
      * @param grantType grant type to use
-     *
      * @return access token from the response
-     *
-     * @throws FoxHttpException
-     * @throws MalformedURLException
      */
     public String getNewToken(GrantType grantType) throws FoxHttpException, MalformedURLException, InstantiationException, IllegalAccessException {
         FoxHttpRequest request = this.generateRequestForGrantType(grantType);
@@ -92,9 +93,6 @@ public class OAuth2Component implements FoxHttpComponent {
      * Request a new token based on the configuration
      *
      * @return access token from the response
-     *
-     * @throws FoxHttpException
-     * @throws MalformedURLException
      */
     public String getNewToken() throws FoxHttpException, MalformedURLException, InstantiationException, IllegalAccessException {
         FoxHttpRequest request = this.generateRequestForGrantType(this.getOAuth2Store().getGrantType());

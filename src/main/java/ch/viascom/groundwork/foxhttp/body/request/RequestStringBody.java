@@ -5,14 +5,13 @@ import ch.viascom.groundwork.foxhttp.type.ContentType;
 import lombok.ToString;
 
 /**
- * RequestStringBody for FoxHttp
- * <p>
- * Stores a string for a request body.
+ * RequestStringBody for FoxHttp <p> Stores a string for a request body.
  *
  * @author patrick.boesch@viascom.ch
  */
 @ToString
 public class RequestStringBody extends FoxHttpRequestBody {
+
     private String content;
 
     /**
@@ -28,7 +27,7 @@ public class RequestStringBody extends FoxHttpRequestBody {
     /**
      * Create a new RequestStringBody
      *
-     * @param content     string content
+     * @param content string content
      * @param contentType type of the content
      */
     public RequestStringBody(String content, ContentType contentType) {

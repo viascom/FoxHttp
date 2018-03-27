@@ -1,7 +1,6 @@
 package ch.viascom.groundwork.foxhttp.response.serviceresult;
 
 import ch.viascom.groundwork.serviceresult.ServiceResult;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -18,7 +17,7 @@ public class ServiceResultParameterizedType implements ParameterizedType {
 
     @Override
     public Type[] getActualTypeArguments() {
-        return new Type[] {type};
+        return new Type[]{type};
     }
 
     @Override

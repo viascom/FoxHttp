@@ -5,15 +5,15 @@ import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.util.QueryBuilder;
 import com.google.gson.annotations.SerializedName;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * FoxHttpRequestQuery stores query entries for a request
@@ -24,12 +24,13 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class FoxHttpRequestQuery {
+
     private HashMap<String, String> queryMap = new HashMap<>();
 
     /**
      * Add a new query entry
      *
-     * @param name  name of the query entry
+     * @param name name of the query entry
      * @param value value of the query entry
      */
     public void addQueryEntry(String name, String value) {
@@ -79,7 +80,7 @@ public class FoxHttpRequestQuery {
      * Parse an object as query map
      *
      * @param params list of attribute names which will be included
-     * @param o      object with the attributes
+     * @param o object with the attributes
      * @throws FoxHttpRequestException can throw an exception if a field does not exist
      */
     public void parseObjectAsQueryMap(List<String> params, Object o, boolean parseSerializedName, boolean allowOptional, boolean recursiveOptional) throws FoxHttpRequestException {
@@ -90,56 +91,78 @@ public class FoxHttpRequestQuery {
 
         if (o != null) {
             Class clazz = o.getClass();
+
+            //Get all fields including all super classes
+            HashMap<String, Field> fields = new HashMap<>();
+            fields = getAllFields(fields, clazz);
+
             HashMap<String, String> paramMap = new HashMap<>();
+            ArrayList<String> paramNames = new ArrayList<>(params);
 
-            ArrayList<String> paramNames = new ArrayList<>();
-            paramNames.addAll(params);
-
-            if (paramNames.get(0).isEmpty()) {
-                paramNames.clear();
-                Arrays.stream(clazz.getDeclaredFields()).forEachOrdered(field -> paramNames.add(field.getName()));
-            }
-
-            for (String param : paramNames) {
-                try {
-                    Field field = clazz.getDeclaredField(param);
-                    field.setAccessible(true);
-
-                    //Check optional
-                    boolean isOptional = recursiveOptional;
-                    if(field.getAnnotationsByType(QueryName.class).length > 0){
-                        isOptional = field.getAnnotationsByType(QueryName.class)[0].allowOptional();
+            try {
+                if (!paramNames.get(0).isEmpty()) {
+                    for (String param : paramNames) {
+                        Field field = fields.get(param);
+                        paramMap = processQueryField(o, parseSerializedName, recursiveOptional, clazz, paramMap, field);
                     }
-
-                    if (field.get(o) == null && !isOptional) {
-                        throw new FoxHttpRequestException("The query parameter attribute " + field.getName() + " in " + clazz.getSimpleName() + " is not optional and can't be null because of this.");
+                } else {
+                    for (Entry<String, Field> fieldSet : fields.entrySet()) {
+                        paramMap = processQueryField(o, parseSerializedName, recursiveOptional, clazz, paramMap, fieldSet.getValue());
                     }
-                    if (field.get(o) != null) {
-
-                    //Load query parameter name
-                    String paramName = field.getName();
-                        if (parseSerializedName && field.getAnnotationsByType(SerializedName.class).length != 0) {
-                        paramName = field.getAnnotationsByType(SerializedName.class)[0].value();
-                    }
-
-                    if (field.getAnnotationsByType(QueryName.class).length != 0 && !field.getAnnotationsByType(QueryName.class)[0].value().isEmpty()) {
-                        paramName = field.getAnnotationsByType(QueryName.class)[0].value();
-                    }
-
-                    //Load query value
-                    String value = String.valueOf(field.get(o));
-
-
-                        paramMap.put(paramName, value);
-                    }
-                } catch (FoxHttpException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new FoxHttpRequestException(e);
                 }
+            } catch (FoxHttpException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new FoxHttpRequestException(e);
             }
             queryMap = paramMap;
         }
+    }
+
+    private HashMap<String, Field> getAllFields(HashMap<String, Field> fields, Class<?> type) {
+
+        Arrays.asList(type.getDeclaredFields()).forEach(field -> fields.put(field.getName(), field));
+
+        if (type.getSuperclass() != null) {
+            getAllFields(fields, type.getSuperclass());
+        }
+
+        return fields;
+    }
+
+    private HashMap<String, String> processQueryField(Object o, boolean parseSerializedName, boolean recursiveOptional, Class clazz, HashMap<String, String> paramMap, Field field)
+        throws IllegalAccessException, FoxHttpRequestException {
+        field.setAccessible(true);
+
+        //Check optional
+        boolean isOptional = recursiveOptional;
+        if (field.getAnnotationsByType(QueryName.class).length > 0) {
+            isOptional = field.getAnnotationsByType(QueryName.class)[0].allowOptional();
+        }
+
+        if (field.get(o) == null && !isOptional) {
+            throw new FoxHttpRequestException(
+                "The query parameter attribute " + field.getName() + " in " + clazz.getSimpleName() + " is not optional and can't be null because of this.");
+        }
+        if (field.get(o) != null) {
+
+            //Load query parameter name
+            String paramName = field.getName();
+            if (parseSerializedName && field.getAnnotationsByType(SerializedName.class).length != 0) {
+                paramName = field.getAnnotationsByType(SerializedName.class)[0].value();
+            }
+
+            if (field.getAnnotationsByType(QueryName.class).length != 0 && !field.getAnnotationsByType(QueryName.class)[0].value().isEmpty()) {
+                paramName = field.getAnnotationsByType(QueryName.class)[0].value();
+            }
+
+            //Load query value
+            String value = String.valueOf(field.get(o));
+
+            paramMap.put(paramName, value);
+        }
+
+        return paramMap;
     }
 
 }

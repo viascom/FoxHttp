@@ -8,5 +8,6 @@ import ch.viascom.groundwork.foxhttp.interceptor.request.context.FoxHttpRequestC
  * @author patrick.boesch@viascom.ch
  */
 public interface FoxHttpRequestConnectionInterceptor extends FoxHttpInterceptor {
+
     void onIntercept(FoxHttpRequestConnectionInterceptorContext context) throws FoxHttpException;
 }

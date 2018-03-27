@@ -6,6 +6,7 @@ import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.models.PostResponse;
 import ch.viascom.groundwork.foxhttp.models.User;
+import ch.viascom.groundwork.foxhttp.parser.GenericParser;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
@@ -31,29 +32,11 @@ public class FoxHttpRequestBodyTest {
 
     private String endpoint = "http://httpbin.org/";
 
-    @Test
-    public void postObjectExceptionRequest() throws Exception {
-
-        FoxHttpClientBuilder clientBuilder = new FoxHttpClientBuilder();
-
-        FoxHttpRequestBody requestBody = new RequestObjectBody(new User());
-
-        FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "post", RequestType.POST, clientBuilder.build());
-        requestBuilder.setRequestBody(requestBody);
-
-        try {
-            requestBuilder.build().execute();
-            assertThat(false).isEqualTo(true);
-        } catch (FoxHttpRequestException e) {
-            assertThat(e.getMessage()).isEqualTo("RequestObjectBody needs a FoxHttpRequestParser to serialize the body");
-        }
-
-    }
 
     @Test
     public void postObjectRequest() throws Exception {
 
-        FoxHttpClientBuilder clientBuilder = new FoxHttpClientBuilder(new GsonParser(), new GsonParser());
+        FoxHttpClientBuilder clientBuilder = new FoxHttpClientBuilder();
 
         FoxHttpRequestBody requestBody = new RequestObjectBody(new User());
 
@@ -66,7 +49,7 @@ public class FoxHttpRequestBodyTest {
 
         PostResponse postResponse = foxHttpResponse.getParsedBody(PostResponse.class);
 
-        assertThat(postResponse.getData()).isEqualTo(new GsonParser().objectToSerialized(new User()));
+        assertThat(postResponse.getData()).isEqualTo(new GenericParser().objectToSerialized(new User(), ContentType.APPLICATION_JSON));
     }
 
     @Test
@@ -134,25 +117,6 @@ public class FoxHttpRequestBodyTest {
         PostResponse postResponse = foxHttpResponse.getParsedBody(PostResponse.class);
 
         assertThat(postResponse.getData()).isEqualTo("{\"status\":\"failed\",\"type\":\"ch.viascom.app.models.AppUser\",\"content\":{\"username\":\"foxhttp@viascom.ch\",\"firstname\":\"Fox\",\"lastname\":\"Http\"},\"hash\":\"FAKE-HASH\",\"destination\":\"\",\"metadata\":{\"isActive\":{\"type\":\"java.lang.Boolean\",\"content\":true}}}");
-    }
-
-    @Test
-    public void postServiceResultExceptionRequest() throws Exception {
-
-        FoxHttpClientBuilder clientBuilder = new FoxHttpClientBuilder();
-
-        FoxHttpRequestBody requestBody = new RequestServiceResultBody(new ServiceResult<>(User.class));
-
-        FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "post", RequestType.POST, clientBuilder.build());
-        requestBuilder.setRequestBody(requestBody);
-
-        try {
-            requestBuilder.build().execute();
-            assertThat(false).isEqualTo(true);
-        } catch (FoxHttpRequestException e) {
-            assertThat(e.getMessage()).isEqualTo("RequestServiceResultBody needs a FoxHttpRequestParser to serialize the body");
-        }
-
     }
 
     @Test

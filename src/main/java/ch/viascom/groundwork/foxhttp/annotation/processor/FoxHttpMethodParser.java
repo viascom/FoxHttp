@@ -1,23 +1,45 @@
 package ch.viascom.groundwork.foxhttp.annotation.processor;
 
+import static ch.viascom.groundwork.foxhttp.annotation.processor.FoxHttpAnnotationUtil.getParameterAnnotation;
+import static ch.viascom.groundwork.foxhttp.annotation.processor.FoxHttpAnnotationUtil.getParameterAnnotationTpe;
+import static ch.viascom.groundwork.foxhttp.annotation.processor.FoxHttpAnnotationUtil.hasMethodAnnotation;
+import static ch.viascom.groundwork.foxhttp.annotation.processor.FoxHttpAnnotationUtil.hasParameterAnnotation;
+
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
 import ch.viascom.groundwork.foxhttp.FoxHttpRequest;
 import ch.viascom.groundwork.foxhttp.FoxHttpResponse;
-import ch.viascom.groundwork.foxhttp.annotation.types.*;
+import ch.viascom.groundwork.foxhttp.annotation.types.Body;
+import ch.viascom.groundwork.foxhttp.annotation.types.DELETE;
+import ch.viascom.groundwork.foxhttp.annotation.types.Field;
+import ch.viascom.groundwork.foxhttp.annotation.types.FieldMap;
+import ch.viascom.groundwork.foxhttp.annotation.types.FollowRedirect;
+import ch.viascom.groundwork.foxhttp.annotation.types.FormUrlEncodedBody;
+import ch.viascom.groundwork.foxhttp.annotation.types.GET;
+import ch.viascom.groundwork.foxhttp.annotation.types.HEAD;
+import ch.viascom.groundwork.foxhttp.annotation.types.Header;
+import ch.viascom.groundwork.foxhttp.annotation.types.HeaderField;
+import ch.viascom.groundwork.foxhttp.annotation.types.MultipartBody;
+import ch.viascom.groundwork.foxhttp.annotation.types.OPTIONS;
+import ch.viascom.groundwork.foxhttp.annotation.types.POST;
+import ch.viascom.groundwork.foxhttp.annotation.types.PUT;
+import ch.viascom.groundwork.foxhttp.annotation.types.Part;
+import ch.viascom.groundwork.foxhttp.annotation.types.PartMap;
+import ch.viascom.groundwork.foxhttp.annotation.types.Path;
+import ch.viascom.groundwork.foxhttp.annotation.types.Query;
+import ch.viascom.groundwork.foxhttp.annotation.types.QueryMap;
+import ch.viascom.groundwork.foxhttp.annotation.types.QueryObject;
+import ch.viascom.groundwork.foxhttp.annotation.types.SkipResponseBody;
 import ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
-import lombok.Getter;
-
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
-
-import static ch.viascom.groundwork.foxhttp.annotation.processor.FoxHttpAnnotationUtil.*;
+import lombok.Getter;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -98,10 +120,12 @@ class FoxHttpMethodParser {
             url = basePath.value() + url;
         }
 
-        for (Map.Entry<String, String> entry : foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap().entrySet()) {
-            url = url.replace(foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderEscapeCharStart()
-                    + entry.getKey()
-                    + foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderEscapeCharEnd(), entry.getValue());
+        if (basePath != null && basePath.preProcessPlaceholders()) {
+            for (Map.Entry<String, String> entry : foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap().entrySet()) {
+                url = url.replace(foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderEscapeCharStart() + entry.getKey() + foxHttpClient.getFoxHttpPlaceholderStrategy()
+                                                                                                                                                .getPlaceholderEscapeCharEnd(),
+                    entry.getValue());
+            }
         }
 
         try {
@@ -112,10 +136,10 @@ class FoxHttpMethodParser {
     }
 
     private void parseReturnType(Class<?> responseType) throws FoxHttpRequestException {
-        if ((!responseType.isAssignableFrom(FoxHttpResponse.class) &&
-                !responseType.isAssignableFrom(String.class) &&
-                !responseType.isAssignableFrom(void.class) &&
-                !responseType.isAssignableFrom(FoxHttpRequest.class)) && foxHttpClient.getFoxHttpResponseParser() == null) {
+        if ((!responseType.isAssignableFrom(FoxHttpResponse.class)
+             && !responseType.isAssignableFrom(String.class)
+             && !responseType.isAssignableFrom(void.class)
+             && !responseType.isAssignableFrom(FoxHttpRequest.class)) && foxHttpClient.getFoxHttpResponseParser() == null) {
             throwFoxHttpRequestException("The used return type needs a FoxHttpResponseParser to deserialize the body");
         } else {
             this.responseType = responseType;
@@ -124,17 +148,17 @@ class FoxHttpMethodParser {
 
     private void parsetMethodAnnotation(Annotation annotation) throws FoxHttpRequestException {
         if (annotation instanceof DELETE) {
-            setRequestTypeAndUrl("DELETE", ((DELETE) annotation).value(),((DELETE) annotation).completePath(), false);
+            setRequestTypeAndUrl("DELETE", ((DELETE) annotation).value(), ((DELETE) annotation).completePath(), false);
         } else if (annotation instanceof GET) {
-            setRequestTypeAndUrl("GET", ((GET) annotation).value(),((GET) annotation).completePath(), false);
+            setRequestTypeAndUrl("GET", ((GET) annotation).value(), ((GET) annotation).completePath(), false);
         } else if (annotation instanceof HEAD) {
-            setRequestTypeAndUrl("HEAD", ((HEAD) annotation).value(),((HEAD) annotation).completePath(), false);
+            setRequestTypeAndUrl("HEAD", ((HEAD) annotation).value(), ((HEAD) annotation).completePath(), false);
         } else if (annotation instanceof POST) {
-            setRequestTypeAndUrl("POST", ((POST) annotation).value(),((POST) annotation).completePath(), true);
+            setRequestTypeAndUrl("POST", ((POST) annotation).value(), ((POST) annotation).completePath(), true);
         } else if (annotation instanceof PUT) {
-            setRequestTypeAndUrl("PUT", ((PUT) annotation).value(),((PUT) annotation).completePath(), true);
+            setRequestTypeAndUrl("PUT", ((PUT) annotation).value(), ((PUT) annotation).completePath(), true);
         } else if (annotation instanceof OPTIONS) {
-            setRequestTypeAndUrl("OPTIONS", ((OPTIONS) annotation).value(),((OPTIONS) annotation).completePath(), false);
+            setRequestTypeAndUrl("OPTIONS", ((OPTIONS) annotation).value(), ((OPTIONS) annotation).completePath(), false);
         } else if (annotation instanceof Header) {
             setHeader((Header) annotation);
         }
@@ -174,11 +198,13 @@ class FoxHttpMethodParser {
 
             if (bodyAnnotationCount == 1) {
                 Class<?> parameterClass = getParameterAnnotationTpe(Body.class, this.method);
-                if (!(FoxHttpRequestBody.class.isAssignableFrom(parameterClass) ||
-                        String.class.isAssignableFrom(parameterClass) ||
-                        Serializable.class.isAssignableFrom(parameterClass))) {
-                    throwFoxHttpRequestException("FoxHttpRequestBody, String, Serializable is not assignable from Parameter " + parameterClass +
-                            " (" + parameterClass.getSimpleName() + ") with annotation @Body");
+                if (!(FoxHttpRequestBody.class.isAssignableFrom(parameterClass) || String.class.isAssignableFrom(parameterClass) || Serializable.class.isAssignableFrom(
+                    parameterClass))) {
+                    throwFoxHttpRequestException("FoxHttpRequestBody, String, Serializable is not assignable from Parameter "
+                                                 + parameterClass
+                                                 + " ("
+                                                 + parameterClass.getSimpleName()
+                                                 + ") with annotation @Body");
                 }
             }
         }
@@ -212,7 +238,6 @@ class FoxHttpMethodParser {
             doParameterMatch(PartMap.class, new Class[]{Map.class}, this.method);
         }
 
-
         this.requestType = RequestType.valueOf(requestType);
         this.hasBody = hasBody;
         this.path = value;
@@ -222,10 +247,10 @@ class FoxHttpMethodParser {
 
     private boolean hasBodyAnnotation() {
         return hasParameterAnnotation(Body.class, this.method)
-                || hasParameterAnnotation(Field.class, this.method)
-                || hasParameterAnnotation(FieldMap.class, this.method)
-                || hasParameterAnnotation(Part.class, this.method)
-                || hasParameterAnnotation(PartMap.class, this.method);
+               || hasParameterAnnotation(Field.class, this.method)
+               || hasParameterAnnotation(FieldMap.class, this.method)
+               || hasParameterAnnotation(Part.class, this.method)
+               || hasParameterAnnotation(PartMap.class, this.method);
     }
 
 
@@ -244,8 +269,13 @@ class FoxHttpMethodParser {
                         }
                     }
                     if (!foundMatchingType) {
-                        throwFoxHttpRequestException(checkedClass.getSimpleName() + " is not assignable from Parameter " + method.getParameterTypes()[parameterPos] +
-                                " (" + method.getParameterTypes()[parameterPos].getSimpleName() + ") with annotation @" + annotationClass.getSimpleName());
+                        throwFoxHttpRequestException(checkedClass.getSimpleName()
+                                                     + " is not assignable from Parameter "
+                                                     + method.getParameterTypes()[parameterPos]
+                                                     + " ("
+                                                     + method.getParameterTypes()[parameterPos].getSimpleName()
+                                                     + ") with annotation @"
+                                                     + annotationClass.getSimpleName());
 
                     }
                 }
@@ -256,11 +286,7 @@ class FoxHttpMethodParser {
 
     private void throwFoxHttpRequestException(String message) throws FoxHttpRequestException {
 
-        String outputMessage = method.getDeclaringClass().getSimpleName() +
-                "." +
-                method.getName() +
-                "\n-> " +
-                message;
+        String outputMessage = method.getDeclaringClass().getSimpleName() + "." + method.getName() + "\n-> " + message;
 
         throw new FoxHttpRequestException(outputMessage);
     }

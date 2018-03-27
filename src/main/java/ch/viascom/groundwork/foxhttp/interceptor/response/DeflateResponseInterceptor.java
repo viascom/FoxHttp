@@ -2,11 +2,10 @@ package ch.viascom.groundwork.foxhttp.interceptor.response;
 
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.interceptor.response.context.FoxHttpResponseInterceptorContext;
-import lombok.Getter;
-
 import java.io.InputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
+import lombok.Getter;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -44,8 +43,8 @@ public class DeflateResponseInterceptor implements FoxHttpResponseInterceptor {
     @Override
     public void onIntercept(FoxHttpResponseInterceptorContext context) throws FoxHttpException {
         try {
-            if (context.getFoxHttpResponse().getResponseHeaders().getHeader("Content-Encoding") != null &&
-                    "deflate".equals(context.getFoxHttpResponse().getResponseHeaders().getHeader("Content-Encoding").getValue())) {
+            if (context.getFoxHttpResponse().getResponseHeaders().getHeader("Content-Encoding") != null && "deflate".equals(
+                context.getFoxHttpResponse().getResponseHeaders().getHeader("Content-Encoding").getValue())) {
                 InputStream is = new InflaterInputStream(context.getFoxHttpResponse().getInputStreamBody(), new Inflater(nowrap));
                 context.getFoxHttpResponse().getResponseBody().setBody(is, true);
             }

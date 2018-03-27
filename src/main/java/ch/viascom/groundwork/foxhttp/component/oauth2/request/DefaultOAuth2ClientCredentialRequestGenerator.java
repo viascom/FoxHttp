@@ -7,7 +7,6 @@ import ch.viascom.groundwork.foxhttp.component.oauth2.OAuth2Store;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.util.BasicAuthUtil;
-
 import java.net.MalformedURLException;
 import java.util.HashMap;
 
@@ -15,6 +14,7 @@ import java.util.HashMap;
  * @author patrick.boesch@viascom.ch
  */
 public class DefaultOAuth2ClientCredentialRequestGenerator extends OAuth2RequestGenerator {
+
     @Override
     public FoxHttpRequest getRequest(OAuth2Component oAuth2Component) throws MalformedURLException, FoxHttpRequestException, InstantiationException, IllegalAccessException {
         OAuth2Store oAuth2Store = oAuth2Component.getOAuth2Store();
@@ -30,10 +30,8 @@ public class DefaultOAuth2ClientCredentialRequestGenerator extends OAuth2Request
         foxHttpRequestBuilder.setFollowRedirect(true);
         foxHttpRequestBuilder.setSkipResponseBody(false);
 
-        foxHttpRequestBuilder.addRequestHeader(
-                HeaderTypes.AUTHORIZATION,
-                "Basic " + BasicAuthUtil.getBasicAuthenticationEncoding(oAuth2Store.getClientId(), oAuth2Store.getClientSecret())
-        );
+        foxHttpRequestBuilder.addRequestHeader(HeaderTypes.AUTHORIZATION,
+            "Basic " + BasicAuthUtil.getBasicAuthenticationEncoding(oAuth2Store.getClientId(), oAuth2Store.getClientSecret()));
 
         return foxHttpRequestBuilder.build();
     }

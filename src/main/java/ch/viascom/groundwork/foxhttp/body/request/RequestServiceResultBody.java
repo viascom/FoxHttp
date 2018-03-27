@@ -1,14 +1,14 @@
 package ch.viascom.groundwork.foxhttp.body.request;
 
+import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.serviceresult.ServiceResult;
 import ch.viascom.groundwork.serviceresult.ServiceResultStatus;
 import ch.viascom.groundwork.serviceresult.util.Metadata;
-import lombok.ToString;
-
 import java.io.Serializable;
 import java.util.HashMap;
+import lombok.ToString;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -33,15 +33,16 @@ public class RequestServiceResultBody extends FoxHttpRequestBody {
     public RequestServiceResultBody(ServiceResultStatus status, Serializable content, String type, String destination) {
         serviceResult = new ServiceResult<>(type, content, status);
         setDestination(destination);
+        this.outputContentType = ContentType.APPLICATION_JSON;
     }
 
     @Override
-    public void setBody(FoxHttpRequestBodyContext context) throws FoxHttpRequestException {
+    public void setBody(FoxHttpRequestBodyContext context) throws FoxHttpException {
         if (context.getClient().getFoxHttpRequestParser() == null) {
             throw new FoxHttpRequestException("RequestServiceResultBody needs a FoxHttpRequestParser to serialize the body");
         }
 
-        String json = context.getClient().getFoxHttpRequestParser().objectToSerialized(serviceResult);
+        String json = context.getClient().getFoxHttpRequestParser().objectToSerialized(serviceResult, this.outputContentType);
 
         writeBody(context, json);
     }
@@ -53,7 +54,7 @@ public class RequestServiceResultBody extends FoxHttpRequestBody {
 
     @Override
     public ContentType getOutputContentType() {
-        return ContentType.APPLICATION_JSON;
+        return this.outputContentType;
     }
 
     public void setStatus(ServiceResultStatus status) {

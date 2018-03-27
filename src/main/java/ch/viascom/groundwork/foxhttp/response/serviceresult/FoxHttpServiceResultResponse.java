@@ -18,15 +18,20 @@ import ch.viascom.groundwork.serviceresult.util.Metadata;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.nio.charset.Charset;
+import java.util.HashMap;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import org.joda.time.DateTime;
-
-import java.io.*;
-import java.lang.reflect.Type;
-import java.nio.charset.Charset;
-import java.util.HashMap;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -56,7 +61,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
     /**
      * Create a new FoxHttpServiceResultParser
      *
-     * @param foxHttpResponse     response with a serialized service result
+     * @param foxHttpResponse response with a serialized service result
      * @param customParserBuilder a custom gson parser builder
      */
     public FoxHttpServiceResultResponse(FoxHttpResponse foxHttpResponse, GsonBuilder customParserBuilder) throws FoxHttpResponseException {
@@ -76,7 +81,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Create a new FoxHttpServiceResultParser
      *
      * @param foxHttpResponse response with a serialized service result
-     * @param objectHasher    object hasher to check the result
+     * @param objectHasher object hasher to check the result
      */
     public FoxHttpServiceResultResponse(FoxHttpResponse foxHttpResponse, FoxHttpServiceResultHasher objectHasher) throws FoxHttpResponseException {
         this(foxHttpResponse, objectHasher, null);
@@ -85,8 +90,8 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
     /**
      * Create a new FoxHttpServiceResultParser
      *
-     * @param foxHttpResponse     response with a serialized service result
-     * @param objectHasher        object hasher to check the result
+     * @param foxHttpResponse response with a serialized service result
+     * @param objectHasher object hasher to check the result
      * @param customParserBuilder a custom gson parser builder
      */
     public FoxHttpServiceResultResponse(FoxHttpResponse foxHttpResponse, FoxHttpServiceResultHasher objectHasher, GsonBuilder customParserBuilder) throws FoxHttpResponseException {
@@ -134,18 +139,17 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
     }
 
     private boolean isDefaultServiceResultFaultInterceptorPresent() {
-        return !this.foxHttpClient.getFoxHttpInterceptorStrategy().getFoxHttpInterceptors().isEmpty() &&
-                !this.foxHttpClient.getFoxHttpInterceptorStrategy().getInterceptorByClass(FoxHttpInterceptorType.RESPONSE, DefaultServiceResultFaultInterceptor.class).isEmpty();
+        return !this.foxHttpClient.getFoxHttpInterceptorStrategy().getFoxHttpInterceptors().isEmpty() && !this.foxHttpClient.getFoxHttpInterceptorStrategy()
+                                                                                                                            .getInterceptorsByClass(FoxHttpInterceptorType.RESPONSE,
+                                                                                                                                DefaultServiceResultFaultInterceptor.class)
+                                                                                                                            .isEmpty();
     }
 
     /**
      * Parser for annotation use
      *
      * @param foxHttpResponse response with a serialized service result
-     *
      * @return new FoxHttpResponseParser
-     *
-     * @throws FoxHttpResponseException
      */
     public FoxHttpResponseParser parseResult(FoxHttpResponse foxHttpResponse) throws FoxHttpResponseException {
         return new FoxHttpServiceResultResponse(foxHttpResponse, objectHasher);
@@ -178,7 +182,6 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Get the response body as string
      *
      * @return body as string
-     *
      * @throws IOException if the stream is not accessible
      */
     public String getStringBody() throws IOException {
@@ -198,9 +201,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Get the content of the service result
      *
      * @param contentClass class of the return object
-     *
      * @return deserialized content of the service result
-     *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     public <T extends Serializable> T getContent(Class<T> contentClass) throws FoxHttpResponseException {
@@ -211,9 +212,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Get the content of the service result
      *
      * @param <T> Type of the content
-     *
      * @return deserialized content of the service result
-     *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     public <T extends Serializable> T getContentFromType() throws FoxHttpResponseException {
@@ -224,10 +223,8 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Get the content of the service result
      *
      * @param checkHash should the result be checked
-     * @param <T>       Type of the content
-     *
+     * @param <T> Type of the content
      * @return deserialized content of the service result
-     *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     @SuppressWarnings("unchecked")
@@ -246,10 +243,8 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Get the content of the service result
      *
      * @param contentClass class of the return object
-     * @param checkHash    should the result be checked
-     *
+     * @param checkHash should the result be checked
      * @return deserialized content of the service result
-     *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     @SuppressWarnings("unchecked")
@@ -287,7 +282,6 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Get the fault of the service result
      *
      * @return deserialized fault of the service result
-     *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     public ServiceFault getFault() throws FoxHttpResponseException {
@@ -298,9 +292,7 @@ public class FoxHttpServiceResultResponse implements FoxHttpResponseParser {
      * Get the fault of the service result
      *
      * @param checkHash should the result be checked
-     *
      * @return deserialized fault of the service result
-     *
      * @throws FoxHttpResponseException Exception during the deserialization
      */
     public ServiceFault getFault(boolean checkHash) throws FoxHttpResponseException {

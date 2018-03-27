@@ -1,8 +1,7 @@
 package ch.viascom.groundwork.foxhttp.type;
 
-import lombok.Getter;
-
 import java.util.Locale;
+import lombok.Getter;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -21,11 +20,11 @@ public class HeaderTypes {
     public static final HeaderTypes PROXY_AUTHORIZATION = create("Proxy-Authorization");
     public static final HeaderTypes PROXY_AUTHENTICATION = create("Proxy-Authenticate");
 
-    public static final HeaderTypes ETAG= create("ETag");
-    public static final HeaderTypes EXPIRES= create("Expires");
-    public static final HeaderTypes IF_MATCH= create("If-Match");
-    public static final HeaderTypes IF_MODIFIED_SINCE= create("If-Modified-Since");
-    public static final HeaderTypes IF_NONE_MATCH= create("If-None-Match");
+    public static final HeaderTypes ETAG = create("ETag");
+    public static final HeaderTypes EXPIRES = create("Expires");
+    public static final HeaderTypes IF_MATCH = create("If-Match");
+    public static final HeaderTypes IF_MODIFIED_SINCE = create("If-Modified-Since");
+    public static final HeaderTypes IF_NONE_MATCH = create("If-None-Match");
 
     public static final HeaderTypes ACCEPT = create("Accept");
     public static final HeaderTypes ACCEPT_CHARSET = create("Accept-Charset");

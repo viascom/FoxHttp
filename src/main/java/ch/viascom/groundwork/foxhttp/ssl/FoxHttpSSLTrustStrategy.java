@@ -2,7 +2,6 @@ package ch.viascom.groundwork.foxhttp.ssl;
 
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpSSLTrustStrategyException;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLogger;
-
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 

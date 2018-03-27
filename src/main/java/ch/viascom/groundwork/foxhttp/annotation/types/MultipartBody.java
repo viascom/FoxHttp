@@ -1,12 +1,15 @@
 package ch.viascom.groundwork.foxhttp.annotation.types;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * The @MultipartBody annotation defines that the request uses a multipart body.
  *
- * The Form-encoded method must contain at least one @Part or @PartMap from type
- * {@link java.util.Map Map} and can not contain the annotations @Body, @Field or @FieldMap.
+ * The Form-encoded method must contain at least one @Part or @PartMap from type {@link java.util.Map Map} and can not contain the annotations @Body, @Field or @FieldMap.
  *
  * @author patrick.boesch@viascom.ch
  */
@@ -14,6 +17,8 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MultipartBody {
+
     String charset() default "UTF-8";
+
     String linefeed() default "\n";
 }

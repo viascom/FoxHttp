@@ -3,12 +3,11 @@ package ch.viascom.groundwork.foxhttp.placeholder;
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -44,7 +43,7 @@ public class DefaultPlaceholderStrategy implements FoxHttpPlaceholderStrategy {
      * Add a placeholder to the strategy
      *
      * @param placeholder name of the placholder
-     * @param value       value of the placeholder
+     * @param value value of the placeholder
      */
     @Override
     public void addPlaceholder(String placeholder, String value) {
@@ -58,14 +57,20 @@ public class DefaultPlaceholderStrategy implements FoxHttpPlaceholderStrategy {
         for (Map.Entry<String, String> entry : this.getPlaceholderMap().entrySet()) {
             if (p.matcher(parsedString).find()) {
                 String searchPlaceholder = this.getPlaceholderEscapeCharStart() + entry.getKey() + this.getPlaceholderEscapeCharEnd();
-                if(entry.getValue() == null){
-                    throw new FoxHttpRequestException("Placeholder "+searchPlaceholder+" cant be null.");
+                if (entry.getValue() == null) {
+                    throw new FoxHttpRequestException("Placeholder " + searchPlaceholder + " cant be null.");
                 }
                 parsedString = parsedString.replace(searchPlaceholder, entry.getValue());
-                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO,
-                        processedURL +
-                                " -> (" + this.getPlaceholderEscapeCharStart() + entry.getKey() + this.getPlaceholderEscapeCharEnd() + " -> " + entry.getValue() +
-                                ") -> " + parsedString);
+                foxHttpClient.getFoxHttpLogger()
+                             .log(FoxHttpLoggerLevel.INFO, processedURL
+                                                           + " -> ("
+                                                           + this.getPlaceholderEscapeCharStart()
+                                                           + entry.getKey()
+                                                           + this.getPlaceholderEscapeCharEnd()
+                                                           + " -> "
+                                                           + entry.getValue()
+                                                           + ") -> "
+                                                           + parsedString);
             } else {
                 break;
             }

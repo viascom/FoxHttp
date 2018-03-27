@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @author patrick.boesch@viascom.ch
  */
 @Data
-@SerializeContentType(mimetype = "application/json", charset = "UTF-8")
+@SerializeContentType(mimeType = "application/json", charset = "UTF-8")
 public class User implements Serializable {
     private String username = "foxhttp@viascom.ch";
     private String firstname = "Fox";

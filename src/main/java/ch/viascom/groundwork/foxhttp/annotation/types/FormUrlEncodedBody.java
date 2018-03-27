@@ -1,12 +1,16 @@
 package ch.viascom.groundwork.foxhttp.annotation.types;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * The @FormUrlEncodedBody annotation defines that the request uses a form-url-encoded body.
  *
- * The Form-encoded method must contain at least one @Field from type {@link java.lang.String String} or @FieldMap from type
- * {@link java.util.Map Map} and can not contain the annotations @Body, @Part or @PartMap.
+ * The Form-encoded method must contain at least one @Field from type {@link java.lang.String String} or @FieldMap from type {@link java.util.Map Map} and can not contain the
+ * annotations @Body, @Part or @PartMap.
  *
  * @author patrick.boesch@viascom.ch
  */
@@ -14,4 +18,5 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FormUrlEncodedBody {
+
 }

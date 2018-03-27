@@ -1,10 +1,13 @@
 package ch.viascom.groundwork.foxhttp.interceptor;
 
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.*;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -23,7 +26,7 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
 
     public void addInterceptor(FoxHttpInterceptorType type, FoxHttpInterceptor interceptor, String key) throws FoxHttpException {
         FoxHttpInterceptorType.verifyInterceptor(type, interceptor);
-        if (foxHttpInterceptors.containsKey(type)) {
+        if (doesTypeExist(type)) {
             foxHttpInterceptors.get(type).put(key, interceptor);
         } else {
             HashMap<String, FoxHttpInterceptor> foxHttpInterceptorMap = new HashMap<>();
@@ -35,45 +38,60 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
     @Override
     public void removeInterceptorByKey(FoxHttpInterceptorType type, String key) {
         HashMap<String, FoxHttpInterceptor> clearedMap = new HashMap<>();
-        foxHttpInterceptors.get(type).entrySet()
-                .stream()
-                .filter(entry -> !entry.getKey().equals(key))
-                .forEach(interceptorEntry -> clearedMap.put(interceptorEntry.getKey(), interceptorEntry.getValue()));
+        if (doesTypeExist(type)) {
+            foxHttpInterceptors.get(type)
+                               .entrySet()
+                               .stream()
+                               .filter(entry -> !entry.getKey().equals(key))
+                               .forEach(interceptorEntry -> clearedMap.put(interceptorEntry.getKey(), interceptorEntry.getValue()));
 
-        foxHttpInterceptors.get(type).clear();
-        foxHttpInterceptors.get(type).putAll(clearedMap);
+            foxHttpInterceptors.get(type).clear();
+            foxHttpInterceptors.get(type).putAll(clearedMap);
+        }
     }
 
     @Override
     public void removeInterceptorByClass(FoxHttpInterceptorType type, Class<? extends FoxHttpInterceptor> clazz) {
         HashMap<String, FoxHttpInterceptor> clearedMap = new HashMap<>();
-        foxHttpInterceptors.get(type).entrySet()
-                .stream()
-                .filter(entry -> !entry.getValue().getClass().isAssignableFrom(clazz))
-                .forEach(interceptorEntry -> clearedMap.put(interceptorEntry.getKey(), interceptorEntry.getValue()));
+        if (doesTypeExist(type)) {
+            foxHttpInterceptors.get(type)
+                               .entrySet()
+                               .stream()
+                               .filter(entry -> !entry.getValue().getClass().isAssignableFrom(clazz))
+                               .forEach(interceptorEntry -> clearedMap.put(interceptorEntry.getKey(), interceptorEntry.getValue()));
 
-        foxHttpInterceptors.get(type).clear();
-        foxHttpInterceptors.get(type).putAll(clearedMap);
+            foxHttpInterceptors.get(type).clear();
+            foxHttpInterceptors.get(type).putAll(clearedMap);
+        }
     }
 
     @Override
     public void replaceInterceptor(FoxHttpInterceptorType type, FoxHttpInterceptor newInterceptor, String key) {
         removeInterceptorByKey(type, key);
-        foxHttpInterceptors.get(type).put(key, newInterceptor);
+        if (doesTypeExist(type)) {
+            foxHttpInterceptors.get(type).put(key, newInterceptor);
+        }
     }
 
     @Override
     public FoxHttpInterceptor getInterceptorByKey(FoxHttpInterceptorType type, String key) {
-        return foxHttpInterceptors.get(type).get(key);
+        if (doesTypeExist(type)) {
+            return foxHttpInterceptors.get(type).get(key);
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public ArrayList<FoxHttpInterceptor> getInterceptorByClass(FoxHttpInterceptorType type, Class<? extends FoxHttpInterceptor> clazz) {
+    public ArrayList<FoxHttpInterceptor> getInterceptorsByClass(FoxHttpInterceptorType type, Class<? extends FoxHttpInterceptor> clazz) {
         ArrayList<FoxHttpInterceptor> interceptorList = new ArrayList<>();
-        foxHttpInterceptors.get(type).entrySet()
-                .stream()
-                .filter((Map.Entry<String, FoxHttpInterceptor> interceptor) -> interceptor.getValue().getClass().isAssignableFrom(clazz))
-                .forEach(interceptorEntry -> interceptorList.add(interceptorEntry.getValue()));
+        if (doesTypeExist(type)) {
+            foxHttpInterceptors.get(type)
+                               .entrySet()
+                               .stream()
+                               .filter((Map.Entry<String, FoxHttpInterceptor> interceptor) -> interceptor.getValue().getClass().isAssignableFrom(clazz))
+                               .forEach(interceptorEntry -> interceptorList.add(interceptorEntry.getValue()));
+        }
         return interceptorList;
     }
 
@@ -86,9 +104,11 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
     public ArrayList<FoxHttpInterceptor> getAllInterceptorsFromTypeAsArray(FoxHttpInterceptorType type, boolean sorted) {
         ArrayList<FoxHttpInterceptor> innerInterceptorList = new ArrayList<>();
 
-        foxHttpInterceptors.get(type).forEach((key, value) -> innerInterceptorList.add(value));
-        if (sorted) {
-            innerInterceptorList.sort(new FoxHttpInterceptorComparator());
+        if (doesTypeExist(type)) {
+            foxHttpInterceptors.get(type).forEach((key, value) -> innerInterceptorList.add(value));
+            if (sorted) {
+                innerInterceptorList.sort(new FoxHttpInterceptorComparator());
+            }
         }
         return innerInterceptorList;
     }
