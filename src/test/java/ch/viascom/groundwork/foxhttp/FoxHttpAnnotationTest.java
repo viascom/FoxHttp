@@ -110,6 +110,33 @@ public class FoxHttpAnnotationTest {
     }
 
     @Test
+    public void objectParentGet() throws Exception {
+        //Set Gson parser, register placeholder
+        FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()
+            .setFoxHttpResponseParser(new GsonParser())
+            .addFoxHttpPlaceholderEntry("host", endpoint);
+
+        QueryObjectModelUseParentOfParent model = new QueryObjectModelUseParentOfParent();
+        model.setUserId("Fox");
+        model.setPassword("password");
+        model.setFirstName("Fox");
+        model.setLastName("Http");
+        model.setAvatar("<avatar>");
+
+
+        //Request
+        FoxHttpInterfaceTest foxHttpInterfaceTest = new FoxHttpAnnotationParser().parseInterface(FoxHttpInterfaceTest.class, foxHttpClientBuilder.build());
+        GetResponse getResponse = foxHttpInterfaceTest.objectGet(model);
+
+        assertThat(getResponse.getArgs().get("user-id")).isEqualTo("Fox");
+        assertThat(getResponse.getArgs().get("password")).isEqualTo("password");
+        assertThat(getResponse.getArgs().get("firstName")).isEqualTo("Fox");
+        assertThat(getResponse.getArgs().get("lastName")).isEqualTo("Http");
+        assertThat(getResponse.getArgs().get("avatar")).isEqualTo("<avatar>");
+
+    }
+
+    @Test
     public void objectOptionalGet() throws Exception {
         //Set Gson parser, register placeholder
         FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()
