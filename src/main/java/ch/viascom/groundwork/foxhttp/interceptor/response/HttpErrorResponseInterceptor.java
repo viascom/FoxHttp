@@ -64,7 +64,7 @@ public class HttpErrorResponseInterceptor implements FoxHttpResponseInterceptor,
      * @return true if the status code is valid.
      */
     public boolean isValidResponseCode(int statuscode) {
-        return ((statuscode >= 200 && statuscode < 300) && !skippedCodes.contains(statuscode));
+        return ((statuscode >= 200 && statuscode < 300) || skippedCodes.contains(statuscode));
     }
 
 }
