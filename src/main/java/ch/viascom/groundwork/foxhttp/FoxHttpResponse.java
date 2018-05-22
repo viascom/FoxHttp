@@ -154,7 +154,12 @@ public class FoxHttpResponse {
 
             if (contentTypeHeaderValue.contains("; ")) {
                 contentTypeMimeType = contentTypeHeaderValue.substring(0, contentTypeHeaderValue.indexOf("; "));
-                contentTypeCharset = Charset.forName(contentTypeHeaderValue.substring(contentTypeHeaderValue.indexOf("; ") + 2));
+
+                String contentTypeCharsetString = contentTypeHeaderValue.substring(contentTypeHeaderValue.indexOf("; ") + 2);
+
+                if(contentTypeCharsetString.toLowerCase().contains("charset=")){
+                    contentTypeCharset = Charset.forName(contentTypeHeaderValue.substring(contentTypeHeaderValue.indexOf("; ") + 10));
+                }
             } else {
                 contentTypeMimeType = contentTypeHeaderValue;
             }
