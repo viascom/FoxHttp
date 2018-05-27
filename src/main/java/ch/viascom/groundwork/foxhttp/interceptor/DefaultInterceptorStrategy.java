@@ -59,7 +59,7 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
                                .stream()
                                .filter(entry -> !entry.getValue().getClass().isAssignableFrom(clazz))
                                .forEach(interceptorEntry -> clearedMap.put(interceptorEntry.getKey(), interceptorEntry.getValue()));
-
+//TODO
             foxHttpInterceptors.get(type).clear();
             foxHttpInterceptors.get(type).putAll(clearedMap);
         }
