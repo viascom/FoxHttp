@@ -114,7 +114,7 @@ public class FoxHttpHeader implements Iterable<HeaderEntry> {
      * @param name name of the headers
      * @param value value of the replaced headers
      */
-    public void replaceHeader(String name, String value) {
+    public synchronized void replaceHeader(String name, String value) {
         ArrayList<HeaderEntry> replacedList = new ArrayList<>();
         headerEntries.forEach(headerEntry -> {
             if (headerEntry.getName().equals(name)) {
