@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,31 +39,20 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
 
     @Override
     public void removeInterceptorByKey(FoxHttpInterceptorType type, String key) {
-        HashMap<String, FoxHttpInterceptor> clearedMap = new HashMap<>();
         if (doesTypeExist(type)) {
-            foxHttpInterceptors.get(type)
-                               .entrySet()
-                               .stream()
-                               .filter(entry -> !entry.getKey().equals(key))
-                               .forEach(interceptorEntry -> clearedMap.put(interceptorEntry.getKey(), interceptorEntry.getValue()));
-
-            foxHttpInterceptors.get(type).clear();
-            foxHttpInterceptors.get(type).putAll(clearedMap);
+            foxHttpInterceptors.put(type, new HashMap<>(
+                foxHttpInterceptors.get(type).entrySet().stream().filter(entry -> !entry.getKey().equals(key)).collect(Collectors.toMap(Entry::getKey, Entry::getValue))));
         }
     }
 
     @Override
     public void removeInterceptorByClass(FoxHttpInterceptorType type, Class<? extends FoxHttpInterceptor> clazz) {
-        HashMap<String, FoxHttpInterceptor> clearedMap = new HashMap<>();
         if (doesTypeExist(type)) {
-            foxHttpInterceptors.get(type)
-                               .entrySet()
-                               .stream()
-                               .filter(entry -> !entry.getValue().getClass().isAssignableFrom(clazz))
-                               .forEach(interceptorEntry -> clearedMap.put(interceptorEntry.getKey(), interceptorEntry.getValue()));
-
-            foxHttpInterceptors.get(type).clear();
-            foxHttpInterceptors.get(type).putAll(clearedMap);
+            foxHttpInterceptors.put(type, new HashMap<>(foxHttpInterceptors.get(type)
+                                                                           .entrySet()
+                                                                           .stream()
+                                                                           .filter(entry -> !entry.getValue().getClass().isAssignableFrom(clazz))
+                                                                           .collect(Collectors.toMap(Entry::getKey, Entry::getValue))));
         }
     }
 
@@ -86,11 +77,12 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
     public ArrayList<FoxHttpInterceptor> getInterceptorsByClass(FoxHttpInterceptorType type, Class<? extends FoxHttpInterceptor> clazz) {
         ArrayList<FoxHttpInterceptor> interceptorList = new ArrayList<>();
         if (doesTypeExist(type)) {
-            foxHttpInterceptors.get(type)
-                               .entrySet()
-                               .stream()
-                               .filter((Map.Entry<String, FoxHttpInterceptor> interceptor) -> interceptor.getValue().getClass().isAssignableFrom(clazz))
-                               .forEach(interceptorEntry -> interceptorList.add(interceptorEntry.getValue()));
+            interceptorList.addAll(foxHttpInterceptors.get(type)
+                                                      .entrySet()
+                                                      .stream()
+                                                      .filter((Map.Entry<String, FoxHttpInterceptor> interceptor) -> interceptor.getValue().getClass().isAssignableFrom(clazz))
+                                                      .map(Map.Entry::getValue)
+                                                      .collect(Collectors.toList()));
         }
         return interceptorList;
     }
@@ -105,7 +97,7 @@ public class DefaultInterceptorStrategy implements FoxHttpInterceptorStrategy {
         ArrayList<FoxHttpInterceptor> innerInterceptorList = new ArrayList<>();
 
         if (doesTypeExist(type)) {
-            foxHttpInterceptors.get(type).forEach((key, value) -> innerInterceptorList.add(value));
+            innerInterceptorList.addAll(foxHttpInterceptors.get(type).entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList()));
             if (sorted) {
                 innerInterceptorList.sort(new FoxHttpInterceptorComparator());
             }

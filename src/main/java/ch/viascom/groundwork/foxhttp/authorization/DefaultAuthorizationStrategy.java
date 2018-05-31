@@ -6,13 +6,18 @@ import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.util.RegexUtil;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.val;
 
 /**
  * Default AuthorizationStrategy for FoxHttp <p> Stores FoxHttpAuthorization with a FoxHttpAuthorizationScope as key.
@@ -21,6 +26,7 @@ import lombok.ToString;
  */
 @ToString
 public class DefaultAuthorizationStrategy implements FoxHttpAuthorizationStrategy {
+
 
     /**
      * AuthorizationStrategy store
@@ -76,15 +82,14 @@ public class DefaultAuthorizationStrategy implements FoxHttpAuthorizationStrateg
     @Override
     public List<FoxHttpAuthorization> getAuthorization(URLConnection connection, FoxHttpAuthorizationScope searchScope, FoxHttpClient foxHttpClient,
         FoxHttpPlaceholderStrategy foxHttpPlaceholderStrategy) {
-        ArrayList<FoxHttpAuthorization> foxHttpAuthorizationList = new ArrayList<>();
 
-        foxHttpAuthorizations.entrySet().stream().filter(entry -> {
+        ArrayList<FoxHttpAuthorization> foxHttpAuthorizationList = foxHttpAuthorizations.entrySet().stream().filter(entry -> {
             try {
                 return RegexUtil.doesURLMatch(searchScope.toString(), foxHttpPlaceholderStrategy.processPlaceholders(entry.getKey(), foxHttpClient));
             } catch (FoxHttpRequestException e) {
                 throw new RuntimeException(e.getMessage());
             }
-        }).forEach(entry -> foxHttpAuthorizationList.addAll(entry.getValue().values()));
+        }).map(entry -> entry.getValue().values()).flatMap(Collection::stream).collect(Collectors.toCollection(ArrayList::new));
 
         if (doesScopeExist(FoxHttpAuthorizationScope.ANY) && (foxHttpAuthorizationList.isEmpty())) {
             foxHttpAuthorizationList.addAll(foxHttpAuthorizations.get(FoxHttpAuthorizationScope.ANY.toString()).values());
@@ -102,16 +107,12 @@ public class DefaultAuthorizationStrategy implements FoxHttpAuthorizationStrateg
      */
     @Override
     public void removeAuthorizationByKey(FoxHttpAuthorizationScope scope, String key) {
-        HashMap<String, FoxHttpAuthorization> clearedMap = new HashMap<>();
         if (doesScopeExist(scope)) {
-            foxHttpAuthorizations.get(scope.toString())
-                                 .entrySet()
-                                 .stream()
-                                 .filter(entry -> !entry.getKey().equals(key))
-                                 .forEach(entry -> clearedMap.put(entry.getKey(), entry.getValue()));
-
-            foxHttpAuthorizations.get(scope.toString()).clear();
-            foxHttpAuthorizations.get(scope.toString()).putAll(clearedMap);
+            foxHttpAuthorizations.put(scope.toString(), new HashMap<>(foxHttpAuthorizations.get(scope.toString())
+                                                                                           .entrySet()
+                                                                                           .stream()
+                                                                                           .filter(entry -> !entry.getKey().equals(key))
+                                                                                           .collect(Collectors.toMap(Entry::getKey, Entry::getValue))));
         }
     }
 
@@ -123,16 +124,12 @@ public class DefaultAuthorizationStrategy implements FoxHttpAuthorizationStrateg
      */
     @Override
     public void removeAuthorizationByClass(FoxHttpAuthorizationScope scope, Class<? extends FoxHttpAuthorization> clazz) {
-        HashMap<String, FoxHttpAuthorization> clearedMap = new HashMap<>();
         if (doesScopeExist(scope)) {
-            foxHttpAuthorizations.get(scope.toString())
-                                 .entrySet()
-                                 .stream()
-                                 .filter(entry -> !entry.getValue().getClass().isAssignableFrom(clazz))
-                                 .forEach(entry -> clearedMap.put(entry.getKey(), entry.getValue()));
-
-            foxHttpAuthorizations.get(scope.toString()).clear();
-            foxHttpAuthorizations.get(scope.toString()).putAll(clearedMap);
+            foxHttpAuthorizations.put(scope.toString(), new HashMap<>(foxHttpAuthorizations.get(scope.toString())
+                                                                                           .entrySet()
+                                                                                           .stream()
+                                                                                           .filter(entry -> !entry.getValue().getClass().isAssignableFrom(clazz))
+                                                                                           .collect(Collectors.toMap(Entry::getKey, Entry::getValue))));
         }
     }
 
@@ -157,11 +154,12 @@ public class DefaultAuthorizationStrategy implements FoxHttpAuthorizationStrateg
     public ArrayList<FoxHttpAuthorization> getAuthorizationsByClass(FoxHttpAuthorizationScope scope, Class<? extends FoxHttpAuthorization> clazz) {
         ArrayList<FoxHttpAuthorization> authorizationList = new ArrayList<>();
         if (doesScopeExist(scope)) {
-            foxHttpAuthorizations.get(scope.toString())
+            authorizationList.addAll(foxHttpAuthorizations.get(scope.toString())
                                  .entrySet()
                                  .stream()
                                  .filter((Map.Entry<String, FoxHttpAuthorization> authorization) -> authorization.getValue().getClass().isAssignableFrom(clazz))
-                                 .forEach(entry -> authorizationList.add(entry.getValue()));
+                                 .map(Map.Entry::getValue)
+                                 .collect(Collectors.toList()));
         }
         return authorizationList;
     }
@@ -175,7 +173,11 @@ public class DefaultAuthorizationStrategy implements FoxHttpAuthorizationStrateg
     public ArrayList<FoxHttpAuthorization> getAllAuthorizationsFromScopeAsArray(FoxHttpAuthorizationScope scope) {
         ArrayList<FoxHttpAuthorization> innerAuthorizationList = new ArrayList<>();
         if (doesScopeExist(scope)) {
-            foxHttpAuthorizations.get(scope.toString()).forEach((key, value) -> innerAuthorizationList.add(value));
+            innerAuthorizationList.addAll(foxHttpAuthorizations.get(scope.toString())
+                                 .entrySet()
+                                 .stream()
+                                 .map(Map.Entry::getValue)
+                                 .collect(Collectors.toList()));
         }
         return innerAuthorizationList;
     }

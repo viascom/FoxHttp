@@ -4,6 +4,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 import ch.viascom.groundwork.foxhttp.authorization.BasicAuthAuthorization;
 import ch.viascom.groundwork.foxhttp.authorization.BearerTokenAuthorization;
+import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorization;
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationScope;
 import ch.viascom.groundwork.foxhttp.authorization.RegExAuthorizationStrategy;
 import ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody;
@@ -21,7 +22,6 @@ import ch.viascom.groundwork.foxhttp.models.CookieResponse;
 import ch.viascom.groundwork.foxhttp.models.GetResponse;
 import ch.viascom.groundwork.foxhttp.models.PostResponse;
 import ch.viascom.groundwork.foxhttp.models.QueryDataHolder;
-import ch.viascom.groundwork.foxhttp.models.QueryObjectModel;
 import ch.viascom.groundwork.foxhttp.objects.RemoveMeAuthorization;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
 import ch.viascom.groundwork.foxhttp.placeholder.DefaultPlaceholderStrategy;
@@ -38,8 +38,12 @@ import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -620,5 +624,41 @@ public class FoxHttpRequestTest {
         System.setOut(old);
 
         assertThat(baos.toString()).contains("TEST-CASE: Test 1");
+    }
+
+    @Ignore
+    @Test
+    public void ConcurrentModificationExceptionTest() throws Exception {
+
+        FoxHttpClient foxHttpClient = new FoxHttpClient();
+
+        Random rand = new Random();
+
+        Runnable getter = () -> {
+            try {
+                while (!Thread.interrupted()) {
+                    foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorizationByKey(FoxHttpAuthorizationScope.ANY,"1");
+                }
+            } catch (ConcurrentModificationException e) {
+                e.printStackTrace();
+                System.out.println("GOT IT!");
+            }
+        };
+        Runnable putter = () -> {
+            while (!Thread.interrupted()) {
+                //use a random component to make sure the map
+                //is actually mutated
+                char c = (char) rand.nextInt();
+                foxHttpClient.getFoxHttpAuthorizationStrategy().addAuthorization(FoxHttpAuthorizationScope.ANY, new BearerTokenAuthorization(String.valueOf(c)), String.valueOf(c));
+                char c2 = (char) rand.nextInt();
+                foxHttpClient.getFoxHttpAuthorizationStrategy().replaceAuthorization(FoxHttpAuthorizationScope.ANY,new BearerTokenAuthorization("234"),String.valueOf(c2));
+            }
+        };
+        Thread g = new Thread(getter);
+        Thread p = new Thread(putter);
+        g.start();
+        p.start();
+        g.join(); //wait until CME
+        p.interrupt();
     }
 }
