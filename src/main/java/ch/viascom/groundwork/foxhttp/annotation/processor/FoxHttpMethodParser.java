@@ -18,6 +18,7 @@ import ch.viascom.groundwork.foxhttp.annotation.types.GET;
 import ch.viascom.groundwork.foxhttp.annotation.types.HEAD;
 import ch.viascom.groundwork.foxhttp.annotation.types.Header;
 import ch.viascom.groundwork.foxhttp.annotation.types.HeaderField;
+import ch.viascom.groundwork.foxhttp.annotation.types.Headers;
 import ch.viascom.groundwork.foxhttp.annotation.types.MultipartBody;
 import ch.viascom.groundwork.foxhttp.annotation.types.OPTIONS;
 import ch.viascom.groundwork.foxhttp.annotation.types.POST;
@@ -84,6 +85,12 @@ class FoxHttpMethodParser {
         for (Annotation annotation : method.getDeclaringClass().getAnnotations()) {
             if (annotation instanceof Header) {
                 setHeader((Header) annotation);
+            }
+            if (annotation instanceof Headers) {
+                Header[] headers = ((Headers) annotation).value();
+                for (Header header : headers) {
+                    setHeader(header);
+                }
             }
         }
     }
@@ -161,6 +168,11 @@ class FoxHttpMethodParser {
             setRequestTypeAndUrl("OPTIONS", ((OPTIONS) annotation).value(), ((OPTIONS) annotation).completePath(), false);
         } else if (annotation instanceof Header) {
             setHeader((Header) annotation);
+        } else if (annotation instanceof Headers) {
+            Header[] headers = ((Headers) annotation).value();
+            for (Header header : headers) {
+                setHeader(header);
+            }
         }
 
     }
