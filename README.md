@@ -26,8 +26,8 @@
 
 ## Build-Status & Metrics
 
-[![master](https://img.shields.io/badge/master-v1.3.4-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/master) [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=master)](https://travis-ci.org/Viascom/FoxHttp)<br/>
-[![develop](https://img.shields.io/badge/develop-v1.3.4-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/develop) [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=develop)](https://travis-ci.org/Viascom/FoxHttp)
+[![master](https://img.shields.io/badge/master-v1.3.5-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/master) [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=master)](https://travis-ci.org/Viascom/FoxHttp)<br/>
+[![develop](https://img.shields.io/badge/develop-v1.3.5-brightgreen.svg)](https://github.com/Viascom/FoxHttp/tree/develop) [![Build Status](https://travis-ci.org/Viascom/FoxHttp.svg?branch=develop)](https://travis-ci.org/Viascom/FoxHttp)
 <br/><br/>
 Request against [httpbin](https://httpbin.org/) which was installed on localhost:<br/>
 [![get](https://img.shields.io/badge/GET--Request-35.4_ms-brightgreen.svg)](https://github.com/Viascom/groundwork/wiki/GroundWork-FoxHttp-Examples#get-request)
@@ -68,13 +68,13 @@ Request against [httpbin](https://httpbin.org/) which was installed on localhost
 <dependency>
     <groupId>ch.viascom.groundwork</groupId>
     <artifactId>foxhttp</artifactId>
-    <version>1.3.4</version>
+    <version>1.3.5</version>
 </dependency>
 ```
 
 #### gradle
 ```
-compile 'ch.viascom.groundwork:foxhttp:1.3'
+compile 'ch.viascom.groundwork:foxhttp:1.3.5'
 ```
 
 ### Send a request with JSON response deserialization
@@ -90,7 +90,7 @@ foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "FoxHttp-Logger"
 FoxHttpResponse response = new FoxHttpRequestBuilder("http://httpbin.org/get?search=Viascom", RequestType.GET, foxHttpClient).buildAndExecute();
 
 // Deserialization response
-GetResponse object = repsponse.getParsedBody(GetResponse.class);
+GetResponse object = response.getParsedBody(GetResponse.class);
 
 // Print result
 System.out.println("Parsed-Output: " + object);

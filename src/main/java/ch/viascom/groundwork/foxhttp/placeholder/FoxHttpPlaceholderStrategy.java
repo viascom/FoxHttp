@@ -2,12 +2,13 @@ package ch.viascom.groundwork.foxhttp.placeholder;
 
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * @author patrick.boesch@viascom.ch
  */
-public interface FoxHttpPlaceholderStrategy {
+public interface FoxHttpPlaceholderStrategy extends Serializable {
 
     String getPlaceholderEscapeCharStart();
 

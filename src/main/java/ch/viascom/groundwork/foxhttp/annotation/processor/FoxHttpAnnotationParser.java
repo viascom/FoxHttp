@@ -1,7 +1,7 @@
 package ch.viascom.groundwork.foxhttp.annotation.processor;
 
 import ch.viascom.groundwork.foxhttp.FoxHttpClient;
-import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
+import ch.viascom.groundwork.foxhttp.builder.CachableRequestBuilder;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.response.FoxHttpResponseParser;
@@ -19,7 +19,7 @@ import lombok.Getter;
  */
 public class FoxHttpAnnotationParser {
 
-    private HashMap<Method, FoxHttpRequestBuilder> requestCache = new HashMap<>();
+    private HashMap<Method, CachableRequestBuilder> requestCache = new HashMap<>();
     @Getter
     private HashMap<Class<? extends Annotation>, FoxHttpResponseParser> responseParsers = new HashMap<>();
 
@@ -56,16 +56,15 @@ public class FoxHttpAnnotationParser {
                 FoxHttpMethodParser foxHttpMethodParser = new FoxHttpMethodParser();
                 foxHttpMethodParser.parseMethod(method, foxHttpClient);
 
-                FoxHttpRequestBuilder foxHttpRequestBuilder = new FoxHttpRequestBuilder(foxHttpMethodParser.getUrl(), foxHttpMethodParser.getRequestType(),
-                    foxHttpClient).setRequestHeader(foxHttpMethodParser.getHeaderFields())
-                                  .setSkipResponseBody(foxHttpMethodParser.isSkipResponseBody())
-                                  .setFollowRedirect(foxHttpMethodParser.isFollowRedirect());
+                CachableRequestBuilder cachableRequestBuilder = new CachableRequestBuilder(foxHttpMethodParser.getUrl(), foxHttpMethodParser.getHeaderFields(),
+                                                                                           foxHttpMethodParser.getRequestType(), foxHttpMethodParser.isSkipResponseBody(),
+                                                                                           foxHttpMethodParser.isFollowRedirect(), foxHttpClient);
 
-                requestCache.put(method, foxHttpRequestBuilder);
+                requestCache.put(method, cachableRequestBuilder);
             }
 
             return (T) Proxy.newProxyInstance(serviceInterface.getClassLoader(), new Class[]{serviceInterface},
-                new FoxHttpAnnotationInvocationHandler(requestCache, responseParsers));
+                                              new FoxHttpAnnotationInvocationHandler(requestCache, responseParsers));
         } catch (FoxHttpException e) {
             throw e;
         } catch (Exception e) {

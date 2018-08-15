@@ -25,7 +25,7 @@ public class DefaultServiceResultFaultInterceptor implements FoxHttpResponseInte
     public void onIntercept(FoxHttpResponseInterceptorContext context) throws FoxHttpException {
         if (!isValidResponseCode(context.getResponseCode())) {
             ServiceFault serviceFault = new FoxHttpServiceResultResponse(context.getFoxHttpResponse()).getFault();
-            throw new FoxHttpServiceResultException(serviceFault);
+            throw new FoxHttpServiceResultException(serviceFault, context.getFoxHttpResponse());
         }
     }
 

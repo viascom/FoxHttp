@@ -6,6 +6,8 @@ import ch.viascom.groundwork.foxhttp.builder.FoxHttpClientBuilder;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
+import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
+import ch.viascom.groundwork.foxhttp.interceptors.AddHeaderInterceptor;
 import ch.viascom.groundwork.foxhttp.interfaces.FoxHttpExceptionInterfaceTest;
 import ch.viascom.groundwork.foxhttp.interfaces.FoxHttpInterfaceTest;
 import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
@@ -84,6 +86,7 @@ public class FoxHttpAnnotationTest {
         assertThat(getResponse.getArgs().get("version")).isEqualTo("v1.0");
         assertThat(getResponse.getArgs().get("date")).isEqualTo("01.01.2000");
         assertThat(getResponse.getHeaders().get("Product")).isEqualTo("FoxHttp");
+        assertThat(getResponse.getHeaders().get("X-Nice-Header")).isEqualTo("bar");
 
     }
 
@@ -336,5 +339,28 @@ public class FoxHttpAnnotationTest {
             assertThat(e.getMessage()).isEqualTo("FoxHttpExceptionInterfaceTest.bodyInGet\n" +
                     "-> Non-body HTTP method can not contain @Body, @Field, @FieldMap, @Part or @PartMap.");
         }
+    }
+
+    @Test
+    public void multipleRequerstsPerApi() throws Exception {
+        //Set Gson parser, register placeholder
+        FoxHttpClientBuilder foxHttpClientBuilder = new FoxHttpClientBuilder()
+            .setFoxHttpResponseParser(new GsonParser())
+            .addFoxHttpInterceptor(FoxHttpInterceptorType.REQUEST_CONNECTION, new AddHeaderInterceptor())
+            .addFoxHttpPlaceholderEntry("host", endpoint);
+
+        //Request
+        FoxHttpInterfaceTest foxHttpInterfaceTest = new FoxHttpAnnotationParser().parseInterface(FoxHttpInterfaceTest.class, foxHttpClientBuilder.build());
+        FoxHttpRequest request1 = foxHttpInterfaceTest.getRequest("get");
+        FoxHttpResponse response1 = request1.execute();
+
+
+        FoxHttpRequest request2 = foxHttpInterfaceTest.getRequest("get");
+        FoxHttpResponse response2 = request2.execute();
+
+        assertThat(request1.getRequestHeader()).isNotEqualTo(request2.getRequestHeader());
+
+        assertThat(response1.getFoxHttpRequest().getRequestHeader().getHeaderEntries().size()).isEqualTo(2);
+        assertThat(response2.getFoxHttpRequest().getRequestHeader().getHeaderEntries().size()).isEqualTo(2);
     }
 }

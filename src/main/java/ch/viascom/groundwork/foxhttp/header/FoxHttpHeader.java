@@ -1,6 +1,7 @@
 package ch.viascom.groundwork.foxhttp.header;
 
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +14,7 @@ import lombok.Data;
  * @author patrick.boesch@viascom.ch
  */
 @Data
-public class FoxHttpHeader implements Iterable<HeaderEntry> {
+public class FoxHttpHeader implements Iterable<HeaderEntry>, Serializable {
 
     private List<HeaderEntry> headerEntries = new ArrayList<>();
 
@@ -125,5 +126,10 @@ public class FoxHttpHeader implements Iterable<HeaderEntry> {
             }
         });
         headerEntries = replacedList;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

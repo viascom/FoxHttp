@@ -1,5 +1,6 @@
 package ch.viascom.groundwork.foxhttp.type;
 
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Locale;
 import lombok.Getter;
@@ -7,7 +8,7 @@ import lombok.Getter;
 /**
  * @author patrick.boesch@viascom.ch
  */
-public class ContentType {
+public class ContentType implements Serializable {
 
     public static final ContentType APPLICATION_OCTET_STREAM = create("application/octet-stream", (Charset) null);
     public static final ContentType WILDCARD = create("*/*", (Charset) null);

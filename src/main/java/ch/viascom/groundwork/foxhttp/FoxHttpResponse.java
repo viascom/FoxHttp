@@ -25,7 +25,6 @@ import lombok.NoArgsConstructor;
  * @author patrick.boesch@viascom.ch
  */
 @Data
-@NoArgsConstructor
 public class FoxHttpResponse {
 
     private FoxHttpResponseBody responseBody = new FoxHttpResponseBody();

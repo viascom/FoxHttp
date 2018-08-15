@@ -5,6 +5,7 @@ import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
 import ch.viascom.groundwork.foxhttp.util.QueryBuilder;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +24,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class FoxHttpRequestQuery {
+public class FoxHttpRequestQuery implements Serializable {
 
     private HashMap<String, String> queryMap = new HashMap<>();
 

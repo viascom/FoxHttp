@@ -7,6 +7,8 @@ import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.cookie.DefaultCookieStore;
 import ch.viascom.groundwork.foxhttp.cookie.FoxHttpCookieStore;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
+import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
+import ch.viascom.groundwork.foxhttp.header.FoxHttpHeader;
 import ch.viascom.groundwork.foxhttp.header.HeaderEntry;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptor;
 import ch.viascom.groundwork.foxhttp.interceptor.FoxHttpInterceptorType;
@@ -18,12 +20,15 @@ import ch.viascom.groundwork.foxhttp.parser.FoxHttpParser;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
 import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.proxy.FoxHttpProxyStrategy;
+import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
 import ch.viascom.groundwork.foxhttp.ssl.*;
 import ch.viascom.groundwork.foxhttp.timeout.DefaultTimeoutStrategy;
 import ch.viascom.groundwork.foxhttp.timeout.FoxHttpTimeoutStrategy;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
+import ch.viascom.groundwork.foxhttp.util.DeepCopy;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -301,4 +306,49 @@ public class FoxHttpBuilderTest {
         assertThat(foxHttpClient3.getFoxHttpSSLTrustStrategy()).isEqualTo(sslTrustStrategy);
     }
 
+    @Test
+    public void deepCopy() throws Exception {
+        FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder("http://httpbin.org/{method}");
+        requestBuilder.setRequestType(RequestType.POST);
+        requestBuilder.setFollowRedirect(true);
+        requestBuilder.setFoxHttpClient(new FoxHttpClient());
+        requestBuilder.addRequestHeader("Fox-Header", "true");
+        requestBuilder.addRequestHeader(HeaderTypes.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+        requestBuilder.addRequestQueryEntry("name", "FoxHttp");
+        requestBuilder.setSkipResponseBody(false);
+        requestBuilder.setRequestBody(new RequestStringBody("Hi!"));
+        requestBuilder.addFoxHttpPlaceholderEntry("method", "post");
+
+        //Check if with disabled deepCopy the objects are the same
+        assertThat(requestBuilder.build(false).getRequestHeader()).isEqualTo(requestBuilder.build(false).getRequestHeader());
+
+        //Check if with enabled deepCopy the objects are different
+        assertThat(requestBuilder.build().getRequestHeader()).isNotEqualTo(requestBuilder.build().getRequestHeader());
+    }
+
+    @Test
+    @Ignore
+    public void deepCopyCompareTest() throws Exception {
+
+        FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder("http://httpbin.org/{method}");
+        requestBuilder.setRequestType(RequestType.POST);
+        requestBuilder.setFollowRedirect(true);
+        requestBuilder.setFoxHttpClient(new FoxHttpClient());
+        requestBuilder.addRequestHeader("Fox-Header", "true");
+        requestBuilder.addRequestHeader(HeaderTypes.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+        requestBuilder.addRequestQueryEntry("name", "FoxHttp");
+        requestBuilder.setSkipResponseBody(false);
+        requestBuilder.setRequestBody(new RequestStringBody("Hi!"));
+        requestBuilder.addFoxHttpPlaceholderEntry("method", "post");
+
+        long start = System.currentTimeMillis();
+        FoxHttpRequest request = requestBuilder.build();
+        long optimizedTime = (System.currentTimeMillis() - start);
+        System.out.println("DeepCopy: "+optimizedTime);
+
+        long start2 = System.currentTimeMillis();
+        FoxHttpRequest request2 = requestBuilder.build(false);
+        long optimizedTime2 = (System.currentTimeMillis() - start2);
+        System.out.println("Normal: "+optimizedTime2);
+    }
 }
