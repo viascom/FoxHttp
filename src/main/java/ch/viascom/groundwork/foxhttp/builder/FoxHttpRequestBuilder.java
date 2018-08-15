@@ -17,6 +17,8 @@ import ch.viascom.groundwork.foxhttp.placeholder.FoxHttpPlaceholderStrategy;
 import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
+import ch.viascom.groundwork.foxhttp.util.DeepCopy;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -117,9 +119,9 @@ public class FoxHttpRequestBuilder {
             this.requestType = requestType;
 
             // Copy configuration from client to request
-            this.foxHttpPlaceholderStrategy = this.foxHttpClient.getFoxHttpPlaceholderStrategy().getClass().newInstance();
+            this.foxHttpPlaceholderStrategy = this.foxHttpClient.getFoxHttpPlaceholderStrategy().getClass().getDeclaredConstructor().newInstance();
             this.foxHttpPlaceholderStrategy.getPlaceholderMap().putAll(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap());
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new FoxHttpRequestException("Could not copy foxHttpPlaceholderStrategy from client to request: " + e.getMessage());
         }
     }
@@ -344,25 +346,75 @@ public class FoxHttpRequestBuilder {
         request.setFoxHttpClient(this.foxHttpClient);
 
         if (this.foxHttpPlaceholderStrategy != null) {
-            request.getFoxHttpPlaceholderStrategy().getPlaceholderMap().putAll(this.foxHttpPlaceholderStrategy.getPlaceholderMap());
+            FoxHttpPlaceholderStrategy foxHttpPlaceholderStrategyCopy = DeepCopy.copy(this.foxHttpPlaceholderStrategy);
+            request.setFoxHttpPlaceholderStrategy(foxHttpPlaceholderStrategyCopy);
         }
 
         if (this.url == null || "".equals(this.url)) {
             throw new FoxHttpRequestException("URL cant be null or empty.");
         }
         try {
-            request.setUrl(this.url);
+            String urlCopy = DeepCopy.copy(this.url);
+            request.setUrl(urlCopy);
         } catch (MalformedURLException e) {
             throw new FoxHttpRequestException("URL is malformed: " + this.url);
         }
-        request.setRequestType(this.requestType);
-        request.setRequestHeader(this.requestHeader);
-        request.setRequestQuery(this.requestQuery);
-        request.setRequestBody(this.requestBody);
-        request.setFollowRedirect(this.followRedirect);
-        request.setSkipResponseBody(this.skipResponseBody);
+
+        RequestType requestTypeCopy = DeepCopy.copy(this.requestType);
+        request.setRequestType(requestTypeCopy);
+
+        FoxHttpHeader requestHeaderCopy = DeepCopy.copy(this.requestHeader);
+        request.setRequestHeader(requestHeaderCopy);
+
+        FoxHttpRequestQuery requestQueryCopy = DeepCopy.copy(this.requestQuery);
+        request.setRequestQuery(requestQueryCopy);
+
+        request.setRequestBody(requestBody);
+
+        boolean followRedirectCopy = DeepCopy.copy(this.followRedirect);
+        request.setFollowRedirect(followRedirectCopy);
+
+        boolean skipResponseBodyCopy = DeepCopy.copy(this.skipResponseBody);
+        request.setSkipResponseBody(skipResponseBodyCopy);
 
         return request;
+    }
+
+    /**
+     * Get the FoxHttpRequest of this builder
+     *
+     * @param deepCopy if [false] no deep copy of the builder will be created. This is faster but keep in mind that you shouldn't use the builder again.
+     * @return FoxHttpRequest
+     */
+    public FoxHttpRequest build(boolean deepCopy) throws FoxHttpRequestException {
+        if (deepCopy) {
+            return build();
+        } else {
+            FoxHttpRequest request = new FoxHttpRequest();
+            request.setFoxHttpClient(this.foxHttpClient);
+
+            if (this.foxHttpPlaceholderStrategy != null) {
+                request.setFoxHttpPlaceholderStrategy(this.foxHttpPlaceholderStrategy);
+            }
+
+            if (this.url == null || "".equals(this.url)) {
+                throw new FoxHttpRequestException("URL cant be null or empty.");
+            }
+            try {
+                request.setUrl(this.url);
+            } catch (MalformedURLException e) {
+                throw new FoxHttpRequestException("URL is malformed: " + this.url);
+            }
+
+            request.setRequestType(this.requestType);
+            request.setRequestHeader(this.requestHeader);
+            request.setRequestQuery(this.requestQuery);
+            request.setRequestBody(requestBody);
+            request.setFollowRedirect(this.followRedirect);
+            request.setSkipResponseBody(this.skipResponseBody);
+
+            return request;
+        }
     }
 
     /**

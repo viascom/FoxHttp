@@ -43,7 +43,7 @@ public class RequestMultipartBody extends FoxHttpRequestBody {
      * @param charset used charset for the body
      */
     public RequestMultipartBody(Charset charset) {
-        this(charset, "\n");
+        this(charset, "\r\n");
     }
 
     /**

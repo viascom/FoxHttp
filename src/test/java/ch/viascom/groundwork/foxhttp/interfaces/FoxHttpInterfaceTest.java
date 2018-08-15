@@ -23,6 +23,7 @@ public interface FoxHttpInterfaceTest {
 
     @GET(value = "{host}get", completePath = true)
     @Header(name = "foo", value = "bar")
+    @Header(name = "X-Nice-Header", value = "bar")
     GetResponse bigGet(@QueryMap HashMap<String, String> queryMap, @HeaderField("Product") String product);
 
     @GET("get")

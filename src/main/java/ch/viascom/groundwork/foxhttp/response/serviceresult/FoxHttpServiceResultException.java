@@ -1,5 +1,6 @@
 package ch.viascom.groundwork.foxhttp.response.serviceresult;
 
+import ch.viascom.groundwork.foxhttp.FoxHttpResponse;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpResponseException;
 import ch.viascom.groundwork.serviceresult.exception.ServiceFault;
 import lombok.Getter;
@@ -27,5 +28,11 @@ public class FoxHttpServiceResultException extends FoxHttpResponseException {
 
     public FoxHttpServiceResultException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public FoxHttpServiceResultException(ServiceFault serviceFault, FoxHttpResponse foxHttpResponse) {
+        super(serviceFault.getMessage());
+        this.serviceFault = serviceFault;
+        this.setFoxHttpResponse(foxHttpResponse);
     }
 }
