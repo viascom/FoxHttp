@@ -51,7 +51,7 @@ class FoxHttpMethodParser {
     private Method method;
     private String path;
     private boolean completePath;
-    private URL url;
+    private String url;
     private RequestType requestType;
     private boolean hasBody;
     private Class<?> responseType;
@@ -129,17 +129,13 @@ class FoxHttpMethodParser {
 
         if (basePath != null && basePath.preProcessPlaceholders()) {
             for (Map.Entry<String, String> entry : foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap().entrySet()) {
-                url = url.replace(foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderEscapeCharStart() + entry.getKey() + foxHttpClient.getFoxHttpPlaceholderStrategy()
-                                                                                                                                                .getPlaceholderEscapeCharEnd(),
-                    entry.getValue());
+                url = url.replace(foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderEscapeCharStart() + entry.getKey() + foxHttpClient
+                    .getFoxHttpPlaceholderStrategy()
+                    .getPlaceholderEscapeCharEnd(), entry.getValue());
             }
         }
 
-        try {
-            this.url = new URL(url);
-        } catch (MalformedURLException e) {
-            throw new FoxHttpRequestException(e);
-        }
+        this.url = url;
     }
 
     private void parseReturnType(Class<?> responseType) throws FoxHttpRequestException {

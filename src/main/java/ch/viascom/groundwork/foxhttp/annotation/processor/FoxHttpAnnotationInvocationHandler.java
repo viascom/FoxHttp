@@ -3,6 +3,7 @@ package ch.viascom.groundwork.foxhttp.annotation.processor;
 import ch.viascom.groundwork.foxhttp.FoxHttpRequest;
 import ch.viascom.groundwork.foxhttp.FoxHttpResponse;
 import ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody;
+import ch.viascom.groundwork.foxhttp.builder.CachableRequestBuilder;
 import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpException;
 import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
@@ -23,7 +24,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class FoxHttpAnnotationInvocationHandler implements InvocationHandler {
 
-    private HashMap<Method, FoxHttpRequestBuilder> requestCache = new HashMap<>();
+    private HashMap<Method, CachableRequestBuilder> requestCache = new HashMap<>();
     private HashMap<Class<? extends Annotation>, FoxHttpResponseParser> responseParsers = new HashMap<>();
 
     @SuppressWarnings("unchecked")
@@ -35,7 +36,7 @@ public class FoxHttpAnnotationInvocationHandler implements InvocationHandler {
                 return method.invoke(this, args);
             }
 
-            FoxHttpRequest request = requestCache.get(method).build();
+            FoxHttpRequest request = requestCache.get(method).buildFoxHttpRequestBuilder().build(false);
 
             //Resolve path
             request.getFoxHttpPlaceholderStrategy().getPlaceholderMap().putAll(FoxHttpAnnotationRequestBuilder.getPathValues(method, args));

@@ -21,6 +21,7 @@ import ch.viascom.groundwork.foxhttp.query.FoxHttpRequestQuery;
 import ch.viascom.groundwork.foxhttp.type.HeaderTypes;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
@@ -105,9 +106,11 @@ public class FoxHttpRequest {
         this.foxHttpClient = foxHttpClient;
         // Copy configuration from client to request
         try {
-            this.setFoxHttpPlaceholderStrategy(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getClass().newInstance());
+            if(this.getFoxHttpPlaceholderStrategy() == null) {
+                this.setFoxHttpPlaceholderStrategy(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getClass().getDeclaredConstructor().newInstance());
+            }
             this.getFoxHttpPlaceholderStrategy().getPlaceholderMap().putAll(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap());
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new FoxHttpRequestException("Could not copy foxHttpPlaceholderStrategy from client to request: " + e.getMessage());
         }
 
