@@ -90,7 +90,7 @@ foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "FoxHttp-Logger"
 FoxHttpResponse response = new FoxHttpRequestBuilder("http://httpbin.org/get?search=Viascom", RequestType.GET, foxHttpClient).buildAndExecute();
 
 // Deserialization response
-GetResponse object = repsponse.getParsedBody(GetResponse.class);
+GetResponse object = response.getParsedBody(GetResponse.class);
 
 // Print result
 System.out.println("Parsed-Output: " + object);
