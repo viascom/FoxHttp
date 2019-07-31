@@ -88,7 +88,7 @@ public class FoxHttpRequestTest {
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
-        foxHttpRequest.setUrl(new URL(endpoint + "get"));
+        foxHttpRequest.setUrl(new URL(sslEndpoint + "get"));
         foxHttpRequest.setRequestType(RequestType.GET);
         foxHttpRequest.setFollowRedirect(true);
 
@@ -101,7 +101,7 @@ public class FoxHttpRequestTest {
 
         GetResponse getResponse = foxHttpResponse.getParsedBody(GetResponse.class);
 
-        assertThat(getResponse.getUrl()).isEqualTo(endpoint + "get");
+        assertThat(getResponse.getUrl()).isEqualTo(sslEndpoint + "get");
     }
 
     @Test
@@ -134,7 +134,7 @@ public class FoxHttpRequestTest {
         requestQuery.addQueryEntry("name", "FoxHttp");
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
-        foxHttpRequest.setUrl(new URL(endpoint + "get"));
+        foxHttpRequest.setUrl(new URL(sslEndpoint + "get"));
         foxHttpRequest.setRequestType(RequestType.GET);
         foxHttpRequest.setRequestQuery(requestQuery);
         foxHttpRequest.setFollowRedirect(true);
@@ -146,7 +146,7 @@ public class FoxHttpRequestTest {
 
         GetResponse getResponse = foxHttpResponse.getParsedBody(GetResponse.class);
 
-        assertThat(getResponse.getUrl()).isEqualTo(endpoint + "get" + requestQuery.getQueryString());
+        assertThat(getResponse.getUrl()).isEqualTo(sslEndpoint + "get" + requestQuery.getQueryString());
         assertThat(getResponse.getArgs().get("name")).isEqualTo("FoxHttp");
     }
 
@@ -155,7 +155,7 @@ public class FoxHttpRequestTest {
 
         FoxHttpClient foxHttpClient = new FoxHttpClient();
         foxHttpClient.setFoxHttpResponseParser(new GsonParser());
-        foxHttpClient.getFoxHttpPlaceholderStrategy().addPlaceholder("endpoint", endpoint);
+        foxHttpClient.getFoxHttpPlaceholderStrategy().addPlaceholder("endpoint", sslEndpoint);
         foxHttpClient.setFoxHttpLogger(new SystemOutFoxHttpLogger(true, "test", FoxHttpLoggerLevel.INFO));
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
@@ -169,7 +169,7 @@ public class FoxHttpRequestTest {
         assertThat(foxHttpResponse.getByteArrayOutputStreamBody().size()).isGreaterThan(0);
 
         GetResponse getResponse = foxHttpResponse.getParsedBody(GetResponse.class);
-        assertThat(getResponse.getUrl()).isEqualTo(endpoint + "get");
+        assertThat(getResponse.getUrl()).isEqualTo(sslEndpoint + "get");
     }
 
     @Test
@@ -184,7 +184,7 @@ public class FoxHttpRequestTest {
         requestQuery.parseObjectAsQueryMap(new ArrayList<>(Arrays.asList("name", "index", "key")), queryDataHolder, false, false, false);
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
-        foxHttpRequest.setUrl(new URL(endpoint + "get"));
+        foxHttpRequest.setUrl(new URL(sslEndpoint + "get"));
         foxHttpRequest.setRequestType(RequestType.GET);
         foxHttpRequest.setRequestQuery(requestQuery);
         foxHttpRequest.setFollowRedirect(true);
@@ -196,7 +196,7 @@ public class FoxHttpRequestTest {
 
         GetResponse getResponse = foxHttpResponse.getParsedBody(GetResponse.class);
 
-        assertThat(getResponse.getUrl()).isEqualTo(endpoint + "get" + requestQuery.getQueryString());
+        assertThat(getResponse.getUrl()).isEqualTo(sslEndpoint + "get" + requestQuery.getQueryString());
         assertThat(getResponse.getArgs().get("name")).isEqualTo("FoxHttp");
         assertThat(getResponse.getArgs().get("index")).isEqualTo("12");
         assertThat(getResponse.getArgs().get("key")).isEqualTo("java");
@@ -235,7 +235,7 @@ public class FoxHttpRequestTest {
         foxHttpHeader.addHeader("Name", "FoxHttp");
 
         FoxHttpRequest foxHttpRequest = new FoxHttpRequest(foxHttpClient);
-        foxHttpRequest.setUrl(new URL(endpoint + "get"));
+        foxHttpRequest.setUrl(new URL(sslEndpoint + "get"));
         foxHttpRequest.setRequestType(RequestType.GET);
         foxHttpRequest.setRequestHeader(foxHttpHeader);
         foxHttpRequest.setFollowRedirect(true);
@@ -247,7 +247,7 @@ public class FoxHttpRequestTest {
 
         GetResponse getResponse = foxHttpResponse.getParsedBody(GetResponse.class);
 
-        assertThat(getResponse.getUrl()).isEqualTo(endpoint + "get");
+        assertThat(getResponse.getUrl()).isEqualTo(sslEndpoint + "get");
         assertThat(getResponse.getHeaders().get("Name")).isEqualTo("FoxHttp");
     }
 
