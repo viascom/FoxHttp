@@ -106,7 +106,7 @@ public class FoxHttpRequest {
         this.foxHttpClient = foxHttpClient;
         // Copy configuration from client to request
         try {
-            if(this.getFoxHttpPlaceholderStrategy() == null) {
+            if (this.getFoxHttpPlaceholderStrategy() == null) {
                 this.setFoxHttpPlaceholderStrategy(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getClass().getDeclaredConstructor().newInstance());
             }
             this.getFoxHttpPlaceholderStrategy().getPlaceholderMap().putAll(this.foxHttpClient.getFoxHttpPlaceholderStrategy().getPlaceholderMap());
@@ -250,42 +250,60 @@ public class FoxHttpRequest {
                 setRequestBodyStream();
             }
 
-            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "sendRequest()");
-            connection.connect();
+            int responseCode;
 
-            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "========= Response =========");
+            //Check for caching
+            if (foxHttpClient.getFoxHttpCacheStrategy().isCachingEnabled() && foxHttpClient.getFoxHttpCacheStrategy().isCachingAvailable(this, foxHttpClient)) {
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "sendRequest()");
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "========= Cache - Response =========");
+                foxHttpResponse = foxHttpClient.getFoxHttpCacheStrategy().loadDataFromCache(this, foxHttpClient);
+                responseCode = foxHttpResponse.getResponseCode();
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "responseCode(" + responseCode + ")");
 
-            int responseCode = ((HttpURLConnection) connection).getResponseCode();
-            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "responseCode(" + responseCode + ")");
+                //Execute interceptor
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeResponseCodeInterceptor()");
+                FoxHttpInterceptorExecutor.executeResponseCodeInterceptor(new FoxHttpResponseCodeInterceptorContext(responseCode, this, foxHttpClient));
+            } else {
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "sendRequest()");
+                connection.connect();
 
-            //Execute interceptor
-            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeResponseCodeInterceptor()");
-            FoxHttpInterceptorExecutor.executeResponseCodeInterceptor(new FoxHttpResponseCodeInterceptorContext(responseCode, this, foxHttpClient));
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "========= Response =========");
 
-            if (!skipResponseBody) {
-                InputStream is;
-                if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < HttpURLConnection.HTTP_MULT_CHOICE) {
-                    //On success response code
-                    foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "getResponseBody(success)");
-                    is = connection.getInputStream();
+                responseCode = ((HttpURLConnection) connection).getResponseCode();
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "responseCode(" + responseCode + ")");
+
+                //Execute interceptor
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeResponseCodeInterceptor()");
+                FoxHttpInterceptorExecutor.executeResponseCodeInterceptor(new FoxHttpResponseCodeInterceptorContext(responseCode, this, foxHttpClient));
+
+                if (!skipResponseBody) {
+                    InputStream is;
+                    if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < HttpURLConnection.HTTP_MULT_CHOICE) {
+                        //On success response code
+                        foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "getResponseBody(success)");
+                        is = connection.getInputStream();
+                    } else {
+                        //On error response code
+                        foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "getResponseBody(error)");
+                        is = ((HttpURLConnection) connection).getErrorStream();
+                    }
+
+                    foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "createFoxHttpResponse()");
+                    foxHttpResponse = new FoxHttpResponse(is, this, responseCode, foxHttpClient);
                 } else {
-                    //On error response code
-                    foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "getResponseBody(error)");
-                    is = ((HttpURLConnection) connection).getErrorStream();
+                    foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "createFoxHttpResponse()");
+                    foxHttpResponse = new FoxHttpResponse(null, this, responseCode, foxHttpClient);
+                    foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "No body return because skipResponseBody is active!");
                 }
 
-                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "createFoxHttpResponse()");
-                foxHttpResponse = new FoxHttpResponse(is, this, responseCode, foxHttpClient);
-            } else {
-                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "createFoxHttpResponse()");
-                foxHttpResponse = new FoxHttpResponse(null, this, responseCode, foxHttpClient);
-                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.INFO, "No body return because skipResponseBody is active!");
+                //Process response headers
+                foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "processResponseHeader()");
+                processResponseHeader();
+                if (foxHttpClient.getFoxHttpCacheStrategy().isCachingEnabled()) {
+                    foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "saveDataToCache()");
+                    foxHttpClient.getFoxHttpCacheStrategy().saveDataToCache(foxHttpResponse, this, foxHttpClient);
+                }
             }
-
-            //Process response headers
-            foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "processResponseHeader()");
-            processResponseHeader();
-
             //Execute interceptor
             foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "executeResponseInterceptor()");
             FoxHttpInterceptorExecutor.executeResponseInterceptor(new FoxHttpResponseInterceptorContext(responseCode, foxHttpResponse, this, foxHttpClient));
@@ -335,8 +353,8 @@ public class FoxHttpRequest {
     }
 
     private void processAuthorizationStrategy() throws FoxHttpRequestException {
-        List<FoxHttpAuthorization> foxHttpAuthorizations = foxHttpClient.getFoxHttpAuthorizationStrategy()
-                                                                        .getAuthorization(connection, authScope, foxHttpClient, foxHttpPlaceholderStrategy);
+        List<FoxHttpAuthorization> foxHttpAuthorizations = foxHttpClient.getFoxHttpAuthorizationStrategy().getAuthorization(connection, authScope, foxHttpClient,
+                                                                                                                            foxHttpPlaceholderStrategy);
         FoxHttpAuthorizationContext authorizationContext = new FoxHttpAuthorizationContext(connection, this, foxHttpClient);
         for (FoxHttpAuthorization foxHttpAuthorization : foxHttpAuthorizations) {
             foxHttpClient.getFoxHttpLogger().log(FoxHttpLoggerLevel.DEBUG, "-> doAuthorization(" + foxHttpAuthorization + ")");

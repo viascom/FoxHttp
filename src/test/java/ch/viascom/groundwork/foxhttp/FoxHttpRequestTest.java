@@ -97,7 +97,7 @@ public class FoxHttpRequestTest {
         assertThat(foxHttpResponse.getResponseCode()).isEqualTo(200);
         assertThat(foxHttpResponse.getByteArrayOutputStreamBody().size()).isGreaterThan(0);
         assertThat(foxHttpResponse.getFoxHttpRequest().getRequestType()).isEqualTo(RequestType.GET);
-        assertThat(foxHttpResponse.getFoxHttpRequest().getUrl()).isEqualTo(new URL(endpoint + "get"));
+        assertThat(foxHttpResponse.getFoxHttpRequest().getUrl()).isEqualTo(new URL(sslEndpoint + "get"));
 
         GetResponse getResponse = foxHttpResponse.getParsedBody(GetResponse.class);
 

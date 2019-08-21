@@ -19,7 +19,7 @@ import java.util.HashMap;
 public interface FoxHttpInterfaceTest {
 
     @GET("get")
-    GetResponse get(@Query(value = "key", allowOptional = true) String key);
+    GetResponse get(@Query(value = "key", allowOptional = true) String key) throws FoxHttpException;
 
     @GET(value = "{host}get", completePath = true)
     @Header(name = "foo", value = "bar")
