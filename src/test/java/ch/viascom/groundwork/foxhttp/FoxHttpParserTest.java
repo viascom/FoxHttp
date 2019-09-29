@@ -1,5 +1,6 @@
 package ch.viascom.groundwork.foxhttp;
 
+import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
 import ch.viascom.groundwork.foxhttp.models.User;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
 import ch.viascom.groundwork.foxhttp.parser.XStreamParser;

@@ -2,6 +2,8 @@ package ch.viascom.groundwork.foxhttp;
 
 import ch.viascom.groundwork.foxhttp.authorization.DefaultAuthorizationStrategy;
 import ch.viascom.groundwork.foxhttp.authorization.FoxHttpAuthorizationStrategy;
+import ch.viascom.groundwork.foxhttp.cache.FoxHttpCacheStrategy;
+import ch.viascom.groundwork.foxhttp.cache.NoCacheStrategy;
 import ch.viascom.groundwork.foxhttp.component.FoxHttpComponent;
 import ch.viascom.groundwork.foxhttp.cookie.DefaultCookieStore;
 import ch.viascom.groundwork.foxhttp.cookie.FoxHttpCookieStore;
@@ -51,9 +53,10 @@ public class FoxHttpClient {
     //Interceptors
     private FoxHttpInterceptorStrategy foxHttpInterceptorStrategy = new DefaultInterceptorStrategy();
 
-    //@Getter
+    @Getter
+    @Setter
     //Caching
-    //private FoxHttpCacheStrategy foxHttpCacheStrategy;
+    private FoxHttpCacheStrategy foxHttpCacheStrategy = new NoCacheStrategy();
 
     @Getter
     @Setter

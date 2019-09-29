@@ -28,6 +28,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class FoxHttpLambdaTest {
 
     private String endpoint = "http://httpbin.org/";
+    private String sslEndpoint = "https://httpbin.org/";
 
     @Test
     public void lambdaParserTest() throws Exception {
@@ -40,11 +41,11 @@ public class FoxHttpLambdaTest {
                 )
         ).build();
 
-        PostResponse response = new FoxHttpRequestBuilder(endpoint + "post", RequestType.POST, httpClient)
+        PostResponse response = new FoxHttpRequestBuilder(sslEndpoint + "post", RequestType.POST, httpClient)
                 .setRequestBody(new RequestObjectBody(new User()))
                 .build().execute().getParsedBody(PostResponse.class);
 
-        assertThat(response.getUrl()).isEqualTo(endpoint + "post");
+        assertThat(response.getUrl()).isEqualTo(sslEndpoint + "post");
         assertThat(response.getData()).isEqualTo(new GsonParser().objectToSerialized(new User(), ContentType.APPLICATION_JSON));
     }
 

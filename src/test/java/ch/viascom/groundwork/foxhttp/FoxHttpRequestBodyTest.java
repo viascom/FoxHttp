@@ -1,29 +1,34 @@
 package ch.viascom.groundwork.foxhttp;
 
-import ch.viascom.groundwork.foxhttp.body.request.*;
+import static org.fest.assertions.api.Assertions.assertThat;
+
+import ch.viascom.groundwork.foxhttp.body.request.FoxHttpRequestBody;
+import ch.viascom.groundwork.foxhttp.body.request.RequestByteArrayBody;
+import ch.viascom.groundwork.foxhttp.body.request.RequestMultipartBody;
+import ch.viascom.groundwork.foxhttp.body.request.RequestObjectBody;
+import ch.viascom.groundwork.foxhttp.body.request.RequestServiceResultBody;
+import ch.viascom.groundwork.foxhttp.body.request.RequestUrlEncodedFormBody;
 import ch.viascom.groundwork.foxhttp.builder.FoxHttpClientBuilder;
 import ch.viascom.groundwork.foxhttp.builder.FoxHttpRequestBuilder;
-import ch.viascom.groundwork.foxhttp.exception.FoxHttpRequestException;
+import ch.viascom.groundwork.foxhttp.log.FoxHttpLoggerLevel;
+import ch.viascom.groundwork.foxhttp.log.SystemOutFoxHttpLogger;
 import ch.viascom.groundwork.foxhttp.models.PostResponse;
 import ch.viascom.groundwork.foxhttp.models.User;
 import ch.viascom.groundwork.foxhttp.parser.GenericParser;
 import ch.viascom.groundwork.foxhttp.parser.GsonParser;
 import ch.viascom.groundwork.foxhttp.type.ContentType;
 import ch.viascom.groundwork.foxhttp.type.RequestType;
-import ch.viascom.groundwork.serviceresult.ServiceResult;
 import ch.viascom.groundwork.serviceresult.ServiceResultStatus;
 import ch.viascom.groundwork.serviceresult.util.Metadata;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import org.junit.Test;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-
-import static org.fest.assertions.api.Assertions.assertThat;
+import org.junit.Test;
 
 /**
  * @author patrick.boesch@viascom.ch
@@ -65,7 +70,6 @@ public class FoxHttpRequestBodyTest {
         requestBuilder.setRequestBody(requestBody);
         FoxHttpResponse foxHttpResponse = requestBuilder.build().execute();
 
-
         assertThat(foxHttpResponse.getResponseCode()).isEqualTo(200);
         assertThat(foxHttpResponse.getByteArrayOutputStreamBody().size()).isGreaterThan(0);
 
@@ -82,12 +86,12 @@ public class FoxHttpRequestBodyTest {
 
         RequestMultipartBody requestBody = new RequestMultipartBody(Charset.forName("UTF-8"));
         requestBody.addFormField("filename", "test.data");
-        requestBody.addInputStreamPart("file", "file.json", new ByteArrayInputStream("{\"name\":\"FoxHttp\"}".getBytes()), "QUOTED-PRINTABLE", ContentType.DEFAULT_TEXT.getMimeType());
+        requestBody.addInputStreamPart("file", "file.json", new ByteArrayInputStream("{\"name\":\"FoxHttp\"}".getBytes()), "QUOTED-PRINTABLE",
+                                       ContentType.DEFAULT_TEXT.getMimeType());
 
         FoxHttpRequestBuilder requestBuilder = new FoxHttpRequestBuilder(endpoint + "post", RequestType.POST, clientBuilder.build());
         requestBuilder.setRequestBody(requestBody);
         FoxHttpResponse foxHttpResponse = requestBuilder.build().execute();
-
 
         assertThat(foxHttpResponse.getResponseCode()).isEqualTo(200);
         assertThat(foxHttpResponse.getByteArrayOutputStreamBody().size()).isGreaterThan(0);
@@ -116,7 +120,8 @@ public class FoxHttpRequestBodyTest {
 
         PostResponse postResponse = foxHttpResponse.getParsedBody(PostResponse.class);
 
-        assertThat(postResponse.getData()).isEqualTo("{\"status\":\"failed\",\"type\":\"ch.viascom.app.models.AppUser\",\"content\":{\"username\":\"foxhttp@viascom.ch\",\"firstname\":\"Fox\",\"lastname\":\"Http\"},\"hash\":\"FAKE-HASH\",\"destination\":\"\",\"metadata\":{\"isActive\":{\"type\":\"java.lang.Boolean\",\"content\":true}}}");
+        assertThat(postResponse.getData()).isEqualTo(
+            "{\"status\":\"failed\",\"type\":\"ch.viascom.app.models.AppUser\",\"content\":{\"username\":\"foxhttp@viascom.ch\",\"firstname\":\"Fox\",\"lastname\":\"Http\"},\"hash\":\"FAKE-HASH\",\"destination\":\"\",\"metadata\":{\"isActive\":{\"type\":\"java.lang.Boolean\",\"content\":true}}}");
     }
 
     @Test
